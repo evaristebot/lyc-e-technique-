@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://lyc-e-technique.vercel.app/sitemap.xml
