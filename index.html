@@ -2,7 +2,6 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <meta name="google-site-verification" content="wOGc9WuDy35GglvAqca2Xuqkigj91lvIKASBvP_DJB8" />
   <title>Lycée Technique de Batouri</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="style.css">
@@ -12,7 +11,7 @@
 <!-- Navigation -->
 <nav class="navbar">
   <div class="nav-logo" onclick="goHome()">
-    <img src="logo.jpg" alt="Logo" onerror="this.src='https://via.placeholder.com/40'">
+    <img src="logo.jpg" alt="Logo">
     <span>Lycée Technique de Batouri</span>
   </div>
   <div class="nav-links">
@@ -29,7 +28,7 @@
 <!-- ACCUEIL -->
 <div id="home" class="page active">
   <div class="hero">
-    <img src="logo.jpg" class="logo-large" id="mainLogo" onerror="this.src='https://via.placeholder.com/150'">
+    <img src="logo.jpg" class="logo-large" id="mainLogo">
     <h1>Lycée Technique de Batouri</h1>
   </div>
   <div class="presentation">
@@ -43,32 +42,24 @@
 
   <h2>📸 Notre Lycée en Images</h2>
   <div class="grid">
-    <div class="card"><img src="photo1.jpg" onerror="this.src='https://via.placeholder.com/100'"><p>Bâtiment principal</p></div>
-    <div class="card"><img src="photo2.jpg" onerror="this.src='https://via.placeholder.com/100'"><p>Atelier mécanique</p></div>
-    <div class="card"><img src="photo3.jpg" onerror="this.src='https://via.placeholder.com/100'"><p>Salle informatique</p></div>
-    <div class="card"><img src="photo4.jpg" onerror="this.src='https://via.placeholder.com/100'"><p>Bibliothèque</p></div>
+    <div class="card"><img src="photo1.jpg"><p>Bâtiment principal</p></div>
+    <div class="card"><img src="photo2.jpg"><p>Atelier mécanique</p></div>
+    <div class="card"><img src="photo3.jpg"><p>Salle informatique</p></div>
+    <div class="card"><img src="photo4.jpg"><p>Bibliothèque</p></div>
   </div>
 </div>
 
 <!-- ADMINISTRATION -->
 <div id="administration" class="page">
   <h1>👨‍🏫 Notre Administration</h1>
-  <div class="grid">
-    <div class="card"><img src="proviseur.jpg" onerror="this.src='https://via.placeholder.com/100'"><h3>M. Jean NTOMBA</h3><p>Proviseur</p></div>
-    <div class="card"><img src="ct.jpg" onerror="this.src='https://via.placeholder.com/100'"><h3>M. Pierre ESSOMBA</h3><p>Chef des travaux</p></div>
-    <div class="card"><img src="censeur.jpg" onerror="this.src='https://via.placeholder.com/100'"><h3>Mme Marie BELL</h3><p>Censeur</p></div>
-    <div class="card"><img src="surveillant.jpg" onerror="this.src='https://via.placeholder.com/100'"><h3>M. Paul EKOTO</h3><p>Surveillant général</p></div>
-  </div>
+  <div id="adminList" class="grid"></div>
   <button class="btn-secondary" onclick="goHome()">← Retour</button>
 </div>
 
 <!-- ANCIENS ÉLÈVES -->
 <div id="anciens" class="page">
   <h1>🎓 Anciens Élèves</h1>
-  <div class="grid">
-    <div class="card"><img src="ancien1.jpg" onerror="this.src='https://via.placeholder.com/100'"><h3>Marc TCHANA</h3><p>Bac 2015 - Ingénieur</p></div>
-    <div class="card"><img src="ancien2.jpg" onerror="this.src='https://via.placeholder.com/100'"><h3>Sophie NZINGA</h3><p>Bac 2018 - Chef d'atelier</p></div>
-  </div>
+  <div id="anciensList" class="grid"></div>
   <button class="btn-secondary" onclick="goHome()">← Retour</button>
 </div>
 
@@ -85,7 +76,7 @@
   <div class="form-container">
     <input type="text" id="searchEleve" placeholder="Nom de l'élève" class="form-input">
     <button class="btn" onclick="rechercherBulletin()">Rechercher</button>
-    <div id="bulletinResult" style="margin-top: 20px;"></div>
+    <div id="bulletinResult"></div>
   </div>
   <button class="btn-secondary" onclick="goHome()">← Retour</button>
 </div>
@@ -96,7 +87,7 @@
   <div class="form-container">
     <input type="text" id="searchQuery" placeholder="Nom, prénom..." class="form-input">
     <button class="btn" onclick="rechercher()">Rechercher</button>
-    <div id="searchResults" style="margin-top: 20px;"></div>
+    <div id="searchResults"></div>
   </div>
   <button class="btn-secondary" onclick="goHome()">← Retour</button>
 </div>
@@ -114,36 +105,89 @@
 
   <!-- Zone admin cachée -->
   <div id="adminZone" style="display: none;">
-    
+
+    <!-- SPÉCIALITÉS -->
     <div class="admin-section">
-      <h3>➕ Ajouter un élève</h3>
+      <h3>📚 Gestion des spécialités</h3>
+      <input type="text" id="specialiteNom" placeholder="Nom de la spécialité" class="form-input">
+      <button class="btn" onclick="ajouterSpecialite()">Ajouter spécialité</button>
+      <div id="specialitesList"></div>
+    </div>
+
+    <!-- CLASSES -->
+    <div class="admin-section">
+      <h3>📂 Gestion des classes</h3>
+      <input type="text" id="classeNom" placeholder="Nom de la classe" class="form-input">
+      <select id="classeSpecialite" class="form-input"></select>
+      <button class="btn" onclick="ajouterClasse()">Ajouter classe</button>
+      <div id="classesList"></div>
+    </div>
+
+    <!-- MATIÈRES -->
+    <div class="admin-section">
+      <h3>📖 Gestion des matières</h3>
+      <input type="text" id="matiereNom" placeholder="Nom de la matière" class="form-input">
+      <select id="matiereClasse" class="form-input"></select>
+      <input type="number" id="matiereCoef" placeholder="Coefficient" class="form-input">
+      <input type="text" id="matierePassword" placeholder="Mot de passe" class="form-input">
+      <button class="btn" onclick="ajouterMatiere()">Ajouter matière</button>
+      <div id="matieresList"></div>
+    </div>
+
+    <!-- ÉLÈVES -->
+    <div class="admin-section">
+      <h3>👨‍🎓 Ajouter un élève</h3>
       <input type="text" id="eleveNom" placeholder="Nom" class="form-input">
       <input type="text" id="elevePrenom" placeholder="Prénom" class="form-input">
-      <input type="text" id="eleveClasse" placeholder="Classe" class="form-input">
-      <button class="btn" onclick="ajouterEleve()">Ajouter</button>
+      <select id="eleveClasseId" class="form-input"></select>
+      <input type="text" id="eleveParent" placeholder="Numéro parent" class="form-input">
+      <button class="btn" onclick="ajouterEleve()">Ajouter élève</button>
     </div>
 
+    <!-- ENSEIGNANTS -->
     <div class="admin-section">
-      <h3>➕ Ajouter un ancien élève</h3>
-      <input type="text" id="ancienNom" placeholder="Nom" class="form-input">
-      <input type="text" id="ancienPrenom" placeholder="Prénom" class="form-input">
-      <input type="text" id="ancienAnnee" placeholder="Année Bac" class="form-input">
-      <button class="btn" onclick="ajouterAncien()">Ajouter</button>
+      <h3>👩‍🏫 Ajouter un enseignant</h3>
+      <input type="text" id="ensNom" placeholder="Nom" class="form-input">
+      <input type="text" id="ensPrenom" placeholder="Prénom" class="form-input">
+      <input type="text" id="ensMatiere" placeholder="Matière" class="form-input">
+      <input type="text" id="ensTel" placeholder="Téléphone" class="form-input">
+      <button class="btn" onclick="ajouterEnseignant()">Ajouter</button>
+      <div id="enseignantsAdminList"></div>
     </div>
 
+    <!-- ADMINISTRATION -->
+    <div class="admin-section">
+      <h3>🏛️ Ajouter un membre administration</h3>
+      <input type="text" id="adminRole" placeholder="Rôle" class="form-input">
+      <input type="text" id="adminNom" placeholder="Nom complet" class="form-input">
+      <input type="text" id="adminPhoto" placeholder="URL photo" class="form-input">
+      <input type="text" id="adminDesc" placeholder="Description" class="form-input">
+      <button class="btn" onclick="ajouterAdminMembre()">Ajouter</button>
+      <div id="adminAdminList"></div>
+    </div>
+
+    <!-- ARTICLES -->
+    <div class="admin-section">
+      <h3>📰 Ajouter un article</h3>
+      <input type="text" id="articleTitre" placeholder="Titre" class="form-input">
+      <textarea id="articleContenu" placeholder="Contenu..." class="form-input" rows="4"></textarea>
+      <button class="btn" onclick="ajouterArticle()">Publier</button>
+      <div id="articlesAdminList"></div>
+    </div>
+
+    <!-- LOGO -->
     <div class="admin-section">
       <h3>🖼️ Modifier le logo</h3>
       <input type="text" id="newLogo" placeholder="URL du nouveau logo" class="form-input">
       <button class="btn" onclick="updateLogo()">Mettre à jour</button>
     </div>
+
   </div>
 
   <button class="btn-secondary" onclick="goHome()">← Retour</button>
 </div>
 
-<!-- Scripts -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="script.js"></script>
-
 </body>
   </html>
