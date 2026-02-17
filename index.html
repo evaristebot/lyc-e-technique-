@@ -3,12 +3,162 @@
 <head>
   <meta charset="UTF-8">
   <title>Lycée Technique de Batouri</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <!-- Navigation -->
-  <!-- Pages -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="script.js"></script>
+
+<!-- Navigation -->
+<nav class="navbar">
+  <div class="nav-logo" onclick="goHome()">
+    <img src="logo.jpg" alt="Logo">
+    <span>Lycée Technique de Batouri</span>
+  </div>
+  <div class="nav-links">
+    <button onclick="goHome()">🏠 Accueil</button>
+    <button onclick="goToAdministration()">👨‍🏫 Administration</button>
+    <button onclick="goToAnciens()">🎓 Anciens</button>
+    <button onclick="goToJournal()">📰 Journal</button>
+    <button onclick="goToBulletins()">📄 Bulletins</button>
+    <button onclick="goToRecherche()">🔍 Recherche</button>
+    <button onclick="goToAdmin()">⚙️ Admin</button>
+  </div>
+</nav>
+
+<!-- Accueil -->
+<div id="home" class="page active">
+  <div class="hero">
+    <img src="logo.jpg" class="logo-large" id="mainLogo">
+    <h1>Lycée Technique de Batouri</h1>
+  </div>
+  <div class="presentation">
+    <div class="text">
+      <h2>Bienvenue</h2>
+      <p>Le Lycée Technique de Batouri forme les jeunes aux métiers techniques depuis 1985.</p>
+    </div>
+    <button class="btn" onclick="goToAdministration()">Découvrir l'administration</button>
+  </div>
+  
+  <h2>📸 Notre Lycée</h2>
+  <div class="grid">
+    <div class="card"><img src="photo1.jpg"><p>Bâtiment principal</p></div>
+    <div class="card"><img src="photo2.jpg"><p>Atelier mécanique</p></div>
+    <div class="card"><img src="photo3.jpg"><p>Salle informatique</p></div>
+    <div class="card"><img src="photo4.jpg"><p>Bibliothèque</p></div>
+  </div>
+</div>
+
+<!-- Administration -->
+<div id="administration" class="page">
+  <h1>Notre Administration</h1>
+  <div class="grid" id="adminList">
+    <div class="card">
+      <img src="proviseur.jpg">
+      <h3>M. Jean NTOMBA</h3>
+      <p><strong>Proviseur</strong></p>
+    </div>
+    <div class="card">
+      <img src="ct.jpg">
+      <h3>M. Pierre ESSOMBA</h3>
+      <p><strong>Chef des travaux</strong></p>
+    </div>
+    <div class="card">
+      <img src="censeur.jpg">
+      <h3>Mme Marie BELL</h3>
+      <p><strong>Censeur</strong></p>
+    </div>
+    <div class="card">
+      <img src="surveillant.jpg">
+      <h3>M. Paul EKOTO</h3>
+      <p><strong>Surveillant général</strong></p>
+    </div>
+  </div>
+  <button class="btn-secondary" onclick="goHome()">← Retour</button>
+</div>
+
+<!-- Anciens élèves -->
+<div id="anciens" class="page">
+  <h1>Anciens Élèves</h1>
+  <div class="grid">
+    <div class="card">
+      <img src="ancien1.jpg">
+      <h3>Marc TCHANA</h3>
+      <p>Bac 2015 - Ingénieur</p>
+    </div>
+    <div class="card">
+      <img src="ancien2.jpg">
+      <h3>Sophie NZINGA</h3>
+      <p>Bac 2018 - Chef d'atelier</p>
+    </div>
+  </div>
+  <button class="btn-secondary" onclick="goHome()">← Retour</button>
+</div>
+
+<!-- Journal -->
+<div id="journal" class="page">
+  <h1>Journal du Lycée</h1>
+  <div id="articlesList" class="grid"></div>
+  <button class="btn-secondary" onclick="goHome()">← Retour</button>
+</div>
+
+<!-- Bulletins -->
+<div id="bulletins" class="page">
+  <h1>Consultation des bulletins</h1>
+  <div class="form-container">
+    <input type="text" id="searchEleve" placeholder="Nom de l'élève" class="form-input">
+    <button class="btn" onclick="rechercherBulletin()">Rechercher</button>
+    <div id="bulletinResult"></div>
+  </div>
+  <button class="btn-secondary" onclick="goHome()">← Retour</button>
+</div>
+
+<!-- Recherche -->
+<div id="recherche" class="page">
+  <h1>Recherche</h1>
+  <div class="form-container">
+    <input type="text" id="searchQuery" placeholder="Nom, prénom..." class="form-input">
+    <button class="btn" onclick="rechercher()">Rechercher</button>
+    <div id="searchResults"></div>
+  </div>
+  <button class="btn-secondary" onclick="goHome()">← Retour</button>
+</div>
+
+<!-- Admin -->
+<div id="admin" class="page">
+  <h1>Espace Admin</h1>
+  <div id="adminPasswordBox" class="password-box">
+    <h3>Mot de passe</h3>
+    <input type="password" id="adminPassword" class="form-input">
+    <button class="btn" onclick="checkAdminPassword()">Valider</button>
+  </div>
+  
+  <div id="adminZone" style="display:none;">
+    <div class="admin-section">
+      <h3>Ajouter un élève</h3>
+      <input type="text" id="eleveNom" placeholder="Nom" class="form-input">
+      <input type="text" id="elevePrenom" placeholder="Prénom" class="form-input">
+      <input type="text" id="eleveClasse" placeholder="Classe" class="form-input">
+      <button class="btn" onclick="ajouterEleve()">Ajouter</button>
+    </div>
+    
+    <div class="admin-section">
+      <h3>Ajouter un ancien</h3>
+      <input type="text" id="ancienNom" placeholder="Nom" class="form-input">
+      <input type="text" id="ancienPrenom" placeholder="Prénom" class="form-input">
+      <input type="text" id="ancienAnnee" placeholder="Année Bac" class="form-input">
+      <button class="btn" onclick="ajouterAncien()">Ajouter</button>
+    </div>
+    
+    <div class="admin-section">
+      <h3>Modifier le logo</h3>
+      <input type="text" id="newLogo" placeholder="URL du logo" class="form-input">
+      <button class="btn" onclick="updateLogo()">Mettre à jour</button>
+    </div>
+  </div>
+  <button class="btn-secondary" onclick="goHome()">← Retour</button>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="script.js"></script>
 </body>
-</html>
+  </html>
