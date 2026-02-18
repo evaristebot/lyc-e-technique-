@@ -5,24 +5,31 @@
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
+/* ===== IMAGE DE FOND SUR TOUT LE SITE ===== */
 body {
-  background: linear-gradient(135deg, #f5f7fa 0%, #e9edf5 100%);
-  color: #0b2f2f;
+  background-image: linear-gradient(rgba(10, 47, 47, 0.8), rgba(10, 47, 47, 0.8)), url('fond-lycee.jpg');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  color: white;
   line-height: 1.6;
+  min-height: 100vh;
 }
 
+/* ===== N A V I G A T I O N ===== */
 .navbar {
-  background: #0b2f2f;
+  background: rgba(11, 47, 47, 0.95);
   color: white;
   padding: 1rem 5%;
   display: flex;
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
   position: sticky;
   top: 0;
   z-index: 1000;
+  backdrop-filter: blur(10px);
 }
 
 .nav-logo {
@@ -37,6 +44,7 @@ body {
   height: 40px;
   border-radius: 50%;
   object-fit: cover;
+  border: 2px solid #ffb347;
 }
 
 .nav-logo span {
@@ -67,10 +75,12 @@ body {
   color: #0b2f2f;
 }
 
+/* ===== P A G E S ===== */
 .page {
   display: none;
   padding: 2rem 5%;
   animation: fadeIn 0.5s;
+  min-height: 80vh;
 }
 
 .page.active {
@@ -82,6 +92,7 @@ body {
   to { opacity: 1; transform: translateY(0); }
 }
 
+/* ===== A C C U E I L ===== */
 .hero {
   text-align: center;
   margin-bottom: 2rem;
@@ -94,15 +105,26 @@ body {
   object-fit: cover;
   border: 5px solid #ffb347;
   margin: 1rem auto;
+  background: white;
+  padding: 3px;
 }
 
 h1 {
-  color: #0b2f2f;
+  color: #ffb347;
   font-size: 2.5rem;
   margin-bottom: 1rem;
   text-align: center;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
 }
 
+h2 {
+  color: #ffb347;
+  margin: 2rem 0 1rem;
+  text-align: center;
+  text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+}
+
+/* ===== C A R T E S  &  C O N T E N U S ===== */
 .presentation {
   max-width: 800px;
   margin: 0 auto 3rem;
@@ -110,13 +132,16 @@ h1 {
 }
 
 .text {
-  background: white;
+  background: rgba(255, 255, 255, 0.9);
   padding: 2rem;
   border-radius: 20px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
   margin-bottom: 1.5rem;
+  color: #0b2f2f;
+  backdrop-filter: blur(5px);
 }
 
+/* ===== B O U T O N S ===== */
 .btn {
   background: #ffb347;
   color: #0b2f2f;
@@ -136,8 +161,8 @@ h1 {
 
 .btn-secondary {
   background: transparent;
-  border: 2px solid #0b2f2f;
-  color: #0b2f2f;
+  border: 2px solid #ffb347;
+  color: #ffb347;
   padding: 12px 30px;
   border-radius: 30px;
   font-weight: bold;
@@ -145,10 +170,11 @@ h1 {
 }
 
 .btn-secondary:hover {
-  background: #0b2f2f;
-  color: white;
+  background: #ffb347;
+  color: #0b2f2f;
 }
 
+/* ===== G R I L L E S ===== */
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -157,12 +183,14 @@ h1 {
 }
 
 .card {
-  background: white;
+  background: rgba(255, 255, 255, 0.9);
   border-radius: 15px;
   padding: 1.5rem;
-  box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+  box-shadow: 0 5px 20px rgba(0,0,0,0.3);
   transition: transform 0.3s;
   text-align: center;
+  color: #0b2f2f;
+  backdrop-filter: blur(5px);
 }
 
 .card:hover {
@@ -176,37 +204,46 @@ h1 {
   object-fit: cover;
   border: 4px solid #ffb347;
   margin-bottom: 1rem;
+  background: white;
 }
 
+/* ===== F O R M U L A I R E S ===== */
 .form-container {
   max-width: 600px;
   margin: 2rem auto;
-  background: white;
+  background: rgba(255, 255, 255, 0.95);
   padding: 2.5rem;
   border-radius: 20px;
-  box-shadow: 0 15px 40px rgba(0,0,0,0.1);
+  box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+  color: #0b2f2f;
+  backdrop-filter: blur(10px);
 }
 
 .form-input {
   width: 100%;
   padding: 12px 15px;
   margin: 10px 0;
-  border: 2px solid #e0e0e0;
+  border: 2px solid #ddd;
   border-radius: 10px;
   font-size: 1rem;
+  background: rgba(255, 255, 255, 0.9);
 }
 
 .form-input:focus {
   border-color: #ffb347;
   outline: none;
+  box-shadow: 0 0 0 3px rgba(255, 180, 70, 0.3);
 }
 
+/* ===== A D M I N  S E C T I O N ===== */
 .admin-section {
-  background: white;
+  background: rgba(255, 255, 255, 0.95);
   border-radius: 15px;
   padding: 2rem;
   margin-bottom: 2rem;
-  box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+  box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+  color: #0b2f2f;
+  backdrop-filter: blur(10px);
 }
 
 .admin-section h3 {
@@ -216,15 +253,41 @@ h1 {
   margin-bottom: 20px;
 }
 
+/* ===== P A S S W O R D  B O X ===== */
 .password-box {
-  background: #0b2f2f;
+  background: rgba(11, 47, 47, 0.95);
   color: white;
   padding: 20px;
   border-radius: 15px;
   margin-bottom: 20px;
   text-align: center;
+  backdrop-filter: blur(5px);
 }
 
+/* ===== R É S U L T A T S  R E C H E R C H E ===== */
+.result-item {
+  background: rgba(255, 255, 255, 0.9);
+  padding: 15px;
+  margin: 10px 0;
+  border-radius: 10px;
+  border-left: 5px solid #ffb347;
+  color: #0b2f2f;
+}
+
+/* ===== S A I S I E  D E S  N O T E S ===== */
+#notesSaisie div {
+  background: rgba(255, 255, 255, 0.9);
+  padding: 10px;
+  margin: 10px 0;
+  border-radius: 10px;
+  color: #0b2f2f;
+}
+
+#notesSaisie input {
+  border: 2px solid #ffb347;
+}
+
+/* ===== R E S P O N S I V E ===== */
 @media (max-width: 768px) {
   .navbar {
     flex-direction: column;
@@ -238,4 +301,8 @@ h1 {
   .nav-links {
     justify-content: center;
   }
-    }
+  
+  .grid {
+    grid-template-columns: 1fr;
+  }
+  }
