@@ -554,7 +554,27 @@ window.updateLogo = () => {
   document.getElementById('newLogo').value = '';
 };
 
+window.rechercher = () => {
+  const query = document.getElementById('searchQuery').value;
+  const results = document.getElementById('searchResults');
+  if (!query) {
+    results.innerHTML = '<p>Entrez un nom</p>';
+    return;
+  }
+  results.innerHTML = '<p>Recherche simulée</p>';
+};
+
+window.rechercherBulletin = () => {
+  const nom = document.getElementById('searchEleve').value;
+  const result = document.getElementById('bulletinResult');
+  if (!nom) {
+    result.innerHTML = '<p>Entrez un nom</p>';
+    return;
+  }
+  result.innerHTML = '<p>Bulletin simulé</p>';
+};
+
 // ===============================
 // INIT
 // ===============================
-console.log("✅ Script prêt - Version corrigée");
+console.log("✅ Script prêt avec la bonne clé API");
