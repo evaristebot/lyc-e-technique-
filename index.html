@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <title>Lycée Technique de Batouri</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<title>Lycée Technique de Batouri</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<!-- Navigation -->
+<!-- NAVIGATION -->
 <nav class="navbar">
   <div class="nav-logo" onclick="goHome()">
     <img src="logo.jpg" alt="Logo" onerror="this.src='https://via.placeholder.com/40'">
@@ -21,6 +21,7 @@
     <button onclick="goToJournal()">📰 Journal</button>
     <button onclick="goToBulletins()">📄 Bulletins</button>
     <button onclick="goToRecherche()">🔍 Recherche</button>
+    <button onclick="goToProf()">📚 Cours</button>
     <button onclick="goToAdmin()">⚙️ Admin</button>
   </div>
 </nav>
@@ -37,26 +38,17 @@
       <p>Le Lycée Technique de Batouri forme les jeunes aux métiers techniques depuis 1985.</p>
       <p><strong>Excellence, Discipline, Travail</strong></p>
     </div>
-    <button class="btn" onclick="goToAdministration()">Découvrir l'administration</button>
-  </div>
-
-  <h2>📸 Notre Lycée en Images</h2>
-  <div class="grid">
-    <div class="card"><img src="photo1.jpg" onerror="this.src='https://via.placeholder.com/100'"><p>Bâtiment principal</p></div>
-    <div class="card"><img src="photo2.jpg" onerror="this.src='https://via.placeholder.com/100'"><p>Atelier mécanique</p></div>
-    <div class="card"><img src="photo3.jpg" onerror="this.src='https://via.placeholder.com/100'"><p>Salle informatique</p></div>
-    <div class="card"><img src="photo4.jpg" onerror="this.src='https://via.placeholder.com/100'"><p>Bibliothèque</p></div>
   </div>
 </div>
 
 <!-- ADMINISTRATION -->
 <div id="administration" class="page">
-  <h1>👨‍🏫 Notre Administration</h1>
+  <h1>👨‍🏫 Administration</h1>
   <div id="adminList" class="grid"></div>
   <button class="btn-secondary" onclick="goHome()">← Retour</button>
 </div>
 
-<!-- ANCIENS ÉLÈVES -->
+<!-- ANCIENS -->
 <div id="anciens" class="page">
   <h1>🎓 Anciens Élèves</h1>
   <div id="anciensList" class="grid"></div>
@@ -65,55 +57,66 @@
 
 <!-- JOURNAL -->
 <div id="journal" class="page">
-  <h1>📰 Journal du Lycée</h1>
+  <h1>📰 Journal</h1>
   <div id="articlesList" class="grid"></div>
   <button class="btn-secondary" onclick="goHome()">← Retour</button>
 </div>
 
 <!-- BULLETINS -->
 <div id="bulletins" class="page">
-  <h1>📄 Consultation des bulletins</h1>
-  <div class="form-container">
-    <input type="text" id="searchEleve" placeholder="Nom de l'élève" class="form-input">
-    <button class="btn" onclick="rechercherBulletin()">Rechercher</button>
-    <div id="bulletinResult"></div>
-  </div>
-  <button class="btn-secondary" onclick="goHome()">← Retour</button>
+  <h1>📄 Bulletins</h1>
+  <input type="text" id="searchEleve" placeholder="Nom de l'élève">
+  <button onclick="rechercherBulletin()">Rechercher</button>
+  <div id="bulletinResult"></div>
+  <button onclick="goHome()">← Retour</button>
 </div>
 
 <!-- RECHERCHE -->
 <div id="recherche" class="page">
   <h1>🔍 Recherche</h1>
-  <div class="form-container">
-    <input type="text" id="searchQuery" placeholder="Nom, prénom..." class="form-input">
-    <button class="btn" onclick="rechercher()">Rechercher</button>
-    <div id="searchResults"></div>
-  </div>
-  <button class="btn-secondary" onclick="goHome()">← Retour</button>
+  <input type="text" id="searchQuery" placeholder="Nom, prénom...">
+  <button onclick="rechercher()">Rechercher</button>
+  <div id="searchResults"></div>
+  <button onclick="goHome()">← Retour</button>
+</div>
+
+<!-- COURS -->
+<div id="cours" class="page">
+  <h1>📚 Cours</h1>
+  <input type="text" id="teacherName" placeholder="Nom professeur">
+  <input type="text" id="courseTitle" placeholder="Titre du cours">
+  <textarea id="courseDesc" placeholder="Description"></textarea>
+  <select id="courseType">
+    <option value="video">Vidéo (lien)</option>
+    <option value="pdf">PDF</option>
+  </select>
+  <input type="text" id="videoLink" placeholder="Lien vidéo">
+  <input type="file" id="pdfFile" accept=".pdf">
+  <button onclick="submitCourse()">Soumettre</button>
+  <p id="courseMessage"></p>
+
+  <h2>Cours disponibles</h2>
+  <div id="approvedCourses"></div>
+  <button onclick="goHome()">← Retour</button>
 </div>
 
 <!-- ADMIN -->
 <div id="admin" class="page">
-  <h1>⚙️ Espace Administration</h1>
-
-  <!-- Mot de passe -->
-  <div id="adminPasswordBox" class="password-box">
-    <h3>🔐 Accès sécurisé</h3>
-    <input type="password" id="adminPassword" placeholder="Mot de passe" class="form-input">
-    <button class="btn" onclick="checkAdminPassword()">Valider</button>
+  <h1>⚙️ Admin</h1>
+  <div id="adminPasswordBox">
+    <input type="password" id="adminPassword" placeholder="Mot de passe">
+    <button onclick="checkAdminPassword()">Valider</button>
   </div>
+  <div id="adminZone" style="display:none;">
+    <h3>Spécialités</h3>
+    <input type="text" id="specialiteNom" placeholder="Nom spécialité">
+    <button onclick="ajouterSpecialite()">Ajouter</button>
+    <div id="specialitesList"></div>
 
-  <!-- Zone admin -->
-  <div id="adminZone" style="display: none;">
-    <div class="admin-section">
-      <h3>📚 Gestion des spécialités</h3>
-      <input type="text" id="specialiteNom" placeholder="Nom de la spécialité" class="form-input">
-      <button class="btn" onclick="ajouterSpecialite()">Ajouter spécialité</button>
-      <div id="specialitesList"></div>
-    </div>
+    <h3>Cours en attente</h3>
+    <div id="pendingCourses"></div>
   </div>
-
-  <button class="btn-secondary" onclick="goHome()">← Retour</button>
+  <button onclick="goHome()">← Retour</button>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
