@@ -1,145 +1,122 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 <head>
-  <title>Test Supabase</title>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      max-width: 600px;
-      margin: 50px auto;
-      padding: 20px;
-      background: #f5f7fa;
-    }
-    .card {
-      background: white;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-      margin: 20px 0;
-    }
-    button {
-      background: #ffb347;
-      color: #0b2f2f;
-      border: none;
-      padding: 12px 25px;
-      border-radius: 25px;
-      font-weight: bold;
-      cursor: pointer;
-      margin: 5px;
-    }
-    .success { color: green; font-weight: bold; }
-    .error { color: red; font-weight: bold; }
-    pre {
-      background: #f0f0f0;
-      padding: 10px;
-      border-radius: 5px;
-      overflow: auto;
-    }
-  </style>
+  <meta charset="UTF-8">
+  <title>Lycée Technique de Batouri</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>🔍 Test de connexion Supabase</h1>
-  
-  <div class="card">
-    <h3>Configuration</h3>
-    <p><strong>URL:</strong> https://cxvetkmbhohutyprwxjx.supabase.co</p>
-    <p><strong>Clé API:</strong> sb_publishable_o5PsuBWUwgad235AnF6hqg_5E47LM1C</p>
+
+<!-- Navigation -->
+<nav class="navbar">
+  <div class="nav-logo" onclick="goHome()">
+    <img src="logo.jpg" alt="Logo" onerror="this.src='https://via.placeholder.com/40'">
+    <span>Lycée Technique de Batouri</span>
+  </div>
+  <div class="nav-links">
+    <button onclick="goHome()">🏠 Accueil</button>
+    <button onclick="goToAdministration()">👨‍🏫 Administration</button>
+    <button onclick="goToAnciens()">🎓 Anciens</button>
+    <button onclick="goToJournal()">📰 Journal</button>
+    <button onclick="goToBulletins()">📄 Bulletins</button>
+    <button onclick="goToRecherche()">🔍 Recherche</button>
+    <button onclick="goToAdmin()">⚙️ Admin</button>
+  </div>
+</nav>
+
+<!-- ACCUEIL -->
+<div id="home" class="page active">
+  <div class="hero">
+    <img src="logo.jpg" class="logo-large" id="mainLogo" onerror="this.src='https://via.placeholder.com/150'">
+    <h1>Lycée Technique de Batouri</h1>
+  </div>
+  <div class="presentation">
+    <div class="text">
+      <h2>Bienvenue</h2>
+      <p>Le Lycée Technique de Batouri forme les jeunes aux métiers techniques depuis 1985.</p>
+      <p><strong>Excellence, Discipline, Travail</strong></p>
+    </div>
+    <button class="btn" onclick="goToAdministration()">Découvrir l'administration</button>
   </div>
 
-  <div class="card">
-    <h3>Actions</h3>
-    <button onclick="testConnexion()">1️⃣ Tester la connexion</button>
-    <button onclick="testInsertion()">2️⃣ Tester l'insertion</button>
-    <button onclick="testLecture()">3️⃣ Tester la lecture</button>
+  <h2>📸 Notre Lycée en Images</h2>
+  <div class="grid">
+    <div class="card"><img src="photo1.jpg" onerror="this.src='https://via.placeholder.com/100'"><p>Bâtiment principal</p></div>
+    <div class="card"><img src="photo2.jpg" onerror="this.src='https://via.placeholder.com/100'"><p>Atelier mécanique</p></div>
+    <div class="card"><img src="photo3.jpg" onerror="this.src='https://via.placeholder.com/100'"><p>Salle informatique</p></div>
+    <div class="card"><img src="photo4.jpg" onerror="this.src='https://via.placeholder.com/100'"><p>Bibliothèque</p></div>
+  </div>
+</div>
+
+<!-- ADMINISTRATION -->
+<div id="administration" class="page">
+  <h1>👨‍🏫 Notre Administration</h1>
+  <div id="adminList" class="grid"></div>
+  <button class="btn-secondary" onclick="goHome()">← Retour</button>
+</div>
+
+<!-- ANCIENS ÉLÈVES -->
+<div id="anciens" class="page">
+  <h1>🎓 Anciens Élèves</h1>
+  <div id="anciensList" class="grid"></div>
+  <button class="btn-secondary" onclick="goHome()">← Retour</button>
+</div>
+
+<!-- JOURNAL -->
+<div id="journal" class="page">
+  <h1>📰 Journal du Lycée</h1>
+  <div id="articlesList" class="grid"></div>
+  <button class="btn-secondary" onclick="goHome()">← Retour</button>
+</div>
+
+<!-- BULLETINS -->
+<div id="bulletins" class="page">
+  <h1>📄 Consultation des bulletins</h1>
+  <div class="form-container">
+    <input type="text" id="searchEleve" placeholder="Nom de l'élève" class="form-input">
+    <button class="btn" onclick="rechercherBulletin()">Rechercher</button>
+    <div id="bulletinResult"></div>
+  </div>
+  <button class="btn-secondary" onclick="goHome()">← Retour</button>
+</div>
+
+<!-- RECHERCHE -->
+<div id="recherche" class="page">
+  <h1>🔍 Recherche</h1>
+  <div class="form-container">
+    <input type="text" id="searchQuery" placeholder="Nom, prénom..." class="form-input">
+    <button class="btn" onclick="rechercher()">Rechercher</button>
+    <div id="searchResults"></div>
+  </div>
+  <button class="btn-secondary" onclick="goHome()">← Retour</button>
+</div>
+
+<!-- ADMIN -->
+<div id="admin" class="page">
+  <h1>⚙️ Espace Administration</h1>
+
+  <!-- Mot de passe -->
+  <div id="adminPasswordBox" class="password-box">
+    <h3>🔐 Accès sécurisé</h3>
+    <input type="password" id="adminPassword" placeholder="Mot de passe" class="form-input">
+    <button class="btn" onclick="checkAdminPassword()">Valider</button>
   </div>
 
-  <div class="card">
-    <h3>Résultat</h3>
-    <div id="resultat" style="min-height: 100px;">
-      Clique sur un bouton pour commencer
+  <!-- Zone admin -->
+  <div id="adminZone" style="display: none;">
+    <div class="admin-section">
+      <h3>📚 Gestion des spécialités</h3>
+      <input type="text" id="specialiteNom" placeholder="Nom de la spécialité" class="form-input">
+      <button class="btn" onclick="ajouterSpecialite()">Ajouter spécialité</button>
+      <div id="specialitesList"></div>
     </div>
   </div>
 
-  <script>
-    // Configuration Supabase
-    const supabaseUrl = 'https://cxvetkmbhohutyprwxjx.supabase.co';
-    const supabaseKey = 'sb_publishable_o5PsuBWUwgad235AnF6hqg_5E47LM1C';
-    const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+  <button class="btn-secondary" onclick="goHome()">← Retour</button>
+</div>
 
-    const resultDiv = document.getElementById('resultat');
-
-    function afficher(message, type = 'info') {
-      const className = type === 'success' ? 'success' : (type === 'error' ? 'error' : '');
-      resultDiv.innerHTML = `<p class="${className}">${message}</p>`;
-    }
-
-    async function testConnexion() {
-      afficher('⏳ Test de connexion en cours...');
-      
-      try {
-        // Test simple : on essaie de lire la table specialites
-        const { data, error } = await supabase
-          .from('specialites')
-          .select('count', { count: 'exact', head: true });
-        
-        if (error) {
-          afficher(`❌ Erreur de connexion : ${error.message}`, 'error');
-          console.error(error);
-        } else {
-          afficher('✅ Connexion réussie ! La table specialites est accessible.', 'success');
-        }
-      } catch (err) {
-        afficher(`❌ Exception : ${err.message}`, 'error');
-      }
-    }
-
-    async function testInsertion() {
-      const nomTest = 'Test_' + Date.now();
-      afficher(`⏳ Tentative d'insertion de "${nomTest}"...`);
-      
-      try {
-        const { data, error } = await supabase
-          .from('specialites')
-          .insert([{ nom: nomTest }])
-          .select();
-        
-        if (error) {
-          afficher(`❌ Erreur d'insertion : ${error.message}`, 'error');
-          console.error(error);
-        } else {
-          afficher(`✅ Insertion réussie ! Donnée ajoutée : ${JSON.stringify(data)}`, 'success');
-        }
-      } catch (err) {
-        afficher(`❌ Exception : ${err.message}`, 'error');
-      }
-    }
-
-    async function testLecture() {
-      afficher('⏳ Lecture des données...');
-      
-      try {
-        const { data, error } = await supabase
-          .from('specialites')
-          .select('*')
-          .limit(10);
-        
-        if (error) {
-          afficher(`❌ Erreur de lecture : ${error.message}`, 'error');
-          console.error(error);
-        } else {
-          if (data && data.length > 0) {
-            let html = '✅ Données lues avec succès :<br><pre>' + 
-                      JSON.stringify(data, null, 2) + '</pre>';
-            afficher(html, 'success');
-          } else {
-            afficher('✅ Connexion réussie mais aucune donnée trouvée', 'success');
-          }
-        }
-      } catch (err) {
-        afficher(`❌ Exception : ${err.message}`, 'error');
-      }
-    }
-  </script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="script.js"></script>
 </body>
-</html>
+      </html>
