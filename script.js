@@ -1,180 +1,109 @@
-// ===============================
-// CONFIGURATION SUPABASE
-// ===============================
 const supabaseUrl = 'https://cxvetkmbhohutyprwxjx.supabase.co';
 const supabaseKey = 'sb_publishable_o5PsuBWUwgad235AnF6hqg_5E47LM1C';
 const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
-console.log("✅ Supabase configuré");
+// NAVIGATION
+function showPage(id){ document.querySelectorAll('.page').forEach(p=>p.classList.remove('active')); document.getElementById(id).classList.add('active'); }
+window.goHome=()=>showPage('home');
+window.goToAdministration=()=>{showPage('administration'); chargerAdministration();}
+window.goToAnciens=()=>{showPage('anciens'); chargerAnciens();}
+window.goToJournal=()=>{showPage('journal'); chargerArticles();}
+window.goToBulletins=()=>showPage('bulletins');
+window.goToRecherche=()=>showPage('recherche');
+window.goToProf=()=>{showPage('cours'); chargerCoursApprouves();}
+window.goToAdmin=()=>{showPage('admin'); document.getElementById('adminPasswordBox').style.display='block'; document.getElementById('adminZone').style.display='none';};
 
-// ===============================
-// NAVIGATION - FONCTIONS GLOBALES
-// ===============================
-window.goHome = function() {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.getElementById('home').classList.add('active');
+// ADMIN PASSWORD
+window.checkAdminPassword=()=>{
+  if(document.getElementById('adminPassword').value==="LTB2025"){
+    document.getElementById('adminPasswordBox').style.display='none';
+    document.getElementById('adminZone').style.display='block';
+    chargerSpecialites(); chargerCoursEnAttente();
+  } else alert("Mot de passe incorrect");
 };
 
-window.goToAdministration = function() {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.getElementById('administration').classList.add('active');
-  chargerAdministration();
+// SPECIALITES
+window.ajouterSpecialite=async()=>{
+  const nom=document.getElementById('specialiteNom').value.trim();
+  if(!nom) return alert("Nom requis");
+  const {error}=await supabaseClient.from('specialites').insert([{nom}]);
+  if(error) alert("Erreur: "+error.message);
+  else { document.getElementById('specialiteNom').value=''; chargerSpecialites(); }
 };
-
-window.goToAnciens = function() {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.getElementById('anciens').classList.add('active');
-  chargerAnciens();
-};
-
-window.goToJournal = function() {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.getElementById('journal').classList.add('active');
-  chargerArticles();
-};
-
-window.goToBulletins = function() {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.getElementById('bulletins').classList.add('active');
-};
-
-window.goToRecherche = function() {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.getElementById('recherche').classList.add('active');
-};
-
-window.goToAdmin = function() {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.getElementById('admin').classList.add('active');
-  document.getElementById('adminPasswordBox').style.display = 'block';
-  document.getElementById('adminZone').style.display = 'none';
-};
-
-// ===============================
-// ADMIN - MOT DE PASSE
-// ===============================
-window.checkAdminPassword = function() {
-  const pwd = document.getElementById('adminPassword').value;
-  if (pwd === "LTB2025") {
-    document.getElementById('adminPasswordBox').style.display = 'none';
-    document.getElementById('adminZone').style.display = 'block';
-    chargerSpecialites();
-  } else {
-    alert('Mot de passe incorrect');
-  }
-};
-
-// ===============================
-// SPÉCIALITÉS
-// ===============================
-window.ajouterSpecialite = async function() {
-  const nom = document.getElementById('specialiteNom').value.trim();
-  if (!nom) {
-    alert('Nom requis');
-    return;
-  }
-
-  const { error } = await supabaseClient
-    .from('specialites')
-    .insert([{ nom }]);
-
-  if (error) {
-    alert('Erreur : ' + error.message);
-  } else {
-    alert('Spécialité ajoutée');
-    document.getElementById('specialiteNom').value = '';
-    chargerSpecialites();
-  }
-};
-
-async function chargerSpecialites() {
-  const { data, error } = await supabaseClient
-    .from('specialites')
-    .select('*');
-
-  const container = document.getElementById('specialitesList');
-  if (!container) return;
-
-  if (error) {
-    container.innerHTML = '<p>Erreur de chargement</p>';
-    return;
-  }
-
-  if (!data || data.length === 0) {
-    container.innerHTML = '<p>Aucune spécialité</p>';
-    return;
-  }
-
-  let html = '';
-  data.forEach(s => {
-    html += `<div style="background:#f0f0f0; padding:10px; margin:5px 0;">${s.nom}</div>`;
-  });
-  container.innerHTML = html;
+async function chargerSpecialites(){
+  const {data,error}=await supabaseClient.from('specialites').select('*');
+  const container=document.getElementById('specialitesList');
+  if(!container) return;
+  if(error) container.innerHTML='<p>Erreur</p>';
+  else container.innerHTML = data.map(s=>`<div>${s.nom}</div>`).join('');
 }
 
-// ===============================
 // AFFICHAGE PUBLIC
-// ===============================
-async function chargerAdministration() {
-  const { data } = await supabaseClient.from('administration').select('*');
-  const container = document.getElementById('adminList');
-  if (!container) return;
-  
-  let html = '';
-  data?.forEach(a => {
-    html += `<div class="card"><h3>${a.nom}</h3><p>${a.role}</p></div>`;
-  });
-  container.innerHTML = html || '<p>Aucun membre</p>';
+async function chargerAdministration(){
+  const {data}=await supabaseClient.from('administration').select('*');
+  document.getElementById('adminList').innerHTML=data?.map(a=>`<div>${a.nom} - ${a.role}</div>`).join('')||'<p>Aucun membre</p>';
+}
+async function chargerAnciens(){
+  const {data}=await supabaseClient.from('anciens_eleves').select('*');
+  document.getElementById('anciensList').innerHTML=data?.map(a=>`<div>${a.nom} ${a.prenom} - Bac ${a.annee_bac}</div>`).join('')||'<p>Aucun ancien</p>';
+}
+async function chargerArticles(){
+  const {data}=await supabaseClient.from('actualites').select('*').order('created_at',{ascending:false});
+  document.getElementById('articlesList').innerHTML=data?.map(a=>`<div>${a.titre}<p>${a.contenu}</p></div>`).join('')||'<p>Aucun article</p>';
 }
 
-async function chargerAnciens() {
-  const { data } = await supabaseClient.from('anciens_eleves').select('*');
-  const container = document.getElementById('anciensList');
-  if (!container) return;
-  
-  let html = '';
-  data?.forEach(a => {
-    html += `<div class="card"><h3>${a.nom} ${a.prenom}</h3><p>Bac ${a.annee_bac}</p></div>`;
-  });
-  container.innerHTML = html || '<p>Aucun ancien</p>';
+// RECHERCHE / BULLETINS
+window.rechercher=()=>document.getElementById('searchResults').innerHTML='<p>Fonction recherche à venir</p>';
+window.rechercherBulletin=()=>document.getElementById('bulletinResult').innerHTML='<p>Fonction bulletin à venir</p>';
+
+// COURS
+window.submitCourse=async()=>{
+  const title=document.getElementById('courseTitle').value.trim();
+  const description=document.getElementById('courseDesc').value.trim();
+  const teacherName=document.getElementById('teacherName').value.trim();
+  const type=document.getElementById('courseType').value;
+  const videoLink=document.getElementById('videoLink').value.trim();
+  const pdfFile=document.getElementById('pdfFile').files[0];
+  if(!title||!teacherName) return alert("Titre et professeur requis");
+
+  let fileUrl="";
+  if(type==="video") fileUrl=videoLink;
+  if(type==="pdf" && pdfFile){
+    const {data,error}=await supabaseClient.storage.from("cours").upload(`pdf/${Date.now()}-${pdfFile.name}`,pdfFile);
+    if(error){ alert("Erreur upload PDF"); return; }
+    const {data:publicUrl}=supabaseClient.storage.from("cours").getPublicUrl(data.path);
+    fileUrl=publicUrl.publicUrl;
+  }
+
+  // Récupérer teacher_id si existe
+  let {data:teacher}=await supabaseClient.from('enseignants').select('id').ilike('nom',teacherName).limit(1);
+  let teacher_id=teacher?.[0]?.id||null;
+  if(!teacher_id) return alert("Professeur introuvable dans la base");
+
+  const {error}=await supabaseClient.from('courses').insert([{title,description,file_url:fileUrl,type,teacher_id,status:'pending'}]);
+  if(error) alert("Erreur: "+error.message);
+  else document.getElementById('courseMessage').innerText="⏳ Cours envoyé, en attente de validation";
+};
+
+async function chargerCoursApprouves(){
+  const {data}=await supabaseClient.from('courses').select('*,enseignants(nom)').eq('status','approved').order('created_at',{ascending:false});
+  const container=document.getElementById('approvedCourses');
+  container.innerHTML=data?.map(c=>{
+    if(c.type==='video') return `<div>${c.title}<p>${c.description}</p><iframe src="${c.file_url}" width="100%" height="200"></iframe><p>${c.enseignants.nom}</p></div>`;
+    else return `<div>${c.title}<p>${c.description}</p><a href="${c.file_url}" target="_blank">📄 PDF</a><p>${c.enseignants.nom}</p></div>`;
+  }).join('')||'<p>Aucun cours disponible</p>';
 }
 
-async function chargerArticles() {
-  const { data } = await supabaseClient.from('actualites').select('*').order('created_at', { ascending: false });
-  const container = document.getElementById('articlesList');
-  if (!container) return;
-  
-  let html = '';
-  data?.forEach(a => {
-    html += `<div class="card"><h3>${a.titre}</h3><p>${a.contenu}</p><small>${new Date(a.created_at).toLocaleDateString()}</small></div>`;
-  });
-  container.innerHTML = html || '<p>Aucun article</p>';
+// ADMIN VALIDATION
+async function chargerCoursEnAttente(){
+  const {data}=await supabaseClient.from('courses').select('*,enseignants(nom)').eq('status','pending');
+  const container=document.getElementById('pendingCourses');
+  if(!data || data.length===0){ container.innerHTML="<p>Aucun cours en attente</p>"; return; }
+  container.innerHTML=data.map(c=>`<div>${c.title} - ${c.enseignants.nom}<button onclick="approveCourse(${c.id})">✅</button><button onclick="rejectCourse(${c.id})">❌</button></div>`).join('');
 }
+window.approveCourse=async(id)=>{await supabaseClient.from('courses').update({status:'approved'}).eq('id',id); chargerCoursEnAttente();}
+window.rejectCourse=async(id)=>{await supabaseClient.from('courses').update({status:'rejected'}).eq('id',id); chargerCoursEnAttente();}
 
-// ===============================
-// AUTRES FONCTIONS SIMPLES
-// ===============================
-window.updateLogo = function() {
-  const newUrl = document.getElementById('newLogo').value;
-  if (!newUrl) return alert('Entre une URL');
-  document.getElementById('mainLogo').src = newUrl;
-  document.querySelector('.nav-logo img').src = newUrl;
-  alert('Logo mis à jour');
-  document.getElementById('newLogo').value = '';
-};
-
-window.rechercher = function() {
-  document.getElementById('searchResults').innerHTML = '<p>Fonction de recherche à venir</p>';
-};
-
-window.rechercherBulletin = function() {
-  document.getElementById('bulletinResult').innerHTML = '<p>Fonction bulletin à venir</p>';
-};
-
-// ===============================
 // INIT
-// ===============================
-chargerAdministration();
-chargerAnciens();
-chargerArticles();
-console.log("✅ Site prêt - Tous les boutons sont fonctionnels");
+chargerAdministration(); chargerAnciens(); chargerArticles(); chargerCoursApprouves();
+console.log("✅ Site prêt");
