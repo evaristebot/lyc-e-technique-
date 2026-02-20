@@ -8,7 +8,7 @@ const supabase = supabase.createClient(supabaseUrl, supabaseKey);
 console.log('✅ Supabase connecté');
 
 // ===============================
-// FONCTIONS DE NAVIGATION
+// NAVIGATION - TOUTES GLOBALES
 // ===============================
 window.goHome = function() {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -49,11 +49,10 @@ window.goToAdmin = function() {
   document.getElementById('admin').classList.add('active');
   document.getElementById('adminPasswordBox').style.display = 'block';
   document.getElementById('adminZone').style.display = 'none';
-  document.getElementById('adminPassword').value = '';
 };
 
 // ===============================
-// ADMIN : MOT DE PASSE
+// ADMIN
 // ===============================
 window.checkAdminPassword = function() {
   const pwd = document.getElementById('adminPassword').value;
@@ -77,42 +76,25 @@ window.checkAdminPassword = function() {
 async function chargerPublications() {
   const container = document.getElementById('articlesList');
   if (!container) return;
-  
   const { data } = await supabase.from('actualites').select('*').order('created_at', { ascending: false });
-  if (!data || data.length === 0) {
-    container.innerHTML = '<p>Aucune publication</p>';
-    return;
-  }
-  
-  let html = '';
-  data.forEach(p => {
-    html += `<div class="card"><h3>${p.titre}</h3><p>${p.contenu}</p></div>`;
-  });
-  container.innerHTML = html;
+  container.innerHTML = data?.length 
+    ? data.map(p => `<div class="card"><h3>${p.titre}</h3><p>${p.contenu}</p></div>`).join('')
+    : '<p>Aucune publication</p>';
 }
 
 async function chargerAdminPublications() {
   const container = document.getElementById('articlesAdminList');
   if (!container) return;
-  
-  const { data } = await supabase.from('actualites').select('*').order('created_at', { ascending: false });
-  if (!data || data.length === 0) {
-    container.innerHTML = '<p>Aucune publication</p>';
-    return;
-  }
-  
-  let html = '';
-  data.forEach(p => {
-    html += `<div class="admin-item"><span>${p.titre}</span><button class="delete-btn" onclick="supprimerPublication(${p.id})">🗑️</button></div>`;
-  });
-  container.innerHTML = html;
+  const { data } = await supabase.from('actualites').select('*');
+  container.innerHTML = data?.length 
+    ? data.map(p => `<div class="admin-item"><span>${p.titre}</span><button class="delete-btn" onclick="supprimerPublication(${p.id})">🗑️</button></div>`).join('')
+    : '<p>Aucune publication</p>';
 }
 
 window.publierArticle = async function() {
   const titre = document.getElementById('articleTitre').value.trim();
   const contenu = document.getElementById('articleContenu').value.trim();
   if (!titre || !contenu) return alert('❌ Titre et contenu requis');
-  
   await supabase.from('actualites').insert([{ titre, contenu }]);
   document.getElementById('articleTitre').value = '';
   document.getElementById('articleContenu').value = '';
@@ -134,42 +116,19 @@ window.supprimerPublication = async function(id) {
 async function chargerCours() {
   const container = document.getElementById('coursList');
   if (!container) return;
-  
-  const { data } = await supabase.from('cours').select('*').order('created_at', { ascending: false });
-  if (!data || data.length === 0) {
-    container.innerHTML = '<p>Aucun cours</p>';
-    return;
-  }
-  
-  let html = '';
-  data.forEach(c => {
-    html += `
-      <div class="card">
-        <h3>${c.titre}</h3>
-        <p><strong>${c.professeur}</strong></p>
-        <p>${c.description}</p>
-        <a href="${c.lien}" target="_blank" class="cours-link">${c.type === 'pdf' ? '📄 PDF' : '▶️ Vidéo'}</a>
-      </div>
-    `;
-  });
-  container.innerHTML = html;
+  const { data } = await supabase.from('cours').select('*');
+  container.innerHTML = data?.length 
+    ? data.map(c => `<div class="card"><h3>${c.titre}</h3><p>${c.professeur}</p><p>${c.description}</p><a href="${c.lien}" target="_blank">${c.type === 'pdf' ? '📄 PDF' : '▶️ Vidéo'}</a></div>`).join('')
+    : '<p>Aucun cours</p>';
 }
 
 async function chargerAdminCours() {
   const container = document.getElementById('coursAdminList');
   if (!container) return;
-  
   const { data } = await supabase.from('cours').select('*');
-  if (!data || data.length === 0) {
-    container.innerHTML = '<p>Aucun cours</p>';
-    return;
-  }
-  
-  let html = '';
-  data.forEach(c => {
-    html += `<div class="admin-item"><span>${c.titre} - ${c.professeur}</span><button class="delete-btn" onclick="supprimerCours(${c.id})">🗑️</button></div>`;
-  });
-  container.innerHTML = html;
+  container.innerHTML = data?.length 
+    ? data.map(c => `<div class="admin-item"><span>${c.titre}</span><button class="delete-btn" onclick="supprimerCours(${c.id})">🗑️</button></div>`).join('')
+    : '<p>Aucun cours</p>';
 }
 
 window.ajouterCours = async function() {
@@ -179,7 +138,6 @@ window.ajouterCours = async function() {
   const type = document.getElementById('coursType').value;
   const l = document.getElementById('coursLien').value.trim();
   if (!t || !p || !d || !l) return alert('❌ Tous les champs requis');
-  
   await supabase.from('cours').insert([{ titre: t, professeur: p, description: d, type, lien: l }]);
   document.getElementById('coursTitre').value = '';
   document.getElementById('coursProfesseur').value = '';
@@ -203,18 +161,10 @@ window.supprimerCours = async function(id) {
 async function chargerAdminClasses() {
   const container = document.getElementById('classesList');
   if (!container) return;
-  
   const { data } = await supabase.from('classes').select('*');
-  if (!data || data.length === 0) {
-    container.innerHTML = '<p>Aucune classe</p>';
-    return;
-  }
-  
-  let html = '';
-  data.forEach(c => {
-    html += `<div class="admin-item"><span>${c.nom}</span><button class="delete-btn" onclick="supprimerClasse(${c.id})">🗑️</button></div>`;
-  });
-  container.innerHTML = html;
+  container.innerHTML = data?.length 
+    ? data.map(c => `<div class="admin-item"><span>${c.nom}</span><button class="delete-btn" onclick="supprimerClasse(${c.id})">🗑️</button></div>`).join('')
+    : '<p>Aucune classe</p>';
 }
 
 window.ajouterClasse = async function() {
@@ -239,9 +189,7 @@ async function chargerClassesSelect() {
   if (!select) return;
   const { data } = await supabase.from('classes').select('*');
   select.innerHTML = '<option value="">Choisir</option>';
-  data?.forEach(c => {
-    select.innerHTML += `<option value="${c.id}">${c.nom}</option>`;
-  });
+  data?.forEach(c => select.innerHTML += `<option value="${c.id}">${c.nom}</option>`);
 }
 
 // ===============================
@@ -250,18 +198,10 @@ async function chargerClassesSelect() {
 async function chargerAdminEleves() {
   const container = document.getElementById('elevesList');
   if (!container) return;
-  
   const { data } = await supabase.from('eleves').select('*, classes(nom)');
-  if (!data || data.length === 0) {
-    container.innerHTML = '<p>Aucun élève</p>';
-    return;
-  }
-  
-  let html = '';
-  data.forEach(e => {
-    html += `<div class="admin-item"><span>${e.nom} ${e.prenom} - ${e.classes?.nom}</span><button class="delete-btn" onclick="supprimerEleve(${e.id})">🗑️</button></div>`;
-  });
-  container.innerHTML = html;
+  container.innerHTML = data?.length 
+    ? data.map(e => `<div class="admin-item"><span>${e.nom} ${e.prenom} - ${e.classes?.nom}</span><button class="delete-btn" onclick="supprimerEleve(${e.id})">🗑️</button></div>`).join('')
+    : '<p>Aucun élève</p>';
 }
 
 window.ajouterEleve = async function() {
@@ -269,7 +209,6 @@ window.ajouterEleve = async function() {
   const prenom = document.getElementById('elevePrenom').value.trim();
   const classeId = document.getElementById('eleveClasse').value;
   if (!nom || !prenom || !classeId) return alert('❌ Tous les champs requis');
-  
   await supabase.from('eleves').insert([{ nom, prenom, classe_id: classeId }]);
   document.getElementById('eleveNom').value = '';
   document.getElementById('elevePrenom').value = '';
@@ -289,42 +228,25 @@ window.supprimerEleve = async function(id) {
 async function chargerAdministration() {
   const container = document.getElementById('adminList');
   if (!container) return;
-  
   const { data } = await supabase.from('administration').select('*');
-  if (!data || data.length === 0) {
-    container.innerHTML = '<p>Aucun membre</p>';
-    return;
-  }
-  
-  let html = '';
-  data.forEach(a => {
-    html += `<div class="card"><h3>${a.nom}</h3><p><strong>${a.role}</strong></p></div>`;
-  });
-  container.innerHTML = html;
+  container.innerHTML = data?.length 
+    ? data.map(a => `<div class="card"><h3>${a.nom}</h3><p>${a.role}</p></div>`).join('')
+    : '<p>Aucun membre</p>';
 }
 
 async function chargerAdminAdmins() {
   const container = document.getElementById('adminsList');
   if (!container) return;
-  
   const { data } = await supabase.from('administration').select('*');
-  if (!data || data.length === 0) {
-    container.innerHTML = '<p>Aucun membre</p>';
-    return;
-  }
-  
-  let html = '';
-  data.forEach(a => {
-    html += `<div class="admin-item"><span>${a.nom} - ${a.role}</span><button class="delete-btn" onclick="supprimerAdmin(${a.id})">🗑️</button></div>`;
-  });
-  container.innerHTML = html;
+  container.innerHTML = data?.length 
+    ? data.map(a => `<div class="admin-item"><span>${a.nom} - ${a.role}</span><button class="delete-btn" onclick="supprimerAdmin(${a.id})">🗑️</button></div>`).join('')
+    : '<p>Aucun membre</p>';
 }
 
 window.ajouterAdmin = async function() {
   const nom = document.getElementById('adminNom').value.trim();
   const role = document.getElementById('adminRole').value.trim();
   if (!nom || !role) return alert('❌ Nom et rôle requis');
-  
   await supabase.from('administration').insert([{ nom, role }]);
   document.getElementById('adminNom').value = '';
   document.getElementById('adminRole').value = '';
@@ -346,18 +268,10 @@ window.supprimerAdmin = async function(id) {
 async function chargerAnciens() {
   const container = document.getElementById('anciensList');
   if (!container) return;
-  
   const { data } = await supabase.from('anciens_eleves').select('*');
-  if (!data || data.length === 0) {
-    container.innerHTML = '<p>Aucun ancien</p>';
-    return;
-  }
-  
-  let html = '';
-  data.forEach(a => {
-    html += `<div class="card"><h3>${a.nom}</h3><p>Bac ${a.annee_bac} - ${a.parcours}</p></div>`;
-  });
-  container.innerHTML = html;
+  container.innerHTML = data?.length 
+    ? data.map(a => `<div class="card"><h3>${a.nom}</h3><p>${a.annee_bac} - ${a.parcours}</p></div>`).join('')
+    : '<p>Aucun ancien</p>';
 }
 
 // ===============================
@@ -366,28 +280,18 @@ async function chargerAnciens() {
 window.rechercher = async function() {
   const query = document.getElementById('searchQuery').value.trim();
   const results = document.getElementById('searchResults');
-  if (!query) {
-    results.innerHTML = '<p>Entrez un nom</p>';
-    return;
-  }
-
+  if (!query) return results.innerHTML = '<p>Entrez un nom</p>';
+  
   let html = '';
-
   const { data: eleves } = await supabase.from('eleves').select('*, classes(nom)').ilike('nom', `%${query}%`);
-  eleves?.forEach(e => {
-    html += `<div class="card"><h3>👨‍🎓 ${e.nom} ${e.prenom}</h3><p>${e.classes?.nom}</p></div>`;
-  });
-
+  eleves?.forEach(e => html += `<div class="card"><h3>👨‍🎓 ${e.nom} ${e.prenom}</h3><p>${e.classes?.nom}</p></div>`);
+  
   const { data: admins } = await supabase.from('administration').select('*').ilike('nom', `%${query}%`);
-  admins?.forEach(a => {
-    html += `<div class="card"><h3>👨‍🏫 ${a.nom}</h3><p>${a.role}</p></div>`;
-  });
-
+  admins?.forEach(a => html += `<div class="card"><h3>👨‍🏫 ${a.nom}</h3><p>${a.role}</p></div>`);
+  
   const { data: cours } = await supabase.from('cours').select('*').ilike('titre', `%${query}%`);
-  cours?.forEach(c => {
-    html += `<div class="card"><h3>📚 ${c.titre}</h3><p>${c.professeur}</p></div>`;
-  });
-
+  cours?.forEach(c => html += `<div class="card"><h3>📚 ${c.titre}</h3><p>${c.professeur}</p></div>`);
+  
   results.innerHTML = html || '<p>Aucun résultat</p>';
 };
 
@@ -398,4 +302,4 @@ chargerPublications();
 chargerCours();
 chargerAdministration();
 chargerAnciens();
-console.log('✅ Site prêt');
+console.log('✅ Site prêt avec toutes les fonctions globales');
