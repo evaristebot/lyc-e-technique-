@@ -1,49 +1,11 @@
 // ===============================
-// DONNÉES EN MÉMOIRE
+// CONFIGURATION SUPABASE
 // ===============================
+const supabaseUrl = 'https://cxvetkmbhohutyprwxjx.supabase.co';
+const supabaseKey = 'sb_publishable_7MoEHv8lIBlhlO8CFZOMRg_AMQdRsrz';
+const supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
-// Publications (journal)
-let publications = [
-  { id: 1, titre: "Rentrée scolaire 2025", contenu: "La rentrée aura lieu le 9 septembre.", date: new Date().toLocaleDateString('fr-FR') }
-];
-let prochainIdPub = 2;
-
-// Cours
-let cours = [
-  { id: 1, titre: "Introduction à l'électricité", professeur: "M. NKOU", description: "Les bases du courant continu", type: "video", lien: "https://youtube.com/..." },
-  { id: 2, titre: "Cours de mécanique", professeur: "M. ESSOMBA", description: "PDF du chapitre 1", type: "pdf", lien: "https://drive.google.com/..." }
-];
-let prochainIdCours = 3;
-
-// Classes
-let classes = [
-  { id: 1, nom: "1ère Électricité" },
-  { id: 2, nom: "2ème Électricité" },
-  { id: 3, nom: "1ère Mécanique" }
-];
-let prochainIdClasse = 4;
-
-// Élèves
-let eleves = [
-  { id: 1, nom: "NKOU", prenom: "Jean", classeId: 1 },
-  { id: 2, nom: "NGO", prenom: "Marie", classeId: 3 }
-];
-let prochainIdEleve = 3;
-
-// Administration
-let admins = [
-  { id: 1, nom: "Jean NTOMBA", role: "Proviseur" },
-  { id: 2, nom: "Pierre ESSOMBA", role: "Chef des travaux" }
-];
-let prochainIdAdmin = 3;
-
-// Anciens élèves
-let anciens = [
-  { id: 1, nom: "Marc TCHANA", prenom: "", annee: "2015", parcours: "Ingénieur" },
-  { id: 2, nom: "Sophie NZINGA", prenom: "", annee: "2018", parcours: "Chef d'atelier" }
-];
-
-console.log('✅ Données initialisées');
+console.log('✅ Supabase connecté - Mode sauvegarde activé');
 
 // ===============================
 // FONCTIONS DE NAVIGATION
@@ -99,9 +61,9 @@ window.checkAdminPassword = function() {
     document.getElementById('adminZone').style.display = 'block';
     chargerAdminPublications();
     chargerAdminCours();
-    chargerClassesList();
-    chargerElevesList();
-    chargerAdminsList();
+    chargerAdminClasses();
+    chargerAdminEleves();
+    chargerAdminAdmins();
     chargerClassesSelect();
   } else {
     alert('❌ Mot de passe incorrect');
@@ -109,72 +71,135 @@ window.checkAdminPassword = function() {
 };
 
 // ===============================
-// PUBLICATIONS (Journal)
+// PUBLICATIONS (Journal) - SAUVEGARDÉES
 // ===============================
-function chargerPublications() {
+async function chargerPublications() {
   const container = document.getElementById('articlesList');
   if (!container) return;
-  if (publications.length === 0) {
+
+  const { data, error } = await supabase
+    .from('actualites')
+    .select('*')
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    container.innerHTML = '<p>Erreur de chargement</p>';
+    return;
+  }
+
+  if (!data || data.length === 0) {
     container.innerHTML = '<p>Aucune publication</p>';
     return;
   }
+
   let html = '';
-  publications.forEach(p => {
-    html += `<div class="card"><h3>${p.titre}</h3><p>${p.contenu}</p><small>${p.date}</small></div>`;
+  data.forEach(pub => {
+    html += `
+      <div class="card">
+        <h3>${pub.titre}</h3>
+        <p>${pub.contenu}</p>
+        <small>📅 ${new Date(pub.created_at).toLocaleDateString('fr-FR')}</small>
+      </div>
+    `;
   });
   container.innerHTML = html;
 }
 
-function chargerAdminPublications() {
+async function chargerAdminPublications() {
   const container = document.getElementById('articlesAdminList');
   if (!container) return;
-  if (publications.length === 0) {
+
+  const { data, error } = await supabase
+    .from('actualites')
+    .select('*')
+    .order('created_at', { ascending: false });
+
+  if (error || !data) {
+    container.innerHTML = '<p>Erreur</p>';
+    return;
+  }
+
+  if (data.length === 0) {
     container.innerHTML = '<p>Aucune publication</p>';
     return;
   }
+
   let html = '';
-  publications.forEach(p => {
-    html += `<div class="admin-item"><span>${p.titre}</span><button class="delete-btn" onclick="supprimerPublication(${p.id})">🗑️</button></div>`;
+  data.forEach(pub => {
+    html += `
+      <div class="admin-item">
+        <span>${pub.titre}</span>
+        <button class="delete-btn" onclick="supprimerPublication(${pub.id})">🗑️</button>
+      </div>
+    `;
   });
   container.innerHTML = html;
 }
 
-window.publierArticle = function() {
+window.publierArticle = async function() {
   const titre = document.getElementById('articleTitre').value.trim();
   const contenu = document.getElementById('articleContenu').value.trim();
-  if (!titre || !contenu) return alert('❌ Titre et contenu requis');
-  publications.push({
-    id: prochainIdPub++,
-    titre: titre,
-    contenu: contenu,
-    date: new Date().toLocaleDateString('fr-FR')
-  });
-  document.getElementById('articleTitre').value = '';
-  document.getElementById('articleContenu').value = '';
-  chargerPublications();
-  chargerAdminPublications();
-  alert('✅ Article publié');
+
+  if (!titre || !contenu) {
+    alert('❌ Titre et contenu requis');
+    return;
+  }
+
+  const { error } = await supabase
+    .from('actualites')
+    .insert([{ titre, contenu }]);
+
+  if (error) {
+    alert('❌ Erreur: ' + error.message);
+  } else {
+    alert('✅ Article publié et sauvegardé !');
+    document.getElementById('articleTitre').value = '';
+    document.getElementById('articleContenu').value = '';
+    chargerPublications();
+    chargerAdminPublications();
+  }
 };
 
-window.supprimerPublication = function(id) {
-  if (!confirm('Supprimer ?')) return;
-  publications = publications.filter(p => p.id !== id);
-  chargerPublications();
-  chargerAdminPublications();
+window.supprimerPublication = async function(id) {
+  if (!confirm('Supprimer cette publication ?')) return;
+
+  const { error } = await supabase
+    .from('actualites')
+    .delete()
+    .eq('id', id);
+
+  if (error) {
+    alert('❌ Erreur: ' + error.message);
+  } else {
+    chargerPublications();
+    chargerAdminPublications();
+  }
 };
 
 // ===============================
-// COURS
+// COURS - SAUVEGARDÉS
 // ===============================
-function chargerCours() {
+async function chargerCours() {
   const container = document.getElementById('coursList');
   if (!container) return;
-  if (cours.length === 0) {
+
+  const { data, error } = await supabase
+    .from('cours')
+    .select('*')
+    .order('created_at', { ascending: false });
+
+  if (error || !data) {
+    container.innerHTML = '<p>Erreur</p>';
+    return;
+  }
+
+  if (data.length === 0) {
     container.innerHTML = '<p>Aucun cours disponible</p>';
     return;
   }
+
   let html = '';
-  cours.forEach(c => {
+  data.forEach(c => {
     html += `
       <div class="card">
         <h3>${c.titre}</h3>
@@ -189,208 +214,380 @@ function chargerCours() {
   container.innerHTML = html;
 }
 
-function chargerAdminCours() {
+async function chargerAdminCours() {
   const container = document.getElementById('coursAdminList');
   if (!container) return;
-  if (cours.length === 0) {
+
+  const { data, error } = await supabase
+    .from('cours')
+    .select('*')
+    .order('created_at', { ascending: false });
+
+  if (error || !data) {
+    container.innerHTML = '<p>Erreur</p>';
+    return;
+  }
+
+  if (data.length === 0) {
     container.innerHTML = '<p>Aucun cours</p>';
     return;
   }
+
   let html = '';
-  cours.forEach(c => {
-    html += `<div class="admin-item"><span>${c.titre} - ${c.professeur}</span><button class="delete-btn" onclick="supprimerCours(${c.id})">🗑️</button></div>`;
+  data.forEach(c => {
+    html += `
+      <div class="admin-item">
+        <span>${c.titre} - ${c.professeur}</span>
+        <button class="delete-btn" onclick="supprimerCours(${c.id})">🗑️</button>
+      </div>
+    `;
   });
   container.innerHTML = html;
 }
 
-window.ajouterCours = function() {
+window.ajouterCours = async function() {
   const titre = document.getElementById('coursTitre').value.trim();
   const professeur = document.getElementById('coursProfesseur').value.trim();
   const description = document.getElementById('coursDescription').value.trim();
   const type = document.getElementById('coursType').value;
   const lien = document.getElementById('coursLien').value.trim();
 
-  if (!titre || !professeur || !description || !lien) return alert('❌ Tous les champs requis');
+  if (!titre || !professeur || !description || !lien) {
+    alert('❌ Tous les champs requis');
+    return;
+  }
 
-  cours.push({
-    id: prochainIdCours++,
-    titre: titre,
-    professeur: professeur,
-    description: description,
-    type: type,
-    lien: lien
-  });
+  const { error } = await supabase
+    .from('cours')
+    .insert([{ titre, professeur, description, type, lien }]);
 
-  document.getElementById('coursTitre').value = '';
-  document.getElementById('coursProfesseur').value = '';
-  document.getElementById('coursDescription').value = '';
-  document.getElementById('coursLien').value = '';
-
-  chargerCours();
-  chargerAdminCours();
-  alert('✅ Cours ajouté');
+  if (error) {
+    alert('❌ Erreur: ' + error.message);
+  } else {
+    alert('✅ Cours ajouté et sauvegardé !');
+    document.getElementById('coursTitre').value = '';
+    document.getElementById('coursProfesseur').value = '';
+    document.getElementById('coursDescription').value = '';
+    document.getElementById('coursLien').value = '';
+    chargerCours();
+    chargerAdminCours();
+  }
 };
 
-window.supprimerCours = function(id) {
+window.supprimerCours = async function(id) {
   if (!confirm('Supprimer ce cours ?')) return;
-  cours = cours.filter(c => c.id !== id);
-  chargerCours();
-  chargerAdminCours();
+
+  const { error } = await supabase
+    .from('cours')
+    .delete()
+    .eq('id', id);
+
+  if (error) {
+    alert('❌ Erreur: ' + error.message);
+  } else {
+    chargerCours();
+    chargerAdminCours();
+  }
 };
 
 // ===============================
-// CLASSES
+// CLASSES - SAUVEGARDÉES
 // ===============================
-function chargerClassesList() {
+async function chargerAdminClasses() {
   const container = document.getElementById('classesList');
   if (!container) return;
-  if (classes.length === 0) {
+
+  const { data, error } = await supabase
+    .from('classes')
+    .select('*')
+    .order('nom');
+
+  if (error || !data) {
+    container.innerHTML = '<p>Erreur</p>';
+    return;
+  }
+
+  if (data.length === 0) {
     container.innerHTML = '<p>Aucune classe</p>';
     return;
   }
+
   let html = '';
-  classes.forEach(c => {
-    html += `<div class="admin-item"><span>${c.nom}</span><button class="delete-btn" onclick="supprimerClasse(${c.id})">🗑️</button></div>`;
+  data.forEach(c => {
+    html += `
+      <div class="admin-item">
+        <span>${c.nom}</span>
+        <button class="delete-btn" onclick="supprimerClasse(${c.id})">🗑️</button>
+      </div>
+    `;
   });
   container.innerHTML = html;
 }
 
-window.ajouterClasse = function() {
+window.ajouterClasse = async function() {
   const nom = document.getElementById('classeNom').value.trim();
-  if (!nom) return alert('❌ Nom requis');
-  classes.push({ id: prochainIdClasse++, nom: nom });
-  document.getElementById('classeNom').value = '';
-  chargerClassesList();
-  chargerClassesSelect();
-  alert('✅ Classe ajoutée');
+  if (!nom) {
+    alert('❌ Nom requis');
+    return;
+  }
+
+  const { error } = await supabase
+    .from('classes')
+    .insert([{ nom }]);
+
+  if (error) {
+    alert('❌ Erreur: ' + error.message);
+  } else {
+    alert('✅ Classe ajoutée');
+    document.getElementById('classeNom').value = '';
+    chargerAdminClasses();
+    chargerClassesSelect();
+  }
 };
 
-window.supprimerClasse = function(id) {
+window.supprimerClasse = async function(id) {
   if (!confirm('Supprimer cette classe ?')) return;
-  classes = classes.filter(c => c.id !== id);
-  eleves = eleves.filter(e => e.classeId !== id); // Supprime aussi les élèves liés
-  chargerClassesList();
-  chargerClassesSelect();
-  chargerElevesList();
+
+  const { error } = await supabase
+    .from('classes')
+    .delete()
+    .eq('id', id);
+
+  if (error) {
+    alert('❌ Erreur: ' + error.message);
+  } else {
+    chargerAdminClasses();
+    chargerClassesSelect();
+    chargerAdminEleves(); // Les élèves liés seront aussi supprimés (CASCADE)
+  }
 };
 
-// ===============================
-// ÉLÈVES
-// ===============================
-function chargerClassesSelect() {
+async function chargerClassesSelect() {
   const select = document.getElementById('eleveClasse');
   if (!select) return;
+
+  const { data } = await supabase
+    .from('classes')
+    .select('*')
+    .order('nom');
+
   select.innerHTML = '<option value="">Choisir une classe</option>';
-  classes.forEach(c => {
+  data?.forEach(c => {
     select.innerHTML += `<option value="${c.id}">${c.nom}</option>`;
   });
 }
 
-function chargerElevesList() {
+// ===============================
+// ÉLÈVES - SAUVEGARDÉS
+// ===============================
+async function chargerAdminEleves() {
   const container = document.getElementById('elevesList');
   if (!container) return;
-  if (eleves.length === 0) {
+
+  const { data, error } = await supabase
+    .from('eleves')
+    .select(`
+      id, nom, prenom,
+      classe:classes(nom)
+    `)
+    .order('nom');
+
+  if (error || !data) {
+    container.innerHTML = '<p>Erreur</p>';
+    return;
+  }
+
+  if (data.length === 0) {
     container.innerHTML = '<p>Aucun élève</p>';
     return;
   }
+
   let html = '';
-  eleves.forEach(e => {
-    const classe = classes.find(c => c.id === e.classeId);
-    html += `<div class="admin-item"><span>${e.nom} ${e.prenom} - ${classe?.nom || '?'}</span><button class="delete-btn" onclick="supprimerEleve(${e.id})">🗑️</button></div>`;
+  data.forEach(e => {
+    html += `
+      <div class="admin-item">
+        <span>${e.nom} ${e.prenom} - ${e.classe?.nom || '?'}</span>
+        <button class="delete-btn" onclick="supprimerEleve(${e.id})">🗑️</button>
+      </div>
+    `;
   });
   container.innerHTML = html;
 }
 
-window.ajouterEleve = function() {
+window.ajouterEleve = async function() {
   const nom = document.getElementById('eleveNom').value.trim();
   const prenom = document.getElementById('elevePrenom').value.trim();
   const classeId = document.getElementById('eleveClasse').value;
 
-  if (!nom || !prenom || !classeId) return alert('❌ Tous les champs requis');
+  if (!nom || !prenom || !classeId) {
+    alert('❌ Tous les champs requis');
+    return;
+  }
 
-  eleves.push({
-    id: prochainIdEleve++,
-    nom: nom,
-    prenom: prenom,
-    classeId: parseInt(classeId)
-  });
+  const { error } = await supabase
+    .from('eleves')
+    .insert([{ nom, prenom, classe_id: classeId }]);
 
-  document.getElementById('eleveNom').value = '';
-  document.getElementById('elevePrenom').value = '';
-
-  chargerElevesList();
-  alert('✅ Élève ajouté');
+  if (error) {
+    alert('❌ Erreur: ' + error.message);
+  } else {
+    alert('✅ Élève ajouté');
+    document.getElementById('eleveNom').value = '';
+    document.getElementById('elevePrenom').value = '';
+    chargerAdminEleves();
+  }
 };
 
-window.supprimerEleve = function(id) {
+window.supprimerEleve = async function(id) {
   if (!confirm('Supprimer cet élève ?')) return;
-  eleves = eleves.filter(e => e.id !== id);
-  chargerElevesList();
+
+  const { error } = await supabase
+    .from('eleves')
+    .delete()
+    .eq('id', id);
+
+  if (error) {
+    alert('❌ Erreur: ' + error.message);
+  } else {
+    chargerAdminEleves();
+  }
 };
 
 // ===============================
-// ADMINISTRATION
+// ADMINISTRATION - SAUVEGARDÉE
 // ===============================
-function chargerAdministration() {
+async function chargerAdministration() {
   const container = document.getElementById('adminList');
   if (!container) return;
-  if (admins.length === 0) {
+
+  const { data, error } = await supabase
+    .from('administration')
+    .select('*')
+    .order('nom');
+
+  if (error || !data) {
+    container.innerHTML = '<p>Erreur</p>';
+    return;
+  }
+
+  if (data.length === 0) {
     container.innerHTML = '<p>Aucun membre</p>';
     return;
   }
+
   let html = '';
-  admins.forEach(a => {
-    html += `<div class="card"><h3>${a.nom}</h3><p><strong>${a.role}</strong></p></div>`;
+  data.forEach(a => {
+    html += `
+      <div class="card">
+        <h3>${a.nom}</h3>
+        <p><strong>${a.role}</strong></p>
+      </div>
+    `;
   });
   container.innerHTML = html;
 }
 
-function chargerAdminsList() {
+async function chargerAdminAdmins() {
   const container = document.getElementById('adminsList');
   if (!container) return;
-  if (admins.length === 0) {
+
+  const { data, error } = await supabase
+    .from('administration')
+    .select('*')
+    .order('nom');
+
+  if (error || !data) {
+    container.innerHTML = '<p>Erreur</p>';
+    return;
+  }
+
+  if (data.length === 0) {
     container.innerHTML = '<p>Aucun membre</p>';
     return;
   }
+
   let html = '';
-  admins.forEach(a => {
-    html += `<div class="admin-item"><span>${a.nom} - ${a.role}</span><button class="delete-btn" onclick="supprimerAdmin(${a.id})">🗑️</button></div>`;
+  data.forEach(a => {
+    html += `
+      <div class="admin-item">
+        <span>${a.nom} - ${a.role}</span>
+        <button class="delete-btn" onclick="supprimerAdmin(${a.id})">🗑️</button>
+      </div>
+    `;
   });
   container.innerHTML = html;
 }
 
-window.ajouterAdmin = function() {
+window.ajouterAdmin = async function() {
   const nom = document.getElementById('adminNom').value.trim();
   const role = document.getElementById('adminRole').value.trim();
-  if (!nom || !role) return alert('❌ Nom et rôle requis');
-  admins.push({ id: prochainIdAdmin++, nom: nom, role: role });
-  document.getElementById('adminNom').value = '';
-  document.getElementById('adminRole').value = '';
-  chargerAdministration();
-  chargerAdminsList();
-  alert('✅ Membre ajouté');
+
+  if (!nom || !role) {
+    alert('❌ Nom et rôle requis');
+    return;
+  }
+
+  const { error } = await supabase
+    .from('administration')
+    .insert([{ nom, role }]);
+
+  if (error) {
+    alert('❌ Erreur: ' + error.message);
+  } else {
+    alert('✅ Membre ajouté');
+    document.getElementById('adminNom').value = '';
+    document.getElementById('adminRole').value = '';
+    chargerAdministration();
+    chargerAdminAdmins();
+  }
 };
 
-window.supprimerAdmin = function(id) {
+window.supprimerAdmin = async function(id) {
   if (!confirm('Supprimer ce membre ?')) return;
-  admins = admins.filter(a => a.id !== id);
-  chargerAdministration();
-  chargerAdminsList();
+
+  const { error } = await supabase
+    .from('administration')
+    .delete()
+    .eq('id', id);
+
+  if (error) {
+    alert('❌ Erreur: ' + error.message);
+  } else {
+    chargerAdministration();
+    chargerAdminAdmins();
+  }
 };
 
 // ===============================
 // ANCIENS ÉLÈVES
 // ===============================
-function chargerAnciens() {
+async function chargerAnciens() {
   const container = document.getElementById('anciensList');
   if (!container) return;
-  if (anciens.length === 0) {
+
+  const { data, error } = await supabase
+    .from('anciens_eleves')
+    .select('*')
+    .order('nom');
+
+  if (error || !data) {
+    container.innerHTML = '<p>Erreur</p>';
+    return;
+  }
+
+  if (data.length === 0) {
     container.innerHTML = '<p>Aucun ancien élève</p>';
     return;
   }
+
   let html = '';
-  anciens.forEach(a => {
-    html += `<div class="card"><h3>${a.nom}</h3><p>Bac ${a.annee} - ${a.parcours}</p></div>`;
+  data.forEach(a => {
+    html += `
+      <div class="card">
+        <h3>${a.nom} ${a.prenom || ''}</h3>
+        <p>Bac ${a.annee_bac || ''} - ${a.parcours || ''}</p>
+      </div>
+    `;
   });
   container.innerHTML = html;
 }
@@ -398,7 +595,7 @@ function chargerAnciens() {
 // ===============================
 // RECHERCHE
 // ===============================
-window.rechercher = function() {
+window.rechercher = async function() {
   const query = document.getElementById('searchQuery').value.toLowerCase().trim();
   const results = document.getElementById('searchResults');
 
@@ -407,32 +604,68 @@ window.rechercher = function() {
     return;
   }
 
-  // Recherche dans les élèves
-  const elevesTrouves = eleves.filter(e => 
-    e.nom.toLowerCase().includes(query) || e.prenom.toLowerCase().includes(query)
-  ).map(e => {
-    const classe = classes.find(c => c.id === e.classeId);
-    return `<div class="card"><h3>👨‍🎓 ${e.nom} ${e.prenom}</h3><p>Classe: ${classe?.nom || '?'}</p></div>`;
-  }).join('');
+  let resultatsHtml = '';
 
-  // Recherche dans les enseignants
-  const adminsTrouves = admins.filter(a => 
-    a.nom.toLowerCase().includes(query)
-  ).map(a => {
-    return `<div class="card"><h3>👨‍🏫 ${a.nom}</h3><p>${a.role}</p></div>`;
-  }).join('');
+  // Recherche dans les élèves
+  const { data: eleves } = await supabase
+    .from('eleves')
+    .select(`
+      nom, prenom,
+      classe:classes(nom)
+    `)
+    .ilike('nom', `%${query}%`)
+    .or(`prenom.ilike.%${query}%`);
+
+  if (eleves && eleves.length > 0) {
+    eleves.forEach(e => {
+      resultatsHtml += `
+        <div class="card">
+          <h3>👨‍🎓 ${e.nom} ${e.prenom}</h3>
+          <p>Classe: ${e.classe?.nom || '?'}</p>
+        </div>
+      `;
+    });
+  }
+
+  // Recherche dans l'administration
+  const { data: admins } = await supabase
+    .from('administration')
+    .select('nom, role')
+    .ilike('nom', `%${query}%`);
+
+  if (admins && admins.length > 0) {
+    admins.forEach(a => {
+      resultatsHtml += `
+        <div class="card">
+          <h3>👨‍🏫 ${a.nom}</h3>
+          <p>${a.role}</p>
+        </div>
+      `;
+    });
+  }
 
   // Recherche dans les cours
-  const coursTrouves = cours.filter(c => 
-    c.titre.toLowerCase().includes(query) || c.professeur.toLowerCase().includes(query)
-  ).map(c => {
-    return `<div class="card"><h3>📚 ${c.titre}</h3><p>Par ${c.professeur}</p></div>`;
-  }).join('');
+  const { data: coursData } = await supabase
+    .from('cours')
+    .select('titre, professeur')
+    .ilike('titre', `%${query}%`)
+    .or(`professeur.ilike.%${query}%`);
 
-  if (!elevesTrouves && !adminsTrouves && !coursTrouves) {
+  if (coursData && coursData.length > 0) {
+    coursData.forEach(c => {
+      resultatsHtml += `
+        <div class="card">
+          <h3>📚 ${c.titre}</h3>
+          <p>Par ${c.professeur}</p>
+        </div>
+      `;
+    });
+  }
+
+  if (!resultatsHtml) {
     results.innerHTML = '<p>Aucun résultat trouvé</p>';
   } else {
-    results.innerHTML = elevesTrouves + adminsTrouves + coursTrouves;
+    results.innerHTML = resultatsHtml;
   }
 };
 
@@ -443,4 +676,4 @@ chargerPublications();
 chargerCours();
 chargerAdministration();
 chargerAnciens();
-console.log('✅ Site prêt avec toutes les fonctionnalités');
+console.log('✅ Site prêt avec sauvegarde Supabase');
