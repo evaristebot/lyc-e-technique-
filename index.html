@@ -75,12 +75,6 @@
     margin-bottom: 20px; border: 2px solid #ffb347;
   }
   .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
-  .publication-card {
-    background: rgba(255,255,255,0.1); padding: 15px; border-radius: 10px;
-    margin: 10px 0; border-left: 3px solid #ffb347;
-  }
-  .publication-card h3 { color: #ffb347; margin-bottom: 10px; }
-  .publication-card small { color: #aaa; font-size: 0.8rem; }
   .admin-item {
     background: rgba(255,255,255,0.1); padding: 10px; margin: 5px 0;
     border-radius: 5px; display: flex; justify-content: space-between; align-items: center;
@@ -88,6 +82,10 @@
   .delete-btn {
     background: #ff4444; color: white; border: none;
     padding: 5px 15px; border-radius: 20px; cursor: pointer;
+  }
+  .cours-link {
+    display: inline-block; background: #ffb347; color: #0b2f2f;
+    padding: 8px 16px; border-radius: 30px; text-decoration: none; margin-top: 10px;
   }
 </style>
 </head>
@@ -104,6 +102,7 @@
     <button onclick="goToAdministration()">👨‍🏫 Administration</button>
     <button onclick="goToAnciens()">🎓 Anciens</button>
     <button onclick="goToJournal()">📰 Journal</button>
+    <button onclick="goToCours()">📚 Cours</button>
     <button onclick="goToRecherche()">🔍 Recherche</button>
     <button onclick="goToAdmin()">⚙️ Admin</button>
   </div>
@@ -125,48 +124,37 @@
 <!-- ADMINISTRATION -->
 <div id="administration" class="page">
   <h1>👨‍🏫 Administration</h1>
-  <div id="adminList" class="grid">
-    <div class="card">
-      <h3>M. Jean NTOMBA</h3>
-      <p><strong>Proviseur</strong></p>
-    </div>
-    <div class="card">
-      <h3>M. Pierre ESSOMBA</h3>
-      <p><strong>Chef des travaux</strong></p>
-    </div>
-  </div>
+  <div id="adminList" class="grid"></div>
   <button class="btn-secondary" onclick="goHome()">← Retour</button>
 </div>
 
 <!-- ANCIENS -->
 <div id="anciens" class="page">
   <h1>🎓 Anciens Élèves</h1>
-  <div class="grid">
-    <div class="card">
-      <h3>Marc TCHANA</h3>
-      <p>Bac 2015 - Ingénieur</p>
-    </div>
-    <div class="card">
-      <h3>Sophie NZINGA</h3>
-      <p>Bac 2018 - Chef d'atelier</p>
-    </div>
-  </div>
+  <div id="anciensList" class="grid"></div>
   <button class="btn-secondary" onclick="goHome()">← Retour</button>
 </div>
 
-<!-- JOURNAL (PUBLICATIONS) -->
+<!-- JOURNAL -->
 <div id="journal" class="page">
   <h1>📰 Journal du Lycée</h1>
   <div id="articlesList" class="grid"></div>
   <button class="btn-secondary" onclick="goHome()">← Retour</button>
 </div>
 
+<!-- COURS -->
+<div id="cours" class="page">
+  <h1>📚 Cours disponibles</h1>
+  <div id="coursList" class="grid"></div>
+  <button class="btn-secondary" onclick="goHome()">← Retour</button>
+</div>
+
 <!-- RECHERCHE -->
 <div id="recherche" class="page">
   <h1>🔍 Recherche</h1>
-  <input type="text" id="searchQuery" placeholder="Nom, prénom...">
+  <input type="text" id="searchQuery" placeholder="Nom, prénom, matière...">
   <button class="btn" onclick="rechercher()">Rechercher</button>
-  <div id="searchResults"></div>
+  <div id="searchResults" class="grid"></div>
   <button class="btn-secondary" onclick="goHome()">← Retour</button>
 </div>
 
@@ -182,23 +170,55 @@
 
   <div id="adminZone" style="display:none;">
 
-    <!-- ZONE PUBLICATION (comme ARJAP) -->
+    <!-- PUBLICATIONS -->
     <div class="admin-section">
       <h3>📰 Publier un article</h3>
-      <input type="text" id="articleTitre" placeholder="Titre de l'article">
-      <textarea id="articleContenu" placeholder="Contenu de l'article..." rows="4"></textarea>
+      <input type="text" id="articleTitre" placeholder="Titre">
+      <textarea id="articleContenu" placeholder="Contenu..." rows="3"></textarea>
       <button class="btn" onclick="publierArticle()">📤 Publier</button>
-      
-      <h4 style="margin-top:20px;">📋 Articles publiés</h4>
       <div id="articlesAdminList"></div>
     </div>
 
-    <!-- SPÉCIALITÉS -->
+    <!-- COURS -->
     <div class="admin-section">
-      <h3>📚 Gestion des spécialités</h3>
-      <input type="text" id="specialiteNom" placeholder="Nom de la spécialité">
-      <button class="btn" onclick="ajouterSpecialite()">Ajouter</button>
-      <div id="specialitesList"></div>
+      <h3>📚 Ajouter un cours</h3>
+      <input type="text" id="coursTitre" placeholder="Titre du cours">
+      <input type="text" id="coursProfesseur" placeholder="Professeur">
+      <textarea id="coursDescription" placeholder="Description" rows="2"></textarea>
+      <select id="coursType">
+        <option value="video">Vidéo (lien)</option>
+        <option value="pdf">PDF</option>
+      </select>
+      <input type="text" id="coursLien" placeholder="Lien YouTube ou Drive">
+      <button class="btn" onclick="ajouterCours()">➕ Ajouter le cours</button>
+      <div id="coursAdminList"></div>
+    </div>
+
+    <!-- CLASSES -->
+    <div class="admin-section">
+      <h3>📂 Gestion des classes</h3>
+      <input type="text" id="classeNom" placeholder="Nom de la classe (ex: 1ère Électricité)">
+      <button class="btn" onclick="ajouterClasse()">➕ Ajouter classe</button>
+      <div id="classesList"></div>
+    </div>
+
+    <!-- ÉLÈVES -->
+    <div class="admin-section">
+      <h3>👨‍🎓 Gestion des élèves</h3>
+      <input type="text" id="eleveNom" placeholder="Nom">
+      <input type="text" id="elevePrenom" placeholder="Prénom">
+      <select id="eleveClasse"></select>
+      <button class="btn" onclick="ajouterEleve()">➕ Ajouter élève</button>
+      <div id="elevesList"></div>
+    </div>
+
+    <!-- ADMINISTRATION -->
+    <div class="admin-section">
+      <h3>🏛️ Gestion administration</h3>
+      <input type="text" id="adminNom" placeholder="Nom complet">
+      <input type="text" id="adminRole" placeholder="Rôle (Proviseur, Censeur...)">
+      <button class="btn" onclick="ajouterAdmin()">➕ Ajouter membre</button>
+      <div id="adminsList"></div>
     </div>
 
   </div>
@@ -209,4 +229,4 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="script.js"></script>
 </body>
-       </html>
+ </html>
