@@ -33,32 +33,30 @@
     <h1>Lycée Technique de Batouri</h1>
   </div>
   <div class="presentation">
-    <div class="text">
-      <h2>Bienvenue</h2>
-      <p>Le Lycée Technique de Batouri forme les jeunes aux métiers techniques depuis 1985.</p>
-      <p><strong>Excellence, Discipline, Travail</strong></p>
-    </div>
+    <h2>Bienvenue</h2>
+    <p>Le Lycée Technique de Batouri forme les jeunes aux métiers techniques depuis 1985.</p>
+    <p><strong>Excellence, Discipline, Travail</strong></p>
   </div>
 </div>
 
 <!-- ADMINISTRATION -->
 <div id="administration" class="page">
   <h1>👨‍🏫 Administration</h1>
-  <div id="adminList" class="grid"></div>
+  <div id="adminList"></div>
   <button class="btn-secondary" onclick="goHome()">← Retour</button>
 </div>
 
 <!-- ANCIENS -->
 <div id="anciens" class="page">
   <h1>🎓 Anciens Élèves</h1>
-  <div id="anciensList" class="grid"></div>
+  <div id="anciensList"></div>
   <button class="btn-secondary" onclick="goHome()">← Retour</button>
 </div>
 
 <!-- JOURNAL -->
 <div id="journal" class="page">
   <h1>📰 Journal</h1>
-  <div id="articlesList" class="grid"></div>
+  <div id="articlesList"></div>
   <button class="btn-secondary" onclick="goHome()">← Retour</button>
 </div>
 
@@ -102,24 +100,62 @@
 
 <!-- ADMIN -->
 <div id="admin" class="page">
-  <h1>⚙️ Admin</h1>
+  <h1>⚙️ Administration complète</h1>
+
+  <!-- Mot de passe -->
   <div id="adminPasswordBox">
     <input type="password" id="adminPassword" placeholder="Mot de passe">
     <button onclick="checkAdminPassword()">Valider</button>
   </div>
+
+  <!-- Zone admin -->
   <div id="adminZone" style="display:none;">
+
+    <!-- SPÉCIALITÉS -->
     <h3>Spécialités</h3>
     <input type="text" id="specialiteNom" placeholder="Nom spécialité">
     <button onclick="ajouterSpecialite()">Ajouter</button>
     <div id="specialitesList"></div>
 
+    <!-- CLASSES -->
+    <h3>Classes</h3>
+    <input type="text" id="classeNom" placeholder="Nom classe">
+    <select id="classeSpecialite"></select>
+    <button onclick="ajouterClasse()">Ajouter</button>
+    <div id="classesList"></div>
+
+    <!-- ÉLÈVES -->
+    <h3>Élèves</h3>
+    <input type="text" id="eleveNom" placeholder="Nom">
+    <input type="text" id="elevePrenom" placeholder="Prénom">
+    <select id="eleveSpecialite" onchange="chargerClassesSelect()"></select>
+    <select id="eleveClasse"></select>
+    <button onclick="ajouterEleve()">Ajouter</button>
+    <div id="elevesList"></div>
+
+    <!-- ADMINISTRATION -->
+    <h3>Administration</h3>
+    <input type="text" id="adminNom" placeholder="Nom">
+    <input type="text" id="adminRole" placeholder="Role">
+    <button onclick="ajouterAdmin()">Ajouter</button>
+    <div id="adminsList"></div>
+
+    <!-- ACTUALITÉS -->
+    <h3>Journal / Actualités</h3>
+    <input type="text" id="articleTitre" placeholder="Titre">
+    <textarea id="articleContenu" placeholder="Contenu"></textarea>
+    <button onclick="ajouterArticle()">Ajouter</button>
+    <div id="articlesAdminList"></div>
+
+    <!-- COURS EN ATTENTE -->
     <h3>Cours en attente</h3>
     <div id="pendingCourses"></div>
   </div>
+
   <button onclick="goHome()">← Retour</button>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="script.js"></script>
 </body>
-      </html>
+    </html>
