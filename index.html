@@ -21,7 +21,7 @@
     <button onclick="goToJournal()">📰 Journal</button>
     <button onclick="goToBulletins()">📄 Bulletins</button>
     <button onclick="goToRecherche()">🔍 Recherche</button>
-    <button onclick="goToProf()">📚 Cours</button>
+    <button onclick="goToCours()">📚 Cours</button>  <!-- CHANGÉ ICI -->
     <button onclick="goToAdmin()">⚙️ Admin</button>
   </div>
 </nav>
@@ -103,59 +103,79 @@
   <h1>⚙️ Administration complète</h1>
 
   <!-- Mot de passe -->
-  <div id="adminPasswordBox">
-    <input type="password" id="adminPassword" placeholder="Mot de passe">
-    <button onclick="checkAdminPassword()">Valider</button>
+  <div id="adminPasswordBox" style="background:#0b2f2f; color:white; padding:20px; border-radius:10px; margin-bottom:20px;">
+    <h3>🔐 Accès sécurisé</h3>
+    <input type="password" id="adminPassword" placeholder="Mot de passe" style="padding:10px; width:80%; margin:10px 0;">
+    <button onclick="checkAdminPassword()" style="background:#ffb347; border:none; padding:10px 20px; border-radius:30px; cursor:pointer;">Valider</button>
   </div>
 
   <!-- Zone admin -->
   <div id="adminZone" style="display:none;">
 
+    <!-- TEST BASE DE DONNÉES -->
+    <div style="background:#f0f0f0; padding:15px; margin:10px 0; border-radius:10px;">
+      <h3>🔍 TEST BASE DE DONNÉES</h3>
+      <button onclick="testDatabase()" style="background:#ffb347; border:none; padding:10px 20px; border-radius:30px; cursor:pointer;">Tester connexion</button>
+      <div id="testResult" style="margin-top:10px;"></div>
+    </div>
+
     <!-- SPÉCIALITÉS -->
-    <h3>Spécialités</h3>
-    <input type="text" id="specialiteNom" placeholder="Nom spécialité">
-    <button onclick="ajouterSpecialite()">Ajouter</button>
-    <div id="specialitesList"></div>
+    <div style="background:#f0f0f0; padding:15px; margin:10px 0; border-radius:10px;">
+      <h3>📚 Spécialités</h3>
+      <input type="text" id="specialiteNom" placeholder="Nom spécialité">
+      <button onclick="ajouterSpecialite()">Ajouter</button>
+      <div id="specialitesList"></div>
+    </div>
 
     <!-- CLASSES -->
-    <h3>Classes</h3>
-    <input type="text" id="classeNom" placeholder="Nom classe">
-    <select id="classeSpecialite"></select>
-    <button onclick="ajouterClasse()">Ajouter</button>
-    <div id="classesList"></div>
+    <div style="background:#f0f0f0; padding:15px; margin:10px 0; border-radius:10px;">
+      <h3>📂 Classes</h3>
+      <input type="text" id="classeNom" placeholder="Nom classe">
+      <select id="classeSpecialite"></select>
+      <button onclick="ajouterClasse()">Ajouter</button>
+      <div id="classesList"></div>
+    </div>
 
     <!-- ÉLÈVES -->
-    <h3>Élèves</h3>
-    <input type="text" id="eleveNom" placeholder="Nom">
-    <input type="text" id="elevePrenom" placeholder="Prénom">
-    <select id="eleveSpecialite" onchange="chargerClassesSelect()"></select>
-    <select id="eleveClasse"></select>
-    <button onclick="ajouterEleve()">Ajouter</button>
-    <div id="elevesList"></div>
+    <div style="background:#f0f0f0; padding:15px; margin:10px 0; border-radius:10px;">
+      <h3>👨‍🎓 Élèves</h3>
+      <input type="text" id="eleveNom" placeholder="Nom">
+      <input type="text" id="elevePrenom" placeholder="Prénom">
+      <select id="eleveSpecialite"></select>
+      <select id="eleveClasse"></select>
+      <button onclick="ajouterEleve()">Ajouter</button>
+      <div id="elevesList"></div>
+    </div>
 
     <!-- ADMINISTRATION -->
-    <h3>Administration</h3>
-    <input type="text" id="adminNom" placeholder="Nom">
-    <input type="text" id="adminRole" placeholder="Role">
-    <button onclick="ajouterAdmin()">Ajouter</button>
-    <div id="adminsList"></div>
+    <div style="background:#f0f0f0; padding:15px; margin:10px 0; border-radius:10px;">
+      <h3>🏛️ Administration</h3>
+      <input type="text" id="adminNom" placeholder="Nom">
+      <input type="text" id="adminRole" placeholder="Rôle">
+      <button onclick="ajouterAdmin()">Ajouter</button>
+      <div id="adminsList"></div>
+    </div>
 
     <!-- ACTUALITÉS -->
-    <h3>Journal / Actualités</h3>
-    <input type="text" id="articleTitre" placeholder="Titre">
-    <textarea id="articleContenu" placeholder="Contenu"></textarea>
-    <button onclick="ajouterArticle()">Ajouter</button>
-    <div id="articlesAdminList"></div>
+    <div style="background:#f0f0f0; padding:15px; margin:10px 0; border-radius:10px;">
+      <h3>📰 Journal / Actualités</h3>
+      <input type="text" id="articleTitre" placeholder="Titre">
+      <textarea id="articleContenu" placeholder="Contenu"></textarea>
+      <button onclick="ajouterArticle()">Ajouter</button>
+      <div id="articlesAdminList"></div>
+    </div>
 
     <!-- COURS EN ATTENTE -->
-    <h3>Cours en attente</h3>
-    <div id="pendingCourses"></div>
+    <div style="background:#f0f0f0; padding:15px; margin:10px 0; border-radius:10px;">
+      <h3>⏳ Cours en attente</h3>
+      <div id="pendingCourses"></div>
+    </div>
   </div>
 
-  <button onclick="goHome()">← Retour</button>
+  <button onclick="goHome()" style="margin-top:20px;">← Retour</button>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="script.js"></script>
 </body>
-    </html>
+</html>
