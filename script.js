@@ -1,10 +1,11 @@
-
-  // ===============================
-// CONFIGURATION SUPABASE
 // ===============================
-const supabaseUrl = 'https://ildczvkvhblawzqjunbh.supabase.co';
+// CONFIGURATION SUPABASE (CORRIGÉE)
+// ===============================
+const supabaseUrl = 'https://cxvetkmbhohutyprwxjx.supabase.co';  // ✅ URL correcte
 const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN4dmV0a21iaG9odXR5cHJ3eGp4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzU4MjA0NzAsImV4cCI6MjA1MTM5NjQ3MH0.Zh4aM3g1Nt4EmRtaIedfKn43GkjjSR-7nVgW3W_6pOw";
 const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+
+console.log('✅ Supabase connecté avec la bonne URL');
 
 // ===============================
 // NAVIGATION
@@ -14,14 +15,14 @@ function showPage(pageId){
   document.getElementById(pageId).classList.add('active');
 }
 
-function goHome(){ showPage('home'); }
-function goToAdministration(){ showPage('administration'); chargerAdministration(); }
-function goToAnciens(){ showPage('anciens'); }
-function goToJournal(){ showPage('journal'); chargerArticles(); }
-function goToBulletins(){ showPage('bulletins'); }
-function goToRecherche(){ showPage('recherche'); }
-function goToProf(){ showPage('cours'); loadApprovedCourses(); }
-function goToAdmin(){
+window.goHome = function(){ showPage('home'); }
+window.goToAdministration = function(){ showPage('administration'); chargerAdministration(); }
+window.goToAnciens = function(){ showPage('anciens'); }
+window.goToJournal = function(){ showPage('journal'); chargerArticles(); }
+window.goToBulletins = function(){ showPage('bulletins'); }
+window.goToRecherche = function(){ showPage('recherche'); }
+window.goToCours = function(){ showPage('cours'); loadApprovedCourses(); }
+window.goToAdmin = function(){
   showPage('admin');
   document.getElementById('adminPasswordBox').style.display='block';
   document.getElementById('adminZone').style.display='none';
@@ -30,7 +31,7 @@ function goToAdmin(){
 // ===============================
 // ADMIN PASSWORD
 // ===============================
-function checkAdminPassword(){
+window.checkAdminPassword = function(){
   const pwd = document.getElementById('adminPassword').value;
   if(pwd === "LTB2025"){
     document.getElementById('adminPasswordBox').style.display='none';
@@ -47,15 +48,50 @@ function checkAdminPassword(){
 }
 
 // ===============================
+// TEST BASE DE DONNÉES
+// ===============================
+window.testDatabase = async function() {
+  const resultDiv = document.getElementById('testResult');
+  if (!resultDiv) return;
+  
+  resultDiv.innerHTML = '⏳ Test en cours...';
+  
+  try {
+    const { data, error } = await supabaseClient
+      .from('specialites')
+      .select('*')
+      .limit(5);
+    
+    if (error) {
+      resultDiv.innerHTML = `❌ Erreur: ${error.message}`;
+      console.error(error);
+    } else {
+      const count = data?.length || 0;
+      resultDiv.innerHTML = `✅ Connexion réussie! ${count} spécialité(s) trouvée(s)`;
+    }
+  } catch (err) {
+    resultDiv.innerHTML = `❌ Exception: ${err.message}`;
+  }
+}
+
+// ===============================
 // SPÉCIALITÉS
 // ===============================
 async function chargerSpecialites(){
   const { data } = await supabaseClient.from('specialites').select('*');
 
-  document.getElementById('specialitesList').innerHTML = data.map(s=>`
-    <div>
+  const container = document.getElementById('specialitesList');
+  if (!container) return;
+
+  if (!data || data.length === 0) {
+    container.innerHTML = '<p>Aucune spécialité</p>';
+    return;
+  }
+
+  container.innerHTML = data.map(s=>`
+    <div style="background:#f0f0f0; padding:8px; margin:5px 0; border-radius:5px;">
       ${s.nom}
-      <button onclick="modifierSpecialite(${s.id},'${s.nom}')">✏️</button>
+      <button onclick="modifierSpecialite(${s.id},'${s.nom}')" style="margin-left:10px;">✏️</button>
       <button onclick="supprimerSpecialite(${s.id})">🗑️</button>
     </div>
   `).join('');
@@ -63,13 +99,11 @@ async function chargerSpecialites(){
   const select1 = document.getElementById('classeSpecialite');
   const select2 = document.getElementById('eleveSpecialite');
 
-  if(select1) select1.innerHTML = data.map(s=>`<option value="${s.id}">${s.nom}</option>`).join('');
-  if(select2) select2.innerHTML = data.map(s=>`<option value="${s.id}">${s.nom}</option>`).join('');
-
-  chargerClassesSelect();
+  if(select1) select1.innerHTML = '<option value="">Choisir...</option>' + data.map(s=>`<option value="${s.id}">${s.nom}</option>`).join('');
+  if(select2) select2.innerHTML = '<option value="">Choisir...</option>' + data.map(s=>`<option value="${s.id}">${s.nom}</option>`).join('');
 }
 
-async function ajouterSpecialite(){
+window.ajouterSpecialite = async function(){
   const nom = document.getElementById('specialiteNom').value.trim();
   if(!nom) return alert("Nom requis");
   await supabaseClient.from('specialites').insert([{nom}]);
@@ -77,14 +111,14 @@ async function ajouterSpecialite(){
   chargerSpecialites();
 }
 
-async function modifierSpecialite(id, oldNom){
+window.modifierSpecialite = async function(id, oldNom){
   const nom = prompt("Modifier spécialité", oldNom);
   if(!nom) return;
   await supabaseClient.from('specialites').update({nom}).eq('id',id);
   chargerSpecialites();
 }
 
-async function supprimerSpecialite(id){
+window.supprimerSpecialite = async function(id){
   if(!confirm("Supprimer cette spécialité ?")) return;
   await supabaseClient.from('specialites').delete().eq('id',id);
   chargerSpecialites();
@@ -98,25 +132,33 @@ async function chargerClasses(){
     .from('classes')
     .select('id, nom, specialite_id, specialite:specialites(nom)');
 
-  document.getElementById('classesList').innerHTML = data.map(c=>`
-    <div>
-      ${c.nom} (${c.specialite.nom})
-      <button onclick="supprimerClasse(${c.id})">🗑️</button>
+  const container = document.getElementById('classesList');
+  if (!container) return;
+
+  if (!data || data.length === 0) {
+    container.innerHTML = '<p>Aucune classe</p>';
+    return;
+  }
+
+  container.innerHTML = data.map(c=>`
+    <div style="background:#f0f0f0; padding:8px; margin:5px 0; border-radius:5px;">
+      ${c.nom} (${c.specialite?.nom || '?'})
+      <button onclick="supprimerClasse(${c.id})" style="float:right;">🗑️</button>
     </div>
   `).join('');
 }
 
-async function ajouterClasse(){
+window.ajouterClasse = async function(){
   const nom = document.getElementById('classeNom').value.trim();
   const specialite_id = document.getElementById('classeSpecialite').value;
-  if(!nom) return alert("Nom requis");
+  if(!nom || !specialite_id) return alert("Nom et spécialité requis");
 
   await supabaseClient.from('classes').insert([{nom, specialite_id}]);
   document.getElementById('classeNom').value='';
   chargerClasses();
 }
 
-async function supprimerClasse(id){
+window.supprimerClasse = async function(id){
   if(!confirm("Supprimer classe ?")) return;
   await supabaseClient.from('classes').delete().eq('id',id);
   chargerClasses();
@@ -134,15 +176,23 @@ async function chargerEleves(){
     `)
     .order('nom');
 
-  document.getElementById('elevesList').innerHTML = data.map(e=>`
-    <div>
-      ${e.nom} ${e.prenom} - ${e.classe.specialite.nom} / ${e.classe.nom}
-      <button onclick="supprimerEleve(${e.id})">🗑️</button>
+  const container = document.getElementById('elevesList');
+  if (!container) return;
+
+  if (!data || data.length === 0) {
+    container.innerHTML = '<p>Aucun élève</p>';
+    return;
+  }
+
+  container.innerHTML = data.map(e=>`
+    <div style="background:#f0f0f0; padding:8px; margin:5px 0; border-radius:5px;">
+      ${e.nom} ${e.prenom} - ${e.classe?.specialite?.nom || ''} / ${e.classe?.nom || ''}
+      <button onclick="supprimerEleve(${e.id})" style="float:right;">🗑️</button>
     </div>
   `).join('');
 }
 
-async function chargerClassesSelect(){
+window.chargerClassesSelect = async function(){
   const specialite_id = document.getElementById('eleveSpecialite')?.value;
   if(!specialite_id) return;
 
@@ -151,16 +201,19 @@ async function chargerClassesSelect(){
     .select('*')
     .eq('specialite_id', specialite_id);
 
-  document.getElementById('eleveClasse').innerHTML =
+  const select = document.getElementById('eleveClasse');
+  if (!select) return;
+
+  select.innerHTML = '<option value="">Choisir...</option>' +
     data.map(c=>`<option value="${c.id}">${c.nom}</option>`).join('');
 }
 
-async function ajouterEleve(){
+window.ajouterEleve = async function(){
   const nom = document.getElementById('eleveNom').value.trim();
   const prenom = document.getElementById('elevePrenom').value.trim();
   const classe_id = document.getElementById('eleveClasse').value;
 
-  if(!nom || !prenom) return alert("Tout est requis");
+  if(!nom || !prenom || !classe_id) return alert("Tous les champs sont requis");
 
   await supabaseClient.from('eleves').insert([{nom, prenom, classe_id}]);
 
@@ -169,7 +222,7 @@ async function ajouterEleve(){
   chargerEleves();
 }
 
-async function supprimerEleve(id){
+window.supprimerEleve = async function(id){
   if(!confirm("Supprimer élève ?")) return;
   await supabaseClient.from('eleves').delete().eq('id',id);
   chargerEleves();
@@ -181,7 +234,15 @@ async function supprimerEleve(id){
 async function chargerAdministration(){
   const { data } = await supabaseClient.from('administration').select('*');
 
-  document.getElementById('adminList').innerHTML = data.map(a=>`
+  const container = document.getElementById('adminList');
+  if (!container) return;
+
+  if (!data || data.length === 0) {
+    container.innerHTML = '<p>Aucun membre</p>';
+    return;
+  }
+
+  container.innerHTML = data.map(a=>`
     <div class="card">
       <strong>${a.nom}</strong><br>
       ${a.role}
@@ -192,19 +253,27 @@ async function chargerAdministration(){
 async function chargerAdmins(){
   const { data } = await supabaseClient.from('administration').select('*');
 
-  document.getElementById('adminsList').innerHTML = data.map(a=>`
-    <div>
+  const container = document.getElementById('adminsList');
+  if (!container) return;
+
+  if (!data || data.length === 0) {
+    container.innerHTML = '<p>Aucun membre</p>';
+    return;
+  }
+
+  container.innerHTML = data.map(a=>`
+    <div style="background:#f0f0f0; padding:8px; margin:5px 0;">
       ${a.nom} - ${a.role}
-      <button onclick="supprimerAdmin(${a.id})">🗑️</button>
+      <button onclick="supprimerAdmin(${a.id})" style="float:right;">🗑️</button>
     </div>
   `).join('');
 }
 
-async function ajouterAdmin(){
+window.ajouterAdmin = async function(){
   const nom = document.getElementById('adminNom').value.trim();
   const role = document.getElementById('adminRole').value.trim();
 
-  if(!nom || !role) return alert("Tout est requis");
+  if(!nom || !role) return alert("Tous les champs sont requis");
 
   await supabaseClient.from('administration').insert([{nom, role}]);
 
@@ -215,8 +284,8 @@ async function ajouterAdmin(){
   chargerAdministration();
 }
 
-async function supprimerAdmin(id){
-  if(!confirm("Supprimer ?")) return;
+window.supprimerAdmin = async function(id){
+  if(!confirm("Supprimer ce membre ?")) return;
   await supabaseClient.from('administration').delete().eq('id',id);
   chargerAdmins();
   chargerAdministration();
@@ -231,7 +300,15 @@ async function chargerArticles(){
     .select('*')
     .order('created_at',{ascending:false});
 
-  document.getElementById('articlesList').innerHTML = data.map(a=>`
+  const container = document.getElementById('articlesList');
+  if (!container) return;
+
+  if (!data || data.length === 0) {
+    container.innerHTML = '<p>Aucun article</p>';
+    return;
+  }
+
+  container.innerHTML = data.map(a=>`
     <div class="card">
       <h3>${a.titre}</h3>
       <p>${a.contenu}</p>
@@ -240,21 +317,29 @@ async function chargerArticles(){
 }
 
 async function chargerArticlesAdmin(){
-  const { data } = await supabaseClient.from('actualites').select('*');
+  const { data } = await supabaseClient.from('actualites').select('*').order('created_at',{ascending:false});
 
-  document.getElementById('articlesAdminList').innerHTML = data.map(a=>`
-    <div>
+  const container = document.getElementById('articlesAdminList');
+  if (!container) return;
+
+  if (!data || data.length === 0) {
+    container.innerHTML = '<p>Aucun article</p>';
+    return;
+  }
+
+  container.innerHTML = data.map(a=>`
+    <div style="background:#f0f0f0; padding:8px; margin:5px 0;">
       ${a.titre}
-      <button onclick="supprimerArticle(${a.id})">🗑️</button>
+      <button onclick="supprimerArticle(${a.id})" style="float:right;">🗑️</button>
     </div>
   `).join('');
 }
 
-async function ajouterArticle(){
+window.ajouterArticle = async function(){
   const titre = document.getElementById('articleTitre').value.trim();
   const contenu = document.getElementById('articleContenu').value.trim();
 
-  if(!titre || !contenu) return alert("Tout est requis");
+  if(!titre || !contenu) return alert("Titre et contenu requis");
 
   await supabaseClient.from('actualites').insert([{titre, contenu}]);
 
@@ -265,7 +350,7 @@ async function ajouterArticle(){
   chargerArticlesAdmin();
 }
 
-async function supprimerArticle(id){
+window.supprimerArticle = async function(id){
   if(!confirm("Supprimer article ?")) return;
   await supabaseClient.from('actualites').delete().eq('id',id);
   chargerArticles();
@@ -275,20 +360,20 @@ async function supprimerArticle(id){
 // ===============================
 // COURS PDF / VIDEO
 // ===============================
-async function submitCourse(){
+window.submitCourse = async function(){
   const teacher = document.getElementById('teacherName').value.trim();
   const title = document.getElementById('courseTitle').value.trim();
   const description = document.getElementById('courseDesc').value.trim();
   const type = document.getElementById('courseType').value;
 
   if(!teacher || !title || !description)
-    return alert("Tout est requis");
+    return alert("Tous les champs sont requis");
 
   let link = '';
 
   if(type === "pdf"){
     const file = document.getElementById('pdfFile').files[0];
-    if(!file) return alert("Choisir PDF");
+    if(!file) return alert("Choisir un fichier PDF");
 
     const { data, error } = await supabaseClient
       .storage
@@ -314,6 +399,12 @@ async function submitCourse(){
 
   alert("Cours soumis en attente d'approbation");
 
+  document.getElementById('teacherName').value='';
+  document.getElementById('courseTitle').value='';
+  document.getElementById('courseDesc').value='';
+  document.getElementById('videoLink').value='';
+  document.getElementById('pdfFile').value='';
+
   loadApprovedCourses();
   chargerPendingCourses();
 }
@@ -324,17 +415,24 @@ async function chargerPendingCourses(){
     .select('*')
     .eq('status','pending');
 
-  document.getElementById('pendingCourses').innerHTML =
-    data.map(c=>`
-      <div>
-        ${c.title}
-        <button onclick="validerCourse(${c.id})">✅</button>
-        <button onclick="supprimerCourse(${c.id})">🗑️</button>
-      </div>
-    `).join('');
+  const container = document.getElementById('pendingCourses');
+  if (!container) return;
+
+  if (!data || data.length === 0) {
+    container.innerHTML = '<p>Aucun cours en attente</p>';
+    return;
+  }
+
+  container.innerHTML = data.map(c=>`
+    <div style="background:#f0f0f0; padding:8px; margin:5px 0;">
+      ${c.title}
+      <button onclick="validerCourse(${c.id})">✅</button>
+      <button onclick="supprimerCourse(${c.id})">🗑️</button>
+    </div>
+  `).join('');
 }
 
-async function validerCourse(id){
+window.validerCourse = async function(id){
   await supabaseClient.from('cours')
     .update({status:'approved'})
     .eq('id',id);
@@ -342,8 +440,8 @@ async function validerCourse(id){
   loadApprovedCourses();
 }
 
-async function supprimerCourse(id){
-  if(!confirm("Supprimer ?")) return;
+window.supprimerCourse = async function(id){
+  if(!confirm("Supprimer ce cours ?")) return;
   await supabaseClient.from('cours').delete().eq('id',id);
   chargerPendingCourses();
   loadApprovedCourses();
@@ -356,14 +454,31 @@ async function loadApprovedCourses(){
     .eq('status','approved')
     .order('created_at',{ascending:false});
 
-  document.getElementById('approvedCourses').innerHTML =
-    data.map(c=>`
-      <div class="card">
-        <h4>${c.title}</h4>
-        <p>${c.description}</p>
-        <a href="${c.link}" target="_blank">
-          ${c.type === 'pdf' ? '📄 PDF' : '▶️ Vidéo'}
-        </a>
-      </div>
-    `).join('');
+  const container = document.getElementById('approvedCourses');
+  if (!container) return;
+
+  if (!data || data.length === 0) {
+    container.innerHTML = '<p>Aucun cours disponible</p>';
+    return;
+  }
+
+  container.innerHTML = data.map(c=>`
+    <div class="card">
+      <h4>${c.title}</h4>
+      <p><strong>${c.teacher}</strong></p>
+      <p>${c.description}</p>
+      <a href="${c.link}" target="_blank">
+        ${c.type === 'pdf' ? '📄 PDF' : '▶️ Vidéo'}
+      </a>
+    </div>
+  `).join('');
 }
+
+// ===============================
+// INITIALISATION
+// ===============================
+document.addEventListener('DOMContentLoaded', function() {
+  console.log('✅ Script prêt - Toutes les fonctions sont globales');
+  chargerAdministration();
+  loadApprovedCourses();
+});
