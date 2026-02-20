@@ -1,170 +1,70 @@
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: 'Segoe UI', sans-serif;
+/* ===============================
+   RESET & BASE
+   =============================== */
+* { margin:0; padding:0; box-sizing:border-box; font-family: Arial, sans-serif; }
+body { background:#f8f8f8; color:#222; }
+.page { display:none; padding:20px; }
+.page.active { display:block; }
+
+/* ===============================
+   NAVBAR
+   =============================== */
+.navbar { display:flex; justify-content:space-between; align-items:center; padding:10px 20px; background:#004080; color:white; }
+.navbar img { height:40px; margin-right:10px; vertical-align:middle; }
+.nav-links button { background:none; border:none; color:white; margin-left:10px; cursor:pointer; font-size:14px; }
+.nav-links button:hover { text-decoration:underline; }
+
+/* ===============================
+   HERO / ACCUEIL
+   =============================== */
+.hero { text-align:center; margin:20px 0; }
+.logo-large { width:150px; border-radius:10px; }
+.presentation { text-align:center; margin-bottom:20px; }
+.presentation h2 { font-size:24px; margin-bottom:10px; }
+
+/* ===============================
+   BUTTONS
+   =============================== */
+.btn, .btn-secondary { padding:8px 12px; margin:5px 0; border:none; border-radius:5px; cursor:pointer; }
+.btn { background:#004080; color:white; }
+.btn:hover { background:#0066cc; }
+.btn-secondary { background:#ccc; }
+.btn-secondary:hover { background:#bbb; }
+
+/* ===============================
+   FORM & INPUTS
+   =============================== */
+input[type=text], input[type=password], textarea, select { width:100%; padding:8px; margin:5px 0; border:1px solid #ccc; border-radius:5px; }
+textarea { resize:vertical; }
+
+/* ===============================
+   CARDS / LISTS
+   =============================== */
+.card, #specialitesList div, #classesList div, #elevesList div, #adminsList div, #articlesList div, #articlesAdminList div, #pendingCourses div, #approvedCourses div {
+  background:white; padding:10px; margin:5px 0; border-radius:5px; box-shadow:0 1px 3px rgba(0,0,0,0.1);
 }
 
-body {
-  background: linear-gradient(rgba(10,47,47,0.85), rgba(10,47,47,0.85)), url('fond-lycee.jpg');
-  background-size: cover;
-  background-attachment: fixed;
-  color: white;
-  line-height: 1.6;
-}
+/* ===============================
+   ADMIN SECTIONS
+   =============================== */
+#adminZone h3 { margin-top:20px; color:#004080; }
+#adminZone input, #adminZone select, #adminZone textarea { margin-bottom:5px; }
 
-.navbar {
-  background: rgba(11,47,47,0.95);
-  color: white;
-  padding: 1rem 5%;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  position: sticky;
-  top: 0;
-  z-index: 1000;
-}
+/* ===============================
+   TABLEAU / GRID
+   =============================== */
+.grid { display:grid; grid-template-columns: repeat(auto-fill,minmax(150px,1fr)); gap:10px; }
+.grid .card { text-align:center; }
 
-.nav-logo {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  cursor: pointer;
-}
+/* ===============================
+   MESSAGES / ALERTS
+   =============================== */
+#courseMessage { margin-top:10px; font-weight:bold; color:green; }
 
-.nav-logo img {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  border: 2px solid #ffb347;
-}
-
-.nav-logo span {
-  color: #ffb347;
-  font-weight: bold;
-  font-size: 1.2rem;
-}
-
-.nav-links button {
-  background: transparent;
-  border: 2px solid #ffb347;
-  color: white;
-  padding: 8px 16px;
-  border-radius: 30px;
-  cursor: pointer;
-  margin: 5px;
-}
-
-.nav-links button:hover {
-  background: #ffb347;
-  color: #0b2f2f;
-}
-
-.page {
-  display: none;
-  padding: 2rem 5%;
-  min-height: 80vh;
-}
-
-.page.active {
-  display: block;
-}
-
-.hero {
-  text-align: center;
-  margin-bottom: 2rem;
-}
-
-.logo-large {
-  width: 150px;
-  height: 150px;
-  border-radius: 50%;
-  border: 5px solid #ffb347;
-}
-
-h1 {
-  color: #ffb347;
-  font-size: 2.5rem;
-  text-align: center;
-}
-
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 20px;
-  margin: 20px 0;
-}
-
-.card {
-  background: rgba(255,255,255,0.9);
-  color: #0b2f2f;
-  border-radius: 15px;
-  padding: 1.5rem;
-  text-align: center;
-}
-
-.card img {
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  border: 3px solid #ffb347;
-}
-
-.btn {
-  background: #ffb347;
-  border: none;
-  padding: 12px 30px;
-  border-radius: 30px;
-  font-weight: bold;
-  cursor: pointer;
-  margin: 5px;
-}
-
-.btn-secondary {
-  background: transparent;
-  border: 2px solid #ffb347;
-  color: #ffb347;
-  padding: 12px 30px;
-  border-radius: 30px;
-  cursor: pointer;
-}
-
-.form-container {
-  max-width: 500px;
-  margin: auto;
-  background: rgba(255,255,255,0.95);
-  padding: 2rem;
-  border-radius: 20px;
-  color: #0b2f2f;
-}
-
-.form-input {
-  width: 100%;
-  padding: 10px;
-  margin: 10px 0;
-  border: 2px solid #ddd;
-  border-radius: 10px;
-}
-
-.password-box {
-  background: rgba(11,47,47,0.95);
-  padding: 20px;
-  border-radius: 15px;
-  text-align: center;
-  margin-bottom: 20px;
-}
-
-.admin-section {
-  background: rgba(255,255,255,0.95);
-  border-radius: 15px;
-  padding: 20px;
-  margin: 20px 0;
-  color: #0b2f2f;
-}
-
-.admin-section h3 {
-  border-bottom: 3px solid #ffb347;
-  padding-bottom: 10px;
-  margin-bottom: 20px;
+/* ===============================
+   RESPONSIVE
+   =============================== */
+@media(max-width:768px){
+  .nav-links { display:flex; flex-wrap:wrap; }
+  .nav-links button { margin:5px; }
 }
