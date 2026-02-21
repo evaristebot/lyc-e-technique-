@@ -1,43 +1,110 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>✅ TEST CORRIGÉ</title>
+    <title>✅ TEST ULTIME SHEET.BEST</title>
 </head>
 <body>
     <h1>🔍 Test avec la bonne syntaxe</h1>
     
-    <button onclick="test('eleves')">Tester eleves</button>
-    <button onclick="test('publications')">Tester publications</button>
-    <button onclick="test('cours')">Tester cours</button>
-    <button onclick="test('classes')">Tester classes</button>
-    <button onclick="test('administration')">Tester administration</button>
-    <button onclick="test('anciens')">Tester anciens</button>
+    <div>
+        <button onclick="test('eleves')">📋 Élèves</button>
+        <button onclick="test('publications')">📰 Publications</button>
+        <button onclick="test('cours')">📚 Cours</button>
+        <button onclick="test('classes')">🏫 Classes</button>
+        <button onclick="test('administration')">👨‍🏫 Administration</button>
+        <button onclick="test('anciens')">🎓 Anciens</button>
+    </div>
 
-    <pre id="resultat" style="background:#f0f0f0; padding:15px; margin-top:20px;"></pre>
+    <div style="margin-top:20px;">
+        <h3>Ajouter un test</h3>
+        <button onclick="ajouterTest('publications')">➕ Test publications</button>
+        <button onclick="ajouterTest('cours')">➕ Test cours</button>
+        <button onclick="ajouterTest('classes')">➕ Test classes</button>
+        <button onclick="ajouterTest('administration')">➕ Test administration</button>
+        <button onclick="ajouterTest('anciens')">➕ Test anciens</button>
+    </div>
+
+    <pre id="resultat" style="background:#f0f0f0; padding:15px; margin-top:20px; border-radius:5px;"></pre>
 
     <script>
     const BASE_URL = 'https://api.sheetbest.com/sheets/70923d86-6d1a-4756-bf21-a869acf3e029';
 
-    function getSheetUrl(onglet) {
-        return `${BASE_URL}/sheet?name=${onglet}`;
+    function afficher(message, type = 'info') {
+        const pre = document.getElementById('resultat');
+        pre.innerHTML = message;
+        pre.style.color = type === 'error' ? 'red' : 'green';
     }
 
+    // TESTER UN ONGLET
     async function test(onglet) {
-        const resultat = document.getElementById('resultat');
-        resultat.innerHTML = `⏳ Test de "${onglet}"...`;
+        afficher(`⏳ Test de "${onglet}"...`);
         
         try {
-            const url = getSheetUrl(onglet);
+            // LA BONNE SYNTAXE : #nom_onglet
+            const url = `${BASE_URL}#${onglet}`;
             console.log('📡 URL:', url);
             
             const res = await fetch(url);
             const data = await res.json();
             
-            resultat.innerHTML = 
-                `✅ Onglet "${onglet}" : ${data.length} élément(s)\n\n` +
-                JSON.stringify(data, null, 2);
+            let message = `✅ Onglet "${onglet}" trouvé !\n`;
+            message += `📊 ${data.length} élément(s)\n\n`;
+            message += JSON.stringify(data, null, 2);
+            
+            afficher(message);
+            
         } catch (err) {
-            resultat.innerHTML = `❌ Erreur: ${err.message}`;
+            afficher(`❌ Erreur: ${err.message}`, 'error');
+        }
+    }
+
+    // AJOUTER UN TEST
+    async function ajouterTest(onglet) {
+        let donnees = {};
+        
+        switch(onglet) {
+            case 'publications':
+                donnees = { titre: "Test " + Date.now(), contenu: "Test réussi !" };
+                break;
+            case 'cours':
+                donnees = { 
+                    titre: "Cours test", 
+                    professeur: "Prof Test", 
+                    description: "Description", 
+                    type: "pdf", 
+                    lien: "#" 
+                };
+                break;
+            case 'classes':
+                donnees = { nom: "Classe Test" };
+                break;
+            case 'administration':
+                donnees = { nom: "Test Admin", role: "Testeur" };
+                break;
+            case 'anciens':
+                donnees = { nom: "Test Ancien", annee: "2020", parcours: "Testeur" };
+                break;
+        }
+        
+        afficher(`⏳ Ajout dans "${onglet}"...`);
+        
+        try {
+            const url = `${BASE_URL}#${onglet}`;
+            const res = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify([donnees])
+            });
+            
+            if (res.ok) {
+                afficher(`✅ Test ajouté dans "${onglet}" !`);
+                setTimeout(() => test(onglet), 1000);
+            } else {
+                const text = await res.text();
+                afficher(`❌ Erreur ${res.status}: ${text}`, 'error');
+            }
+        } catch (err) {
+            afficher(`❌ Erreur: ${err.message}`, 'error');
         }
     }
     </script>
