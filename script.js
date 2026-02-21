@@ -1,53 +1,23 @@
-// ===============================
-// DONNÉES EN MÉMOIRE
-// ===============================
+// ============================================
+// CONFIGURATION SHEET.BEST
+// ============================================
+const BASE_URL = 'https://api.sheetbest.com/sheets/fe7efdc7-8f02-4758-8f02-b168b59db733';
 
-// Publications (journal)
-let publications = [
-  { id: 1, titre: "Rentrée scolaire 2025", contenu: "La rentrée aura lieu le 9 septembre.", date: new Date().toLocaleDateString('fr-FR') }
-];
-let prochainIdPub = 2;
+// URLs pour chaque feuille (table)
+const API = {
+  eleves: BASE_URL + '/eleves',
+  publications: BASE_URL + '/publications',
+  cours: BASE_URL + '/cours',
+  classes: BASE_URL + '/classes',
+  admins: BASE_URL + '/administration',
+  anciens: BASE_URL + '/anciens'
+};
 
-// Cours
-let cours = [
-  { id: 1, titre: "Introduction à l'électricité", professeur: "M. NKOU", description: "Les bases du courant continu", type: "video", lien: "https://youtube.com/..." },
-  { id: 2, titre: "Cours de mécanique", professeur: "M. ESSOMBA", description: "PDF du chapitre 1", type: "pdf", lien: "https://drive.google.com/..." }
-];
-let prochainIdCours = 3;
+console.log('✅ Sheet.best configuré');
 
-// Classes
-let classes = [
-  { id: 1, nom: "1ère Électricité" },
-  { id: 2, nom: "2ème Électricité" },
-  { id: 3, nom: "1ère Mécanique" }
-];
-let prochainIdClasse = 4;
-
-// Élèves
-let eleves = [
-  { id: 1, nom: "NKOU", prenom: "Jean", classeId: 1 },
-  { id: 2, nom: "NGO", prenom: "Marie", classeId: 3 }
-];
-let prochainIdEleve = 3;
-
-// Administration
-let admins = [
-  { id: 1, nom: "Jean NTOMBA", role: "Proviseur" },
-  { id: 2, nom: "Pierre ESSOMBA", role: "Chef des travaux" }
-];
-let prochainIdAdmin = 3;
-
-// Anciens élèves
-let anciens = [
-  { id: 1, nom: "Marc TCHANA", prenom: "", annee: "2015", parcours: "Ingénieur" },
-  { id: 2, nom: "Sophie NZINGA", prenom: "", annee: "2018", parcours: "Chef d'atelier" }
-];
-
-console.log('✅ Données initialisées');
-
-// ===============================
+// ============================================
 // FONCTIONS DE NAVIGATION
-// ===============================
+// ============================================
 window.goHome = function() {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.getElementById('home').classList.add('active');
@@ -89,9 +59,9 @@ window.goToAdmin = function() {
   document.getElementById('adminZone').style.display = 'none';
 };
 
-// ===============================
+// ============================================
 // ADMIN : MOT DE PASSE
-// ===============================
+// ============================================
 window.checkAdminPassword = function() {
   const pwd = document.getElementById('adminPassword').value;
   if (pwd === "LTB2025") {
@@ -99,56 +69,56 @@ window.checkAdminPassword = function() {
     document.getElementById('adminZone').style.display = 'block';
     chargerAdminPublications();
     chargerAdminCours();
-    chargerClassesList();
-    chargerElevesList();
-    chargerAdminsList();
+    chargerAdminClasses();
+    chargerAdminEleves();
+    chargerAdminAdmins();
     chargerClassesSelect();
   } else {
     alert('❌ Mot de passe incorrect');
   }
 };
 
-// ===============================
+// ============================================
 // PUBLICATIONS (Journal)
-// ===============================
-function chargerPublications() {
-  const container = document.getElementById('articlesList');
-  if (!container) return;
-  if (publications.length === 0) {
-    container.innerHTML = '<p>Aucune publication</p>';
-    return;
-  }
+// ============================================
+async function chargerPublications() {
+  const res = await fetch(API.publications);
+  const data = await res.json();
+  
   let html = '';
-  publications.forEach(p => {
-    html += `<div class="card"><h3>${p.titre}</h3><p>${p.contenu}</p><small>${p.date}</small></div>`;
+  data.forEach(p => {
+    html += `<div class="card"><h3>${p.titre}</h3><p>${p.contenu}</p></div>`;
   });
-  container.innerHTML = html;
+  document.getElementById('articlesList').innerHTML = html || '<p>Aucune publication</p>';
 }
 
-function chargerAdminPublications() {
-  const container = document.getElementById('articlesAdminList');
-  if (!container) return;
-  if (publications.length === 0) {
-    container.innerHTML = '<p>Aucune publication</p>';
-    return;
-  }
+async function chargerAdminPublications() {
+  const res = await fetch(API.publications);
+  const data = await res.json();
+  
   let html = '';
-  publications.forEach(p => {
-    html += `<div class="admin-item"><span>${p.titre}</span><button class="delete-btn" onclick="supprimerPublication(${p.id})">🗑️</button></div>`;
+  data.forEach((p, index) => {
+    html += `
+      <div class="admin-item">
+        <span>${p.titre}</span>
+        <button class="delete-btn" onclick="supprimerPublication('${index}')">🗑️</button>
+      </div>
+    `;
   });
-  container.innerHTML = html;
+  document.getElementById('articlesAdminList').innerHTML = html || '<p>Aucune publication</p>';
 }
 
-window.publierArticle = function() {
+window.publierArticle = async function() {
   const titre = document.getElementById('articleTitre').value.trim();
   const contenu = document.getElementById('articleContenu').value.trim();
   if (!titre || !contenu) return alert('❌ Titre et contenu requis');
-  publications.push({
-    id: prochainIdPub++,
-    titre: titre,
-    contenu: contenu,
-    date: new Date().toLocaleDateString('fr-FR')
+
+  await fetch(API.publications, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify([{ titre, contenu }])
   });
+
   document.getElementById('articleTitre').value = '';
   document.getElementById('articleContenu').value = '';
   chargerPublications();
@@ -156,25 +126,22 @@ window.publierArticle = function() {
   alert('✅ Article publié');
 };
 
-window.supprimerPublication = function(id) {
+window.supprimerPublication = async function(index) {
   if (!confirm('Supprimer ?')) return;
-  publications = publications.filter(p => p.id !== id);
+  await fetch(`${API.publications}/${index}`, { method: 'DELETE' });
   chargerPublications();
   chargerAdminPublications();
 };
 
-// ===============================
+// ============================================
 // COURS
-// ===============================
-function chargerCours() {
-  const container = document.getElementById('coursList');
-  if (!container) return;
-  if (cours.length === 0) {
-    container.innerHTML = '<p>Aucun cours disponible</p>';
-    return;
-  }
+// ============================================
+async function chargerCours() {
+  const res = await fetch(API.cours);
+  const data = await res.json();
+  
   let html = '';
-  cours.forEach(c => {
+  data.forEach(c => {
     html += `
       <div class="card">
         <h3>${c.titre}</h3>
@@ -186,219 +153,233 @@ function chargerCours() {
       </div>
     `;
   });
-  container.innerHTML = html;
+  document.getElementById('coursList').innerHTML = html || '<p>Aucun cours</p>';
 }
 
-function chargerAdminCours() {
-  const container = document.getElementById('coursAdminList');
-  if (!container) return;
-  if (cours.length === 0) {
-    container.innerHTML = '<p>Aucun cours</p>';
-    return;
-  }
+async function chargerAdminCours() {
+  const res = await fetch(API.cours);
+  const data = await res.json();
+  
   let html = '';
-  cours.forEach(c => {
-    html += `<div class="admin-item"><span>${c.titre} - ${c.professeur}</span><button class="delete-btn" onclick="supprimerCours(${c.id})">🗑️</button></div>`;
+  data.forEach((c, index) => {
+    html += `
+      <div class="admin-item">
+        <span>${c.titre} - ${c.professeur}</span>
+        <button class="delete-btn" onclick="supprimerCours('${index}')">🗑️</button>
+      </div>
+    `;
   });
-  container.innerHTML = html;
+  document.getElementById('coursAdminList').innerHTML = html || '<p>Aucun cours</p>';
 }
 
-window.ajouterCours = function() {
+window.ajouterCours = async function() {
   const titre = document.getElementById('coursTitre').value.trim();
   const professeur = document.getElementById('coursProfesseur').value.trim();
   const description = document.getElementById('coursDescription').value.trim();
   const type = document.getElementById('coursType').value;
   const lien = document.getElementById('coursLien').value.trim();
 
-  if (!titre || !professeur || !description || !lien) return alert('❌ Tous les champs requis');
+  if (!titre || !professeur || !description || !lien) {
+    return alert('❌ Tous les champs requis');
+  }
 
-  cours.push({
-    id: prochainIdCours++,
-    titre: titre,
-    professeur: professeur,
-    description: description,
-    type: type,
-    lien: lien
+  await fetch(API.cours, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify([{ titre, professeur, description, type, lien }])
   });
 
   document.getElementById('coursTitre').value = '';
   document.getElementById('coursProfesseur').value = '';
   document.getElementById('coursDescription').value = '';
   document.getElementById('coursLien').value = '';
-
+  
   chargerCours();
   chargerAdminCours();
   alert('✅ Cours ajouté');
 };
 
-window.supprimerCours = function(id) {
-  if (!confirm('Supprimer ce cours ?')) return;
-  cours = cours.filter(c => c.id !== id);
+window.supprimerCours = async function(index) {
+  if (!confirm('Supprimer ?')) return;
+  await fetch(`${API.cours}/${index}`, { method: 'DELETE' });
   chargerCours();
   chargerAdminCours();
 };
 
-// ===============================
+// ============================================
 // CLASSES
-// ===============================
-function chargerClassesList() {
-  const container = document.getElementById('classesList');
-  if (!container) return;
-  if (classes.length === 0) {
-    container.innerHTML = '<p>Aucune classe</p>';
-    return;
-  }
+// ============================================
+async function chargerAdminClasses() {
+  const res = await fetch(API.classes);
+  const data = await res.json();
+  
   let html = '';
-  classes.forEach(c => {
-    html += `<div class="admin-item"><span>${c.nom}</span><button class="delete-btn" onclick="supprimerClasse(${c.id})">🗑️</button></div>`;
+  data.forEach((c, index) => {
+    html += `
+      <div class="admin-item">
+        <span>${c.nom}</span>
+        <button class="delete-btn" onclick="supprimerClasse('${index}')">🗑️</button>
+      </div>
+    `;
   });
-  container.innerHTML = html;
+  document.getElementById('classesList').innerHTML = html || '<p>Aucune classe</p>';
 }
 
-window.ajouterClasse = function() {
+window.ajouterClasse = async function() {
   const nom = document.getElementById('classeNom').value.trim();
   if (!nom) return alert('❌ Nom requis');
-  classes.push({ id: prochainIdClasse++, nom: nom });
+
+  await fetch(API.classes, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify([{ nom }])
+  });
+
   document.getElementById('classeNom').value = '';
-  chargerClassesList();
+  chargerAdminClasses();
   chargerClassesSelect();
   alert('✅ Classe ajoutée');
 };
 
-window.supprimerClasse = function(id) {
-  if (!confirm('Supprimer cette classe ?')) return;
-  classes = classes.filter(c => c.id !== id);
-  eleves = eleves.filter(e => e.classeId !== id); // Supprime aussi les élèves liés
-  chargerClassesList();
+window.supprimerClasse = async function(index) {
+  if (!confirm('Supprimer ?')) return;
+  await fetch(`${API.classes}/${index}`, { method: 'DELETE' });
+  chargerAdminClasses();
   chargerClassesSelect();
-  chargerElevesList();
 };
 
-// ===============================
+async function chargerClassesSelect() {
+  const res = await fetch(API.classes);
+  const data = await res.json();
+  
+  let html = '<option value="">Choisir une classe</option>';
+  data.forEach(c => {
+    html += `<option value="${c.nom}">${c.nom}</option>`;
+  });
+  document.getElementById('eleveClasse').innerHTML = html;
+}
+
+// ============================================
 // ÉLÈVES
-// ===============================
-function chargerClassesSelect() {
-  const select = document.getElementById('eleveClasse');
-  if (!select) return;
-  select.innerHTML = '<option value="">Choisir une classe</option>';
-  classes.forEach(c => {
-    select.innerHTML += `<option value="${c.id}">${c.nom}</option>`;
-  });
-}
-
-function chargerElevesList() {
-  const container = document.getElementById('elevesList');
-  if (!container) return;
-  if (eleves.length === 0) {
-    container.innerHTML = '<p>Aucun élève</p>';
-    return;
-  }
+// ============================================
+async function chargerAdminEleves() {
+  const res = await fetch(API.eleves);
+  const data = await res.json();
+  
   let html = '';
-  eleves.forEach(e => {
-    const classe = classes.find(c => c.id === e.classeId);
-    html += `<div class="admin-item"><span>${e.nom} ${e.prenom} - ${classe?.nom || '?'}</span><button class="delete-btn" onclick="supprimerEleve(${e.id})">🗑️</button></div>`;
+  data.forEach((e, index) => {
+    html += `
+      <div class="admin-item">
+        <span>${e.nom} ${e.prenom} - ${e.classe}</span>
+        <button class="delete-btn" onclick="supprimerEleve('${index}')">🗑️</button>
+      </div>
+    `;
   });
-  container.innerHTML = html;
+  document.getElementById('elevesList').innerHTML = html || '<p>Aucun élève</p>';
 }
 
-window.ajouterEleve = function() {
+window.ajouterEleve = async function() {
   const nom = document.getElementById('eleveNom').value.trim();
   const prenom = document.getElementById('elevePrenom').value.trim();
-  const classeId = document.getElementById('eleveClasse').value;
+  const classe = document.getElementById('eleveClasse').value;
 
-  if (!nom || !prenom || !classeId) return alert('❌ Tous les champs requis');
+  if (!nom || !prenom || !classe) {
+    return alert('❌ Tous les champs requis');
+  }
 
-  eleves.push({
-    id: prochainIdEleve++,
-    nom: nom,
-    prenom: prenom,
-    classeId: parseInt(classeId)
+  await fetch(API.eleves, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify([{ nom, prenom, classe }])
   });
 
   document.getElementById('eleveNom').value = '';
   document.getElementById('elevePrenom').value = '';
-
-  chargerElevesList();
+  
+  chargerAdminEleves();
   alert('✅ Élève ajouté');
 };
 
-window.supprimerEleve = function(id) {
-  if (!confirm('Supprimer cet élève ?')) return;
-  eleves = eleves.filter(e => e.id !== id);
-  chargerElevesList();
+window.supprimerEleve = async function(index) {
+  if (!confirm('Supprimer ?')) return;
+  await fetch(`${API.eleves}/${index}`, { method: 'DELETE' });
+  chargerAdminEleves();
 };
 
-// ===============================
+// ============================================
 // ADMINISTRATION
-// ===============================
-function chargerAdministration() {
-  const container = document.getElementById('adminList');
-  if (!container) return;
-  if (admins.length === 0) {
-    container.innerHTML = '<p>Aucun membre</p>';
-    return;
-  }
+// ============================================
+async function chargerAdministration() {
+  const res = await fetch(API.admins);
+  const data = await res.json();
+  
   let html = '';
-  admins.forEach(a => {
+  data.forEach(a => {
     html += `<div class="card"><h3>${a.nom}</h3><p><strong>${a.role}</strong></p></div>`;
   });
-  container.innerHTML = html;
+  document.getElementById('adminList').innerHTML = html || '<p>Aucun membre</p>';
 }
 
-function chargerAdminsList() {
-  const container = document.getElementById('adminsList');
-  if (!container) return;
-  if (admins.length === 0) {
-    container.innerHTML = '<p>Aucun membre</p>';
-    return;
-  }
+async function chargerAdminAdmins() {
+  const res = await fetch(API.admins);
+  const data = await res.json();
+  
   let html = '';
-  admins.forEach(a => {
-    html += `<div class="admin-item"><span>${a.nom} - ${a.role}</span><button class="delete-btn" onclick="supprimerAdmin(${a.id})">🗑️</button></div>`;
+  data.forEach((a, index) => {
+    html += `
+      <div class="admin-item">
+        <span>${a.nom} - ${a.role}</span>
+        <button class="delete-btn" onclick="supprimerAdmin('${index}')">🗑️</button>
+      </div>
+    `;
   });
-  container.innerHTML = html;
+  document.getElementById('adminsList').innerHTML = html || '<p>Aucun membre</p>';
 }
 
-window.ajouterAdmin = function() {
+window.ajouterAdmin = async function() {
   const nom = document.getElementById('adminNom').value.trim();
   const role = document.getElementById('adminRole').value.trim();
   if (!nom || !role) return alert('❌ Nom et rôle requis');
-  admins.push({ id: prochainIdAdmin++, nom: nom, role: role });
+
+  await fetch(API.admins, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify([{ nom, role }])
+  });
+
   document.getElementById('adminNom').value = '';
   document.getElementById('adminRole').value = '';
+  
   chargerAdministration();
-  chargerAdminsList();
+  chargerAdminAdmins();
   alert('✅ Membre ajouté');
 };
 
-window.supprimerAdmin = function(id) {
-  if (!confirm('Supprimer ce membre ?')) return;
-  admins = admins.filter(a => a.id !== id);
+window.supprimerAdmin = async function(index) {
+  if (!confirm('Supprimer ?')) return;
+  await fetch(`${API.admins}/${index}`, { method: 'DELETE' });
   chargerAdministration();
-  chargerAdminsList();
+  chargerAdminAdmins();
 };
 
-// ===============================
+// ============================================
 // ANCIENS ÉLÈVES
-// ===============================
-function chargerAnciens() {
-  const container = document.getElementById('anciensList');
-  if (!container) return;
-  if (anciens.length === 0) {
-    container.innerHTML = '<p>Aucun ancien élève</p>';
-    return;
-  }
+// ============================================
+async function chargerAnciens() {
+  const res = await fetch(API.anciens);
+  const data = await res.json();
+  
   let html = '';
-  anciens.forEach(a => {
-    html += `<div class="card"><h3>${a.nom}</h3><p>Bac ${a.annee} - ${a.parcours}</p></div>`;
+  data.forEach(a => {
+    html += `<div class="card"><h3>${a.nom}</h3><p>${a.annee} - ${a.parcours}</p></div>`;
   });
-  container.innerHTML = html;
+  document.getElementById('anciensList').innerHTML = html || '<p>Aucun ancien</p>';
 }
 
-// ===============================
+// ============================================
 // RECHERCHE
-// ===============================
-window.rechercher = function() {
+// ============================================
+window.rechercher = async function() {
   const query = document.getElementById('searchQuery').value.toLowerCase().trim();
   const results = document.getElementById('searchResults');
 
@@ -407,40 +388,43 @@ window.rechercher = function() {
     return;
   }
 
-  // Recherche dans les élèves
-  const elevesTrouves = eleves.filter(e => 
-    e.nom.toLowerCase().includes(query) || e.prenom.toLowerCase().includes(query)
-  ).map(e => {
-    const classe = classes.find(c => c.id === e.classeId);
-    return `<div class="card"><h3>👨‍🎓 ${e.nom} ${e.prenom}</h3><p>Classe: ${classe?.nom || '?'}</p></div>`;
-  }).join('');
+  let html = '';
 
-  // Recherche dans les enseignants
-  const adminsTrouves = admins.filter(a => 
-    a.nom.toLowerCase().includes(query)
-  ).map(a => {
-    return `<div class="card"><h3>👨‍🏫 ${a.nom}</h3><p>${a.role}</p></div>`;
-  }).join('');
+  // Recherche dans les élèves
+  const elevesRes = await fetch(API.eleves);
+  const eleves = await elevesRes.json();
+  eleves.forEach(e => {
+    if (e.nom.toLowerCase().includes(query) || e.prenom.toLowerCase().includes(query)) {
+      html += `<div class="card"><h3>👨‍🎓 ${e.nom} ${e.prenom}</h3><p>Classe: ${e.classe}</p></div>`;
+    }
+  });
+
+  // Recherche dans les admins
+  const adminsRes = await fetch(API.admins);
+  const admins = await adminsRes.json();
+  admins.forEach(a => {
+    if (a.nom.toLowerCase().includes(query)) {
+      html += `<div class="card"><h3>👨‍🏫 ${a.nom}</h3><p>${a.role}</p></div>`;
+    }
+  });
 
   // Recherche dans les cours
-  const coursTrouves = cours.filter(c => 
-    c.titre.toLowerCase().includes(query) || c.professeur.toLowerCase().includes(query)
-  ).map(c => {
-    return `<div class="card"><h3>📚 ${c.titre}</h3><p>Par ${c.professeur}</p></div>`;
-  }).join('');
+  const coursRes = await fetch(API.cours);
+  const cours = await coursRes.json();
+  cours.forEach(c => {
+    if (c.titre.toLowerCase().includes(query) || c.professeur.toLowerCase().includes(query)) {
+      html += `<div class="card"><h3>📚 ${c.titre}</h3><p>Par ${c.professeur}</p></div>`;
+    }
+  });
 
-  if (!elevesTrouves && !adminsTrouves && !coursTrouves) {
-    results.innerHTML = '<p>Aucun résultat trouvé</p>';
-  } else {
-    results.innerHTML = elevesTrouves + adminsTrouves + coursTrouves;
-  }
+  results.innerHTML = html || '<p>Aucun résultat trouvé</p>';
 };
 
-// ===============================
+// ============================================
 // INIT
-// ===============================
+// ============================================
 chargerPublications();
 chargerCours();
 chargerAdministration();
 chargerAnciens();
-console.log('✅ Site prêt avec toutes les fonctionnalités');
+console.log('✅ Site prêt avec Sheet.best');
