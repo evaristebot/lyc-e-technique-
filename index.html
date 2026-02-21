@@ -1,16 +1,18 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>🧪 TEST ÉLÈVES & COURS</title>
+    <title>🧪 TEST ÉLÈVES & COURS (avec suppression)</title>
     <style>
         body { font-family: Arial; padding: 20px; background: #f5f7fa; }
-        .container { display: flex; gap: 20px; }
+        .container { display: flex; gap: 20px; flex-wrap: wrap; }
         .card { 
             background: white; 
             padding: 20px; 
             border-radius: 15px; 
             flex: 1;
+            min-width: 300px;
             border-left: 5px solid #ffb347;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
         }
         button { 
             background: #ffb347; 
@@ -19,8 +21,10 @@
             margin: 5px; 
             border-radius: 30px;
             cursor: pointer;
+            font-weight: bold;
         }
-        input, textarea { 
+        button:hover { background: #0b2f2f; color: #ffb347; }
+        input, textarea, select { 
             width: 100%; 
             padding: 8px; 
             margin: 5px 0; 
@@ -29,39 +33,57 @@
         }
         .data-list { 
             margin-top: 15px; 
-            max-height: 200px; 
+            max-height: 300px; 
             overflow-y: auto; 
+            border-top: 2px solid #ffb347;
+            padding-top: 10px;
         }
         .item { 
             background: #f0f0f0; 
-            padding: 8px; 
+            padding: 10px; 
             margin: 5px 0; 
-            border-radius: 5px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
+        .delete-btn {
+            background: #ff4444;
+            color: white;
+            border: none;
+            padding: 5px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+        }
+        .delete-btn:hover { background: #cc0000; }
+        code { background: #f0f0f0; padding: 2px 5px; border-radius: 3px; }
     </style>
 </head>
 <body>
-    <h1>🔍 TEST ÉLÈVES & COURS</h1>
+    <h1>🔍 TEST ÉLÈVES & COURS (avec suppression)</h1>
 
     <div class="container">
         <!-- Carte ÉLÈVES -->
         <div class="card">
             <h2>👨‍🎓 ÉLÈVES</h2>
-            <p>URL: <code>70923d86-6d1a-4756-bf21-a869acf3e029</code></p>
+            <p><code>70923d86-6d1a-4756-bf21-a869acf3e029</code></p>
             
             <input type="text" id="eleveNom" placeholder="Nom">
             <input type="text" id="elevePrenom" placeholder="Prénom">
             <input type="text" id="eleveClasse" placeholder="Classe">
-            <button onclick="ajouterEleve()">➕ Ajouter élève</button>
-            <button onclick="voirEleves()">📋 Voir élèves</button>
             
-            <div id="listeEleves" class="data-list"></div>
+            <button onclick="ajouterEleve()">➕ Ajouter élève</button>
+            <button onclick="voirEleves()">📋 Rafraîchir liste</button>
+            
+            <div id="listeEleves" class="data-list">
+                Chargement...
+            </div>
         </div>
 
         <!-- Carte COURS -->
         <div class="card">
             <h2>📚 COURS</h2>
-            <p>URL: <code>0073e64e-80ab-4337-b6b9-df0c2ce14cd3</code></p>
+            <p><code>0073e64e-80ab-4337-b6b9-df0c2ce14cd3</code></p>
             
             <input type="text" id="coursTitre" placeholder="Titre">
             <input type="text" id="coursProf" placeholder="Professeur">
@@ -71,10 +93,13 @@
                 <option value="video">Vidéo</option>
             </select>
             <input type="text" id="coursLien" placeholder="Lien">
-            <button onclick="ajouterCours()">➕ Ajouter cours</button>
-            <button onclick="voirCours()">📋 Voir cours</button>
             
-            <div id="listeCours" class="data-list"></div>
+            <button onclick="ajouterCours()">➕ Ajouter cours</button>
+            <button onclick="voirCours()">📋 Rafraîchir liste</button>
+            
+            <div id="listeCours" class="data-list">
+                Chargement...
+            </div>
         </div>
     </div>
 
@@ -91,31 +116,46 @@
     // FONCTIONS POUR LES ÉLÈVES
     // ============================================
     async function voirEleves() {
+        const liste = document.getElementById('listeEleves');
+        liste.innerHTML = 'Chargement...';
+        
         try {
             const res = await fetch(API.eleves);
             const data = await res.json();
             
+            if (data.length === 0) {
+                liste.innerHTML = '<p>Aucun élève</p>';
+                return;
+            }
+            
             let html = '';
-            data.forEach(e => {
+            data.forEach((eleve, index) => {
+                // Sheet.best utilise l'index de la ligne (commence à 1)
+                const ligneId = index + 1;
                 html += `
                     <div class="item">
-                        👤 ${e.nom || ''} ${e['prénom '] || e.prenom || ''} - ${e['classe '] || e.classe || ''}
+                        <span>
+                            👤 <strong>${eleve.nom || ''}</strong> 
+                            ${eleve['prénom '] || eleve.prenom || ''} 
+                            - ${eleve['classe '] || eleve.classe || ''}
+                        </span>
+                        <button class="delete-btn" onclick="supprimerEleve(${ligneId})">🗑️ Supprimer</button>
                     </div>
                 `;
             });
-            document.getElementById('listeEleves').innerHTML = html || '<p>Aucun élève</p>';
+            liste.innerHTML = html;
         } catch (err) {
-            alert('Erreur: ' + err.message);
+            liste.innerHTML = `❌ Erreur: ${err.message}`;
         }
     }
 
     async function ajouterEleve() {
-        const nom = document.getElementById('eleveNom').value;
-        const prenom = document.getElementById('elevePrenom').value;
-        const classe = document.getElementById('eleveClasse').value;
+        const nom = document.getElementById('eleveNom').value.trim();
+        const prenom = document.getElementById('elevePrenom').value.trim();
+        const classe = document.getElementById('eleveClasse').value.trim();
         
         if (!nom || !prenom || !classe) {
-            alert('Tous les champs sont requis');
+            alert('❌ Tous les champs sont requis');
             return;
         }
         
@@ -132,9 +172,30 @@
                 document.getElementById('elevePrenom').value = '';
                 document.getElementById('eleveClasse').value = '';
                 voirEleves();
+            } else {
+                alert('❌ Erreur lors de l\'ajout');
             }
         } catch (err) {
-            alert('Erreur: ' + err.message);
+            alert('❌ Erreur: ' + err.message);
+        }
+    }
+
+    async function supprimerEleve(ligneId) {
+        if (!confirm(`Supprimer l'élève à la ligne ${ligneId} ?`)) return;
+        
+        try {
+            const res = await fetch(`${API.eleves}/${ligneId}`, {
+                method: 'DELETE'
+            });
+            
+            if (res.ok) {
+                alert('✅ Élève supprimé !');
+                voirEleves();
+            } else {
+                alert('❌ Erreur lors de la suppression');
+            }
+        } catch (err) {
+            alert('❌ Erreur: ' + err.message);
         }
     }
 
@@ -142,34 +203,47 @@
     // FONCTIONS POUR LES COURS
     // ============================================
     async function voirCours() {
+        const liste = document.getElementById('listeCours');
+        liste.innerHTML = 'Chargement...';
+        
         try {
             const res = await fetch(API.cours);
             const data = await res.json();
             
+            if (data.length === 0) {
+                liste.innerHTML = '<p>Aucun cours</p>';
+                return;
+            }
+            
             let html = '';
-            data.forEach(c => {
+            data.forEach((cours, index) => {
+                const ligneId = index + 1;
                 html += `
                     <div class="item">
-                        📘 ${c.titre || ''} - ${c.professeur || ''}<br>
-                        <small>${c.type || ''}</small>
+                        <span>
+                            📘 <strong>${cours.titre || ''}</strong> 
+                            - ${cours.professeur || ''}<br>
+                            <small>${cours.type || ''}</small>
+                        </span>
+                        <button class="delete-btn" onclick="supprimerCours(${ligneId})">🗑️ Supprimer</button>
                     </div>
                 `;
             });
-            document.getElementById('listeCours').innerHTML = html || '<p>Aucun cours</p>';
+            liste.innerHTML = html;
         } catch (err) {
-            alert('Erreur: ' + err.message);
+            liste.innerHTML = `❌ Erreur: ${err.message}`;
         }
     }
 
     async function ajouterCours() {
-        const titre = document.getElementById('coursTitre').value;
-        const prof = document.getElementById('coursProf').value;
-        const desc = document.getElementById('coursDesc').value;
+        const titre = document.getElementById('coursTitre').value.trim();
+        const prof = document.getElementById('coursProf').value.trim();
+        const desc = document.getElementById('coursDesc').value.trim();
         const type = document.getElementById('coursType').value;
-        const lien = document.getElementById('coursLien').value;
+        const lien = document.getElementById('coursLien').value.trim();
         
         if (!titre || !prof || !desc || !lien) {
-            alert('Tous les champs sont requis');
+            alert('❌ Tous les champs sont requis');
             return;
         }
         
@@ -178,11 +252,11 @@
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify([{ 
-                    titre, 
+                    titre: titre, 
                     professeur: prof, 
                     description: desc, 
-                    type, 
-                    lien 
+                    type: type, 
+                    lien: lien 
                 }])
             });
             
@@ -193,9 +267,30 @@
                 document.getElementById('coursDesc').value = '';
                 document.getElementById('coursLien').value = '';
                 voirCours();
+            } else {
+                alert('❌ Erreur lors de l\'ajout');
             }
         } catch (err) {
-            alert('Erreur: ' + err.message);
+            alert('❌ Erreur: ' + err.message);
+        }
+    }
+
+    async function supprimerCours(ligneId) {
+        if (!confirm(`Supprimer le cours à la ligne ${ligneId} ?`)) return;
+        
+        try {
+            const res = await fetch(`${API.cours}/${ligneId}`, {
+                method: 'DELETE'
+            });
+            
+            if (res.ok) {
+                alert('✅ Cours supprimé !');
+                voirCours();
+            } else {
+                alert('❌ Erreur lors de la suppression');
+            }
+        } catch (err) {
+            alert('❌ Erreur: ' + err.message);
         }
     }
 
@@ -205,4 +300,3 @@
     </script>
 </body>
 </html>
-
