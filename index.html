@@ -40,97 +40,63 @@
     </div>
 </div>
 
-<!-- ÉLÈVES -->
+<!-- ÉLÈVES (public) -->
 <div id="eleves" class="page">
-    <h2>👨‍🎓 Élèves</h2>
-    <input type="text" id="eleveNom" placeholder="Nom">
-    <input type="text" id="elevePrenom" placeholder="Prénom">
-    <input type="text" id="eleveClasse" placeholder="Classe">
-    <input type="text" id="eleveContact" placeholder="Contact parents">
-    <button class="btn" onclick="ajouterEleve()">Ajouter</button>
-    <div id="elevesList"></div>
+    <h2>👨‍🎓 Liste des Élèves</h2>
+    <div id="elevesListPublic" class="grid"></div>
     <button class="btn" onclick="goHome()">← Retour</button>
 </div>
 
-<!-- ENSEIGNANTS -->
+<!-- ENSEIGNANTS (public) -->
 <div id="enseignants" class="page">
-    <h2>👨‍🏫 Enseignants</h2>
-    <input type="text" id="ensNom" placeholder="Nom">
-    <input type="text" id="ensPrenom" placeholder="Prénom">
-    <input type="text" id="ensMatiere" placeholder="Matière">
-    <input type="text" id="ensContact" placeholder="Contact">
-    <button class="btn" onclick="ajouterEnseignant()">Ajouter</button>
-    <div id="enseignantsList"></div>
+    <h2>👨‍🏫 Liste des Enseignants</h2>
+    <div id="enseignantsListPublic" class="grid"></div>
     <button class="btn" onclick="goHome()">← Retour</button>
 </div>
 
-<!-- COURS -->
+<!-- COURS (public) -->
 <div id="cours" class="page">
-    <h2>📚 Cours</h2>
-    <input type="text" id="coursTitre" placeholder="Titre">
-    <input type="text" id="coursProf" placeholder="Professeur">
-    <textarea id="coursDesc" placeholder="Description"></textarea>
-    <select id="coursType">
-        <option value="pdf">PDF</option>
-        <option value="video">Vidéo</option>
-    </select>
-    <input type="url" id="coursLien" placeholder="Lien">
-    <button class="btn" onclick="ajouterCours()">Ajouter</button>
-    <div id="coursList"></div>
+    <h2>📚 Liste des Cours</h2>
+    <div id="coursListPublic" class="grid"></div>
     <button class="btn" onclick="goHome()">← Retour</button>
 </div>
 
-<!-- PUBLICATIONS -->
+<!-- PUBLICATIONS (public) -->
 <div id="publications" class="page">
     <h2>📰 Publications</h2>
-    <input type="text" id="pubTitre" placeholder="Titre">
-    <textarea id="pubContenu" placeholder="Contenu"></textarea>
-    <button class="btn" onclick="ajouterPublication()">Publier</button>
-    <div id="publicationsList"></div>
+    <div id="publicationsListPublic" class="grid"></div>
     <button class="btn" onclick="goHome()">← Retour</button>
 </div>
 
-<!-- CLASSES -->
+<!-- CLASSES (public) -->
 <div id="classes" class="page">
     <h2>🏫 Classes</h2>
-    <input type="text" id="classeNom" placeholder="Nom de la classe">
-    <button class="btn" onclick="ajouterClasse()">Ajouter</button>
-    <div id="classesList"></div>
+    <div id="classesListPublic" class="grid"></div>
     <button class="btn" onclick="goHome()">← Retour</button>
 </div>
 
-<!-- SPÉCIALITÉS -->
+<!-- SPÉCIALITÉS (public) -->
 <div id="specialites" class="page">
     <h2>📌 Spécialités</h2>
-    <input type="text" id="specialiteNom" placeholder="Nom">
-    <button class="btn" onclick="ajouterSpecialite()">Ajouter</button>
-    <div id="specialitesList"></div>
+    <div id="specialitesListPublic" class="grid"></div>
     <button class="btn" onclick="goHome()">← Retour</button>
 </div>
 
-<!-- ADMINISTRATION -->
+<!-- ADMINISTRATION (public) -->
 <div id="administration" class="page">
     <h2>🏛️ Administration</h2>
-    <input type="text" id="adminNom" placeholder="Nom">
-    <input type="text" id="adminRole" placeholder="Rôle">
-    <input type="text" id="adminContact" placeholder="Contact">
-    <button class="btn" onclick="ajouterAdmin()">Ajouter</button>
-    <div id="administrationList"></div>
+    <div id="administrationListPublic" class="grid"></div>
     <button class="btn" onclick="goHome()">← Retour</button>
 </div>
 
-<!-- ANCIENS -->
+<!-- ANCIENS (public) -->
 <div id="anciens" class="page">
     <h2>🎓 Anciens élèves</h2>
-    <input type="text" id="ancienNom" placeholder="Nom">
-    <input type="text" id="ancienAnnee" placeholder="Année">
-    <input type="text" id="ancienParcours" placeholder="Parcours">
-    <button class="btn" onclick="ajouterAncien()">Ajouter</button>
-    <div id="anciensList"></div>
+    <div id="anciensListPublic" class="grid"></div>
     <button class="btn" onclick="goHome()">← Retour</button>
 </div>
 
-<!-- BULLETINS -->
+<!-- BULLETINS (public) -->
 <div id="bulletins" class="page">
     <h2>📄 Bulletins</h2>
     <select id="bulletinClasse"></select>
@@ -139,24 +105,108 @@
         <option value="2">Trimestre 2</option>
         <option value="3">Trimestre 3</option>
     </select>
-    <button class="btn" onclick="afficherBulletins()">Afficher</button>
-    <div id="bulletinsList"></div>
+    <button class="btn" onclick="afficherBulletinsPublic()">Afficher</button>
+    <div id="bulletinsListPublic" class="grid"></div>
     <button class="btn" onclick="goHome()">← Retour</button>
 </div>
 
-<!-- ADMIN ESPACE -->
+<!-- ADMIN ESPACE (protégé) -->
 <div id="admin" class="page">
-    <h2>⚙️ Administration</h2>
+    <h2>⚙️ Panneau d'administration</h2>
     <div id="adminPasswordBox">
         <input type="password" id="adminPassword" placeholder="Mot de passe">
         <button class="btn" onclick="checkAdminPassword()">Valider</button>
     </div>
+
     <div id="adminZone" style="display:none;">
-        <p>🛠️ Espace réservé (gestion globale à venir)</p>
+        <h3>🛠️ Gestion complète</h3>
+
+        <!-- ÉLÈVES -->
+        <div class="admin-section">
+            <h4>👨‍🎓 Gestion des élèves</h4>
+            <input type="text" id="adminEleveNom" placeholder="Nom">
+            <input type="text" id="adminElevePrenom" placeholder="Prénom">
+            <input type="text" id="adminEleveClasse" placeholder="Classe">
+            <input type="text" id="adminEleveContact" placeholder="Contact parents">
+            <button class="btn" onclick="adminAjouterEleve()">Ajouter</button>
+            <div id="adminElevesList"></div>
+        </div>
+
+        <!-- ENSEIGNANTS -->
+        <div class="admin-section">
+            <h4>👨‍🏫 Gestion des enseignants</h4>
+            <input type="text" id="adminEnsNom" placeholder="Nom">
+            <input type="text" id="adminEnsPrenom" placeholder="Prénom">
+            <input type="text" id="adminEnsMatiere" placeholder="Matière">
+            <input type="text" id="adminEnsContact" placeholder="Contact">
+            <button class="btn" onclick="adminAjouterEnseignant()">Ajouter</button>
+            <div id="adminEnseignantsList"></div>
+        </div>
+
+        <!-- COURS -->
+        <div class="admin-section">
+            <h4>📚 Gestion des cours</h4>
+            <input type="text" id="adminCoursTitre" placeholder="Titre">
+            <input type="text" id="adminCoursProf" placeholder="Professeur">
+            <textarea id="adminCoursDesc" placeholder="Description"></textarea>
+            <select id="adminCoursType">
+                <option value="pdf">PDF</option>
+                <option value="video">Vidéo</option>
+            </select>
+            <input type="url" id="adminCoursLien" placeholder="Lien">
+            <button class="btn" onclick="adminAjouterCours()">Ajouter</button>
+            <div id="adminCoursList"></div>
+        </div>
+
+        <!-- PUBLICATIONS -->
+        <div class="admin-section">
+            <h4>📰 Gestion des publications</h4>
+            <input type="text" id="adminPubTitre" placeholder="Titre">
+            <textarea id="adminPubContenu" placeholder="Contenu"></textarea>
+            <button class="btn" onclick="adminAjouterPublication()">Publier</button>
+            <div id="adminPublicationsList"></div>
+        </div>
+
+        <!-- CLASSES -->
+        <div class="admin-section">
+            <h4>🏫 Gestion des classes</h4>
+            <input type="text" id="adminClasseNom" placeholder="Nom de la classe">
+            <button class="btn" onclick="adminAjouterClasse()">Ajouter</button>
+            <div id="adminClassesList"></div>
+        </div>
+
+        <!-- SPÉCIALITÉS -->
+        <div class="admin-section">
+            <h4>📌 Gestion des spécialités</h4>
+            <input type="text" id="adminSpecialiteNom" placeholder="Nom">
+            <button class="btn" onclick="adminAjouterSpecialite()">Ajouter</button>
+            <div id="adminSpecialitesList"></div>
+        </div>
+
+        <!-- ADMINISTRATION (membres) -->
+        <div class="admin-section">
+            <h4>🏛️ Gestion de l'administration</h4>
+            <input type="text" id="adminAdminNom" placeholder="Nom">
+            <input type="text" id="adminAdminRole" placeholder="Rôle">
+            <input type="text" id="adminAdminContact" placeholder="Contact">
+            <button class="btn" onclick="adminAjouterAdmin()">Ajouter</button>
+            <div id="adminAdministrationList"></div>
+        </div>
+
+        <!-- ANCIENS -->
+        <div class="admin-section">
+            <h4>🎓 Gestion des anciens élèves</h4>
+            <input type="text" id="adminAncienNom" placeholder="Nom">
+            <input type="text" id="adminAncienAnnee" placeholder="Année">
+            <input type="text" id="adminAncienParcours" placeholder="Parcours">
+            <button class="btn" onclick="adminAjouterAncien()">Ajouter</button>
+            <div id="adminAnciensList"></div>
+        </div>
     </div>
+
     <button class="btn" onclick="goHome()">← Retour</button>
 </div>
 
 <script src="script.js"></script>
 </body>
-            </html>
+        </html>
