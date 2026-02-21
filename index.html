@@ -1,302 +1,232 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 <head>
-    <title>🧪 TEST ÉLÈVES & COURS (avec suppression)</title>
-    <style>
-        body { font-family: Arial; padding: 20px; background: #f5f7fa; }
-        .container { display: flex; gap: 20px; flex-wrap: wrap; }
-        .card { 
-            background: white; 
-            padding: 20px; 
-            border-radius: 15px; 
-            flex: 1;
-            min-width: 300px;
-            border-left: 5px solid #ffb347;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-        }
-        button { 
-            background: #ffb347; 
-            border: none; 
-            padding: 10px 20px; 
-            margin: 5px; 
-            border-radius: 30px;
-            cursor: pointer;
-            font-weight: bold;
-        }
-        button:hover { background: #0b2f2f; color: #ffb347; }
-        input, textarea, select { 
-            width: 100%; 
-            padding: 8px; 
-            margin: 5px 0; 
-            border: 2px solid #ddd; 
-            border-radius: 10px;
-        }
-        .data-list { 
-            margin-top: 15px; 
-            max-height: 300px; 
-            overflow-y: auto; 
-            border-top: 2px solid #ffb347;
-            padding-top: 10px;
-        }
-        .item { 
-            background: #f0f0f0; 
-            padding: 10px; 
-            margin: 5px 0; 
-            border-radius: 8px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .delete-btn {
-            background: #ff4444;
-            color: white;
-            border: none;
-            padding: 5px 15px;
-            border-radius: 20px;
-            cursor: pointer;
-        }
-        .delete-btn:hover { background: #cc0000; }
-        code { background: #f0f0f0; padding: 2px 5px; border-radius: 3px; }
-    </style>
+<meta charset="UTF-8">
+<title>Lycée Technique de Batouri</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; font-family: 'Segoe UI', sans-serif; }
+  body {
+    background: linear-gradient(135deg, #0b2f2f 0%, #1a4a4a 100%);
+    color: white;
+    min-height: 100vh;
+  }
+  .navbar {
+    background: #0b2f2f;
+    padding: 1rem 5%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    border-bottom: 3px solid #ffb347;
+  }
+  .nav-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+  }
+  .nav-logo img {
+    width: 40px; height: 40px; border-radius: 50%; border: 2px solid #ffb347;
+  }
+  .nav-logo span { color: #ffb347; font-weight: bold; font-size: 1.2rem; }
+  .nav-links button {
+    background: transparent; border: 2px solid #ffb347; color: white;
+    padding: 8px 16px; border-radius: 30px; cursor: pointer; margin: 5px; font-weight: 600;
+    transition: all 0.3s;
+  }
+  .nav-links button:hover { background: #ffb347; color: #0b2f2f; }
+  .page { display: none; padding: 2rem 5%; animation: fade 0.3s; }
+  .page.active { display: block; }
+  @keyframes fade { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+  .hero { text-align: center; margin-bottom: 2rem; }
+  .logo-large { width: 150px; height: 150px; border-radius: 50%; border: 5px solid #ffb347; }
+  h1 { color: #ffb347; text-align: center; font-size: 2.5rem; }
+  .card {
+    background: rgba(255,255,255,0.1); padding: 20px; border-radius: 15px;
+    margin: 10px 0; backdrop-filter: blur(5px);
+    border-left: 3px solid #ffb347;
+  }
+  .btn {
+    background: #ffb347; color: #0b2f2f; border: none; padding: 12px 30px;
+    border-radius: 30px; font-weight: bold; cursor: pointer; margin: 5px;
+    transition: all 0.3s;
+  }
+  .btn:hover { background: transparent; color: #ffb347; border: 2px solid #ffb347; padding: 10px 28px; }
+  .btn-secondary {
+    background: transparent; border: 2px solid #ffb347; color: #ffb347;
+    padding: 12px 30px; border-radius: 30px; cursor: pointer;
+    transition: all 0.3s;
+  }
+  .btn-secondary:hover { background: #ffb347; color: #0b2f2f; }
+  input, select, textarea {
+    width: 100%; padding: 10px; margin: 10px 0;
+    border: 2px solid #ddd; border-radius: 10px;
+    font-size: 1rem;
+  }
+  input:focus, textarea:focus { border-color: #ffb347; outline: none; }
+  .admin-section {
+    background: rgba(255,255,255,0.1); padding: 20px; margin: 20px 0;
+    border-radius: 15px; border-left: 5px solid #ffb347;
+  }
+  .admin-section h3 { color: #ffb347; margin-bottom: 15px; }
+  #adminPasswordBox {
+    background: #0b2f2f; padding: 30px; border-radius: 15px; text-align: center;
+    margin-bottom: 20px; border: 2px solid #ffb347;
+  }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+  .admin-item {
+    background: rgba(255,255,255,0.1); padding: 10px; margin: 5px 0;
+    border-radius: 5px; display: flex; justify-content: space-between; align-items: center;
+  }
+  .delete-btn {
+    background: #ff4444; color: white; border: none;
+    padding: 5px 15px; border-radius: 20px; cursor: pointer;
+  }
+  .cours-link {
+    display: inline-block; background: #ffb347; color: #0b2f2f;
+    padding: 8px 16px; border-radius: 30px; text-decoration: none; margin-top: 10px;
+  }
+</style>
 </head>
 <body>
-    <h1>🔍 TEST ÉLÈVES & COURS (avec suppression)</h1>
 
-    <div class="container">
-        <!-- Carte ÉLÈVES -->
-        <div class="card">
-            <h2>👨‍🎓 ÉLÈVES</h2>
-            <p><code>70923d86-6d1a-4756-bf21-a869acf3e029</code></p>
-            
-            <input type="text" id="eleveNom" placeholder="Nom">
-            <input type="text" id="elevePrenom" placeholder="Prénom">
-            <input type="text" id="eleveClasse" placeholder="Classe">
-            
-            <button onclick="ajouterEleve()">➕ Ajouter élève</button>
-            <button onclick="voirEleves()">📋 Rafraîchir liste</button>
-            
-            <div id="listeEleves" class="data-list">
-                Chargement...
-            </div>
-        </div>
+<!-- NAVIGATION -->
+<nav class="navbar">
+  <div class="nav-logo" onclick="goHome()">
+    <img src="logo.jpg" alt="Logo" onerror="this.src='https://via.placeholder.com/40'">
+    <span>Lycée Technique de Batouri</span>
+  </div>
+  <div class="nav-links">
+    <button onclick="goHome()">🏠 Accueil</button>
+    <button onclick="goToAdministration()">👨‍🏫 Administration</button>
+    <button onclick="goToAnciens()">🎓 Anciens</button>
+    <button onclick="goToJournal()">📰 Journal</button>
+    <button onclick="goToCours()">📚 Cours</button>
+    <button onclick="goToRecherche()">🔍 Recherche</button>
+    <button onclick="goToAdmin()">⚙️ Admin</button>
+  </div>
+</nav>
 
-        <!-- Carte COURS -->
-        <div class="card">
-            <h2>📚 COURS</h2>
-            <p><code>0073e64e-80ab-4337-b6b9-df0c2ce14cd3</code></p>
-            
-            <input type="text" id="coursTitre" placeholder="Titre">
-            <input type="text" id="coursProf" placeholder="Professeur">
-            <textarea id="coursDesc" placeholder="Description" rows="2"></textarea>
-            <select id="coursType">
-                <option value="pdf">PDF</option>
-                <option value="video">Vidéo</option>
-            </select>
-            <input type="text" id="coursLien" placeholder="Lien">
-            
-            <button onclick="ajouterCours()">➕ Ajouter cours</button>
-            <button onclick="voirCours()">📋 Rafraîchir liste</button>
-            
-            <div id="listeCours" class="data-list">
-                Chargement...
-            </div>
-        </div>
+<!-- ACCUEIL -->
+<div id="home" class="page active">
+  <div class="hero">
+    <img src="logo.jpg" class="logo-large" id="mainLogo" onerror="this.src='https://via.placeholder.com/150'">
+    <h1>Lycée Technique de Batouri</h1>
+  </div>
+  <div class="card">
+    <h2>Bienvenue</h2>
+    <p>Le Lycée Technique de Batouri forme les jeunes aux métiers techniques depuis 1985.</p>
+    <p><strong>Excellence, Discipline, Travail</strong></p>
+  </div>
+</div>
+
+<!-- ADMINISTRATION -->
+<div id="administration" class="page">
+  <h1>👨‍🏫 Administration</h1>
+  <div id="adminList" class="grid"></div>
+  <button class="btn-secondary" onclick="goHome()">← Retour</button>
+</div>
+
+<!-- ANCIENS -->
+<div id="anciens" class="page">
+  <h1>🎓 Anciens Élèves</h1>
+  <div id="anciensList" class="grid"></div>
+  <button class="btn-secondary" onclick="goHome()">← Retour</button>
+</div>
+
+<!-- JOURNAL -->
+<div id="journal" class="page">
+  <h1>📰 Journal du Lycée</h1>
+  <div id="articlesList" class="grid"></div>
+  <button class="btn-secondary" onclick="goHome()">← Retour</button>
+</div>
+
+<!-- COURS -->
+<div id="cours" class="page">
+  <h1>📚 Cours disponibles</h1>
+  <div id="coursList" class="grid"></div>
+  <button class="btn-secondary" onclick="goHome()">← Retour</button>
+</div>
+
+<!-- RECHERCHE -->
+<div id="recherche" class="page">
+  <h1>🔍 Recherche</h1>
+  <input type="text" id="searchQuery" placeholder="Nom, prénom, matière...">
+  <button class="btn" onclick="rechercher()">Rechercher</button>
+  <div id="searchResults" class="grid"></div>
+  <button class="btn-secondary" onclick="goHome()">← Retour</button>
+</div>
+
+<!-- ADMIN -->
+<div id="admin" class="page">
+  <h1>⚙️ Administration</h1>
+
+  <div id="adminPasswordBox">
+    <h3>🔐 Accès sécurisé</h3>
+    <input type="password" id="adminPassword" placeholder="Mot de passe">
+    <button class="btn" onclick="checkAdminPassword()">Valider</button>
+  </div>
+
+  <div id="adminZone" style="display:none;">
+
+    <!-- PUBLICATIONS -->
+    <div class="admin-section">
+      <h3>📰 Publier un article</h3>
+      <input type="text" id="articleTitre" placeholder="Titre">
+      <textarea id="articleContenu" placeholder="Contenu..." rows="3"></textarea>
+      <button class="btn" onclick="publierArticle()">📤 Publier</button>
+      <div id="articlesAdminList"></div>
     </div>
 
-    <script>
-    // ============================================
-    // CONFIGURATION
-    // ============================================
-    const API = {
-        eleves: 'https://api.sheetbest.com/sheets/70923d86-6d1a-4756-bf21-a869acf3e029',
-        cours: 'https://api.sheetbest.com/sheets/0073e64e-80ab-4337-b6b9-df0c2ce14cd3'
-    };
+    <!-- COURS -->
+    <div class="admin-section">
+      <h3>📚 Ajouter un cours</h3>
+      <input type="text" id="coursTitre" placeholder="Titre du cours">
+      <input type="text" id="coursProfesseur" placeholder="Professeur">
+      <textarea id="coursDescription" placeholder="Description" rows="2"></textarea>
+      <select id="coursType">
+        <option value="video">Vidéo (lien)</option>
+        <option value="pdf">PDF</option>
+      </select>
+      <input type="text" id="coursLien" placeholder="Lien YouTube ou Drive">
+      <button class="btn" onclick="ajouterCours()">➕ Ajouter le cours</button>
+      <div id="coursAdminList"></div>
+    </div>
 
-    // ============================================
-    // FONCTIONS POUR LES ÉLÈVES
-    // ============================================
-    async function voirEleves() {
-        const liste = document.getElementById('listeEleves');
-        liste.innerHTML = 'Chargement...';
-        
-        try {
-            const res = await fetch(API.eleves);
-            const data = await res.json();
-            
-            if (data.length === 0) {
-                liste.innerHTML = '<p>Aucun élève</p>';
-                return;
-            }
-            
-            let html = '';
-            data.forEach((eleve, index) => {
-                // Sheet.best utilise l'index de la ligne (commence à 1)
-                const ligneId = index + 1;
-                html += `
-                    <div class="item">
-                        <span>
-                            👤 <strong>${eleve.nom || ''}</strong> 
-                            ${eleve['prénom '] || eleve.prenom || ''} 
-                            - ${eleve['classe '] || eleve.classe || ''}
-                        </span>
-                        <button class="delete-btn" onclick="supprimerEleve(${ligneId})">🗑️ Supprimer</button>
-                    </div>
-                `;
-            });
-            liste.innerHTML = html;
-        } catch (err) {
-            liste.innerHTML = `❌ Erreur: ${err.message}`;
-        }
-    }
+    <!-- CLASSES -->
+    <div class="admin-section">
+      <h3>📂 Gestion des classes</h3>
+      <input type="text" id="classeNom" placeholder="Nom de la classe (ex: 1ère Électricité)">
+      <button class="btn" onclick="ajouterClasse()">➕ Ajouter classe</button>
+      <div id="classesList"></div>
+    </div>
 
-    async function ajouterEleve() {
-        const nom = document.getElementById('eleveNom').value.trim();
-        const prenom = document.getElementById('elevePrenom').value.trim();
-        const classe = document.getElementById('eleveClasse').value.trim();
-        
-        if (!nom || !prenom || !classe) {
-            alert('❌ Tous les champs sont requis');
-            return;
-        }
-        
-        try {
-            const res = await fetch(API.eleves, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify([{ nom, prenom, classe }])
-            });
-            
-            if (res.ok) {
-                alert('✅ Élève ajouté !');
-                document.getElementById('eleveNom').value = '';
-                document.getElementById('elevePrenom').value = '';
-                document.getElementById('eleveClasse').value = '';
-                voirEleves();
-            } else {
-                alert('❌ Erreur lors de l\'ajout');
-            }
-        } catch (err) {
-            alert('❌ Erreur: ' + err.message);
-        }
-    }
+    <!-- ÉLÈVES -->
+    <div class="admin-section">
+      <h3>👨‍🎓 Gestion des élèves</h3>
+      <input type="text" id="eleveNom" placeholder="Nom">
+      <input type="text" id="elevePrenom" placeholder="Prénom">
+      <select id="eleveClasse"></select>
+      <button class="btn" onclick="ajouterEleve()">➕ Ajouter élève</button>
+      <div id="elevesList"></div>
+    </div>
 
-    async function supprimerEleve(ligneId) {
-        if (!confirm(`Supprimer l'élève à la ligne ${ligneId} ?`)) return;
-        
-        try {
-            const res = await fetch(`${API.eleves}/${ligneId}`, {
-                method: 'DELETE'
-            });
-            
-            if (res.ok) {
-                alert('✅ Élève supprimé !');
-                voirEleves();
-            } else {
-                alert('❌ Erreur lors de la suppression');
-            }
-        } catch (err) {
-            alert('❌ Erreur: ' + err.message);
-        }
-    }
+    <!-- ADMINISTRATION -->
+    <div class="admin-section">
+      <h3>🏛️ Gestion administration</h3>
+      <input type="text" id="adminNom" placeholder="Nom complet">
+      <input type="text" id="adminRole" placeholder="Rôle (Proviseur, Censeur...)">
+      <button class="btn" onclick="ajouterAdmin()">➕ Ajouter membre</button>
+      <div id="adminsList"></div>
+    </div>
 
-    // ============================================
-    // FONCTIONS POUR LES COURS
-    // ============================================
-    async function voirCours() {
-        const liste = document.getElementById('listeCours');
-        liste.innerHTML = 'Chargement...';
-        
-        try {
-            const res = await fetch(API.cours);
-            const data = await res.json();
-            
-            if (data.length === 0) {
-                liste.innerHTML = '<p>Aucun cours</p>';
-                return;
-            }
-            
-            let html = '';
-            data.forEach((cours, index) => {
-                const ligneId = index + 1;
-                html += `
-                    <div class="item">
-                        <span>
-                            📘 <strong>${cours.titre || ''}</strong> 
-                            - ${cours.professeur || ''}<br>
-                            <small>${cours.type || ''}</small>
-                        </span>
-                        <button class="delete-btn" onclick="supprimerCours(${ligneId})">🗑️ Supprimer</button>
-                    </div>
-                `;
-            });
-            liste.innerHTML = html;
-        } catch (err) {
-            liste.innerHTML = `❌ Erreur: ${err.message}`;
-        }
-    }
+  </div>
 
-    async function ajouterCours() {
-        const titre = document.getElementById('coursTitre').value.trim();
-        const prof = document.getElementById('coursProf').value.trim();
-        const desc = document.getElementById('coursDesc').value.trim();
-        const type = document.getElementById('coursType').value;
-        const lien = document.getElementById('coursLien').value.trim();
-        
-        if (!titre || !prof || !desc || !lien) {
-            alert('❌ Tous les champs sont requis');
-            return;
-        }
-        
-        try {
-            const res = await fetch(API.cours, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify([{ 
-                    titre: titre, 
-                    professeur: prof, 
-                    description: desc, 
-                    type: type, 
-                    lien: lien 
-                }])
-            });
-            
-            if (res.ok) {
-                alert('✅ Cours ajouté !');
-                document.getElementById('coursTitre').value = '';
-                document.getElementById('coursProf').value = '';
-                document.getElementById('coursDesc').value = '';
-                document.getElementById('coursLien').value = '';
-                voirCours();
-            } else {
-                alert('❌ Erreur lors de l\'ajout');
-            }
-        } catch (err) {
-            alert('❌ Erreur: ' + err.message);
-        }
-    }
+  <button class="btn-secondary" onclick="goHome()">← Retour</button>
+</div>
 
-    async function supprimerCours(ligneId) {
-        if (!confirm(`Supprimer le cours à la ligne ${ligneId} ?`)) return;
-        
-        try {
-            const res = await fetch(`${API.cours}/${ligneId}`, {
-                method: 'DELETE'
-            });
-            
-            if (res.ok) {
-                alert('✅ Cours supprimé !');
-                voirCours();
-            } else {
-                alert('❌ Erreur lors de la suppression');
-            }
-        } catch (err) {
-            alert('❌ Erreur: ' + err.message);
-        }
-    }
-
-    // Charger les données au démarrage
-    voirEleves();
-    voirCours();
-    </script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="script.js"></script>
 </body>
-</html>
+    </html>
