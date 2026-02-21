@@ -1,4 +1,109 @@
 // ============================================
+// CONFIGURATION SHEET.BEST
+// ============================================
+const BASE_URL = 'https://api.sheetbest.com/sheets/70923d86-6d1a-4756-bf21-a869acf3e029';
+
+const API = {
+  eleves: BASE_URL + '/eleves',
+  publications: BASE_URL + '/publications',
+  cours: BASE_URL + '/cours',
+  classes: BASE_URL + '/classes',
+  admins: BASE_URL + '/administration',
+  anciens: BASE_URL + '/anciens'
+};
+
+console.log('✅ Sheet.best configuré');
+
+// ============================================
+// FONCTIONS DE TEST
+// ============================================
+function updateTestMessage(message, type = 'info') {
+  const el = document.getElementById('testMessage');
+  if (!el) return;
+  
+  const colors = {
+    info: 'white',
+    success: '#4CAF50',
+    error: '#ff4444',
+    warning: '#ffb347'
+  };
+  
+  el.innerHTML = message;
+  el.style.color = colors[type] || 'white';
+  el.style.borderLeft = `5px solid ${colors[type] || 'white'}`;
+}
+
+window.testSheetBest = async function() {
+  updateTestMessage('⏳ Test de connexion à Sheet.best...', 'info');
+  
+  try {
+    const response = await fetch(BASE_URL);
+    const text = await response.text();
+    
+    if (response.ok) {
+      updateTestMessage(`✅ Connexion réussie ! Données reçues : ${text}`, 'success');
+    } else {
+      updateTestMessage(`❌ Erreur ${response.status}: ${text}`, 'error');
+    }
+  } catch (err) {
+    updateTestMessage(`❌ Exception: ${err.message}`, 'error');
+  }
+};
+
+window.testAjout = async function() {
+  updateTestMessage('⏳ Test d\'ajout en cours...', 'info');
+  
+  try {
+    const testData = [{
+      nom: "TEST_" + Date.now(),
+      "prénom ": "Succès",
+      "classe ": "TestClasse"
+    }];
+    
+    const response = await fetch(API.eleves, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(testData)
+    });
+    
+    const responseText = await response.text();
+    
+    if (response.ok) {
+      updateTestMessage(`✅ AJOUT RÉUSSI ! Donnée ajoutée. Vérifie ton Google Sheets.`, 'success');
+      // Recharge la liste des élèves
+      if (typeof chargerAdminEleves === 'function') chargerAdminEleves();
+    } else {
+      updateTestMessage(`❌ Erreur ${response.status}: ${responseText}`, 'error');
+    }
+  } catch (err) {
+    updateTestMessage(`❌ Exception: ${err.message}`, 'error');
+  }
+};
+
+window.testLecture = async function() {
+  updateTestMessage('⏳ Test de lecture...', 'info');
+  
+  try {
+    const response = await fetch(API.eleves);
+    const data = await response.json();
+    
+    if (response.ok) {
+      updateTestMessage(`✅ Lecture réussie ! ${data.length} élève(s) trouvé(s).`, 'success');
+      console.log('Données reçues:', data);
+    } else {
+      updateTestMessage(`❌ Erreur ${response.status}`, 'error');
+    }
+  } catch (err) {
+    updateTestMessage(`❌ Exception: ${err.message}`, 'error');
+  }
+};
+
+// ============================================
+// N... (le reste de ton script reste identique)
+// ============================================
+// ... (toutes les autres fonctions que tu avais déjà)
+// ...
+// ============================================
 // CONFIGURATION SHEET.BEST - AVEC TA NOUVELLE URL
 // ============================================
 const BASE_URL = 'https://api.sheetbest.com/sheets/70923d86-6d1a-4756-bf21-a869acf3e029';
