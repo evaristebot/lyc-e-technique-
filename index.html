@@ -32,39 +32,35 @@
   .nav-logo span { color: #ffb347; font-weight: bold; font-size: 1.2rem; }
   .nav-links button {
     background: transparent; border: 2px solid #ffb347; color: white;
-    padding: 8px 16px; border-radius: 30px; cursor: pointer; margin: 5px; font-weight: 600;
-    transition: all 0.3s;
+    padding: 8px 16px; border-radius: 30px; cursor: pointer; margin: 5px;
+    font-weight: 600;
   }
   .nav-links button:hover { background: #ffb347; color: #0b2f2f; }
-  .page { display: none; padding: 2rem 5%; animation: fade 0.3s; }
+  .page { display: none; padding: 2rem 5%; }
   .page.active { display: block; }
-  @keyframes fade { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
   .hero { text-align: center; margin-bottom: 2rem; }
   .logo-large { width: 150px; height: 150px; border-radius: 50%; border: 5px solid #ffb347; }
   h1 { color: #ffb347; text-align: center; font-size: 2.5rem; }
   .card {
     background: rgba(255,255,255,0.1); padding: 20px; border-radius: 15px;
-    margin: 10px 0; backdrop-filter: blur(5px);
-    border-left: 3px solid #ffb347;
+    margin: 10px 0; border-left: 3px solid #ffb347;
   }
   .btn {
     background: #ffb347; color: #0b2f2f; border: none; padding: 12px 30px;
     border-radius: 30px; font-weight: bold; cursor: pointer; margin: 5px;
-    transition: all 0.3s;
   }
-  .btn:hover { background: transparent; color: #ffb347; border: 2px solid #ffb347; padding: 10px 28px; }
   .btn-secondary {
     background: transparent; border: 2px solid #ffb347; color: #ffb347;
     padding: 12px 30px; border-radius: 30px; cursor: pointer;
-    transition: all 0.3s;
   }
-  .btn-secondary:hover { background: #ffb347; color: #0b2f2f; }
+  .btn-test {
+    background: #4CAF50; color: white; border: none; padding: 12px 30px;
+    border-radius: 30px; font-weight: bold; cursor: pointer; margin: 5px;
+  }
   input, select, textarea {
     width: 100%; padding: 10px; margin: 10px 0;
     border: 2px solid #ddd; border-radius: 10px;
-    font-size: 1rem;
   }
-  input:focus, textarea:focus { border-color: #ffb347; outline: none; }
   .admin-section {
     background: rgba(255,255,255,0.1); padding: 20px; margin: 20px 0;
     border-radius: 15px; border-left: 5px solid #ffb347;
@@ -83,9 +79,9 @@
     background: #ff4444; color: white; border: none;
     padding: 5px 15px; border-radius: 20px; cursor: pointer;
   }
-  .cours-link {
-    display: inline-block; background: #ffb347; color: #0b2f2f;
-    padding: 8px 16px; border-radius: 30px; text-decoration: none; margin-top: 10px;
+  .test-message {
+    background: rgba(0,0,0,0.3); padding: 15px; border-radius: 10px;
+    margin: 10px 0; font-family: monospace;
   }
 </style>
 </head>
@@ -114,6 +110,18 @@
     <img src="logo.jpg" class="logo-large" id="mainLogo" onerror="this.src='https://via.placeholder.com/150'">
     <h1>Lycée Technique de Batouri</h1>
   </div>
+  
+  <!-- ZONE DE TEST -->
+  <div class="card" style="border-left: 5px solid #4CAF50;">
+    <h2 style="color: #4CAF50;">🧪 Zone de diagnostic</h2>
+    <button class="btn-test" onclick="testSheetBest()">🔍 TESTER SHEET.BEST</button>
+    <button class="btn-test" onclick="testAjout()">➕ TESTER AJOUT</button>
+    <button class="btn-test" onclick="testLecture()">📖 TESTER LECTURE</button>
+    <div id="testMessage" class="test-message">
+      Clique sur un bouton pour commencer le test.
+    </div>
+  </div>
+
   <div class="card">
     <h2>Bienvenue</h2>
     <p>Le Lycée Technique de Batouri forme les jeunes aux métiers techniques depuis 1985.</p>
@@ -137,14 +145,14 @@
 
 <!-- JOURNAL -->
 <div id="journal" class="page">
-  <h1>📰 Journal du Lycée</h1>
+  <h1>📰 Journal</h1>
   <div id="articlesList" class="grid"></div>
   <button class="btn-secondary" onclick="goHome()">← Retour</button>
 </div>
 
 <!-- COURS -->
 <div id="cours" class="page">
-  <h1>📚 Cours disponibles</h1>
+  <h1>📚 Cours</h1>
   <div id="coursList" class="grid"></div>
   <button class="btn-secondary" onclick="goHome()">← Retour</button>
 </div>
@@ -152,7 +160,7 @@
 <!-- RECHERCHE -->
 <div id="recherche" class="page">
   <h1>🔍 Recherche</h1>
-  <input type="text" id="searchQuery" placeholder="Nom, prénom, matière...">
+  <input type="text" id="searchQuery" placeholder="Nom...">
   <button class="btn" onclick="rechercher()">Rechercher</button>
   <div id="searchResults" class="grid"></div>
   <button class="btn-secondary" onclick="goHome()">← Retour</button>
@@ -160,10 +168,10 @@
 
 <!-- ADMIN -->
 <div id="admin" class="page">
-  <h1>⚙️ Administration</h1>
+  <h1>⚙️ Admin</h1>
 
   <div id="adminPasswordBox">
-    <h3>🔐 Accès sécurisé</h3>
+    <h3>🔐 Mot de passe</h3>
     <input type="password" id="adminPassword" placeholder="Mot de passe">
     <button class="btn" onclick="checkAdminPassword()">Valider</button>
   </div>
@@ -182,42 +190,42 @@
     <!-- COURS -->
     <div class="admin-section">
       <h3>📚 Ajouter un cours</h3>
-      <input type="text" id="coursTitre" placeholder="Titre du cours">
+      <input type="text" id="coursTitre" placeholder="Titre">
       <input type="text" id="coursProfesseur" placeholder="Professeur">
       <textarea id="coursDescription" placeholder="Description" rows="2"></textarea>
       <select id="coursType">
         <option value="video">Vidéo (lien)</option>
         <option value="pdf">PDF</option>
       </select>
-      <input type="text" id="coursLien" placeholder="Lien YouTube ou Drive">
-      <button class="btn" onclick="ajouterCours()">➕ Ajouter le cours</button>
+      <input type="text" id="coursLien" placeholder="Lien">
+      <button class="btn" onclick="ajouterCours()">➕ Ajouter</button>
       <div id="coursAdminList"></div>
     </div>
 
     <!-- CLASSES -->
     <div class="admin-section">
-      <h3>📂 Gestion des classes</h3>
-      <input type="text" id="classeNom" placeholder="Nom de la classe (ex: 1ère Électricité)">
-      <button class="btn" onclick="ajouterClasse()">➕ Ajouter classe</button>
+      <h3>📂 Classes</h3>
+      <input type="text" id="classeNom" placeholder="Nom classe">
+      <button class="btn" onclick="ajouterClasse()">➕ Ajouter</button>
       <div id="classesList"></div>
     </div>
 
     <!-- ÉLÈVES -->
     <div class="admin-section">
-      <h3>👨‍🎓 Gestion des élèves</h3>
+      <h3>👨‍🎓 Élèves</h3>
       <input type="text" id="eleveNom" placeholder="Nom">
       <input type="text" id="elevePrenom" placeholder="Prénom">
       <select id="eleveClasse"></select>
-      <button class="btn" onclick="ajouterEleve()">➕ Ajouter élève</button>
+      <button class="btn" onclick="ajouterEleve()">➕ Ajouter</button>
       <div id="elevesList"></div>
     </div>
 
     <!-- ADMINISTRATION -->
     <div class="admin-section">
-      <h3>🏛️ Gestion administration</h3>
-      <input type="text" id="adminNom" placeholder="Nom complet">
-      <input type="text" id="adminRole" placeholder="Rôle (Proviseur, Censeur...)">
-      <button class="btn" onclick="ajouterAdmin()">➕ Ajouter membre</button>
+      <h3>🏛️ Administration</h3>
+      <input type="text" id="adminNom" placeholder="Nom">
+      <input type="text" id="adminRole" placeholder="Rôle">
+      <button class="btn" onclick="ajouterAdmin()">➕ Ajouter</button>
       <div id="adminsList"></div>
     </div>
 
@@ -229,4 +237,4 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="script.js"></script>
 </body>
- </html>
+     </html>
