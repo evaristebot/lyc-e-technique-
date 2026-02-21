@@ -27,189 +27,215 @@ function showPage(id) {
     document.getElementById(id).classList.add('active');
 }
 window.goHome = () => showPage('home');
-window.goToEleves = () => { showPage('eleves'); afficherEleves(); };
-window.goToEnseignants = () => { showPage('enseignants'); afficherEnseignants(); };
-window.goToCours = () => { showPage('cours'); afficherCours(); };
-window.goToPublications = () => { showPage('publications'); afficherPublications(); };
-window.goToClasses = () => { showPage('classes'); afficherClasses(); };
-window.goToSpecialites = () => { showPage('specialites'); afficherSpecialites(); };
-window.goToAdministration = () => { showPage('administration'); afficherAdministration(); };
-window.goToAnciens = () => { showPage('anciens'); afficherAnciens(); };
-window.goToBulletins = () => { showPage('bulletins'); remplirSelectClasses(); afficherBulletins(); };
+
+// Pages publiques
+window.goToEleves = () => { showPage('eleves'); afficherPublic('eleves'); };
+window.goToEnseignants = () => { showPage('enseignants'); afficherPublic('enseignants'); };
+window.goToCours = () => { showPage('cours'); afficherPublic('cours'); };
+window.goToPublications = () => { showPage('publications'); afficherPublic('publications'); };
+window.goToClasses = () => { showPage('classes'); afficherPublic('classes'); };
+window.goToSpecialites = () => { showPage('specialites'); afficherPublic('specialites'); };
+window.goToAdministration = () => { showPage('administration'); afficherPublic('administration'); };
+window.goToAnciens = () => { showPage('anciens'); afficherPublic('anciens'); };
+window.goToBulletins = () => { showPage('bulletins'); remplirSelectClasses(); };
 window.goToAdmin = () => showPage('admin');
 
-// ==================== SPÉCIALITÉS ====================
-function afficherSpecialites() {
-    let html = '';
-    specialites.forEach((s, i) => {
-        html += `<div class="item">${s.nom} <button class="delete-btn" onclick="supprimerSpecialite(${i})">🗑️</button></div>`;
-    });
-    document.getElementById('specialitesList').innerHTML = html || '<p>Aucune spécialité</p>';
-}
-window.ajouterSpecialite = () => {
-    let nom = document.getElementById('specialiteNom').value.trim();
-    if (!nom) return alert('Nom requis');
-    specialites.push({ nom });
-    sauvegarder();
-    document.getElementById('specialiteNom').value = '';
-    afficherSpecialites();
-};
-window.supprimerSpecialite = (i) => { specialites.splice(i,1); sauvegarder(); afficherSpecialites(); };
+// ==================== AFFICHAGE PUBLIC ====================
+function afficherPublic(type) {
+    let data = [];
+    let containerId = '';
 
-// ==================== CLASSES ====================
-function afficherClasses() {
-    let html = '';
-    classes.forEach((c, i) => {
-        html += `<div class="item">${c.nom} <button class="delete-btn" onclick="supprimerClasse(${i})">🗑️</button></div>`;
-    });
-    document.getElementById('classesList').innerHTML = html || '<p>Aucune classe</p>';
-}
-window.ajouterClasse = () => {
-    let nom = document.getElementById('classeNom').value.trim();
-    if (!nom) return alert('Nom requis');
-    classes.push({ nom });
-    sauvegarder();
-    document.getElementById('classeNom').value = '';
-    afficherClasses();
-};
-window.supprimerClasse = (i) => { classes.splice(i,1); sauvegarder(); afficherClasses(); };
+    switch(type) {
+        case 'eleves': data = eleves; containerId = 'elevesListPublic'; break;
+        case 'enseignants': data = enseignants; containerId = 'enseignantsListPublic'; break;
+        case 'cours': data = cours; containerId = 'coursListPublic'; break;
+        case 'publications': data = publications; containerId = 'publicationsListPublic'; break;
+        case 'classes': data = classes; containerId = 'classesListPublic'; break;
+        case 'specialites': data = specialites; containerId = 'specialitesListPublic'; break;
+        case 'administration': data = administration; containerId = 'administrationListPublic'; break;
+        case 'anciens': data = anciens; containerId = 'anciensListPublic'; break;
+    }
 
-// ==================== ÉLÈVES ====================
-function afficherEleves() {
     let html = '';
-    eleves.forEach((e, i) => {
-        html += `<div class="item">${e.nom} ${e.prenom} - ${e.classe} (☎️ ${e.contact}) <button class="delete-btn" onclick="supprimerEleve(${i})">🗑️</button></div>`;
+    data.forEach(item => {
+        if (type === 'eleves') html += `<div class="card"><h3>${item.nom} ${item.prenom}</h3><p>Classe: ${item.classe}<br>☎️ ${item.contact}</p></div>`;
+        else if (type === 'enseignants') html += `<div class="card"><h3>${item.nom} ${item.prenom}</h3><p>${item.matiere}<br>☎️ ${item.contact}</p></div>`;
+        else if (type === 'cours') html += `<div class="card"><h3>${item.titre}</h3><p>${item.prof}<br>${item.desc}</p><a href="${item.lien}" target="_blank">${item.type}</a></div>`;
+        else if (type === 'publications') html += `<div class="card"><h3>${item.titre}</h3><p>${item.contenu}</p></div>`;
+        else if (type === 'classes') html += `<div class="card"><h3>${item.nom}</h3></div>`;
+        else if (type === 'specialites') html += `<div class="card"><h3>${item.nom}</h3></div>`;
+        else if (type === 'administration') html += `<div class="card"><h3>${item.nom}</h3><p>${item.role}<br>☎️ ${item.contact}</p></div>`;
+        else if (type === 'anciens') html += `<div class="card"><h3>${item.nom}</h3><p>${item.annee}<br>${item.parcours}</p></div>`;
     });
-    document.getElementById('elevesList').innerHTML = html || '<p>Aucun élève</p>';
+    document.getElementById(containerId).innerHTML = html || '<p>Aucune donnée</p>';
 }
-window.ajouterEleve = () => {
-    let nom = document.getElementById('eleveNom').value.trim();
-    let prenom = document.getElementById('elevePrenom').value.trim();
-    let classe = document.getElementById('eleveClasse').value.trim();
-    let contact = document.getElementById('eleveContact').value.trim();
-    if (!nom || !prenom || !classe || !contact) return alert('Tous les champs requis');
-    eleves.push({ nom, prenom, classe, contact });
-    sauvegarder();
-    document.getElementById('eleveNom').value = '';
-    document.getElementById('elevePrenom').value = '';
-    document.getElementById('eleveClasse').value = '';
-    document.getElementById('eleveContact').value = '';
-    afficherEleves();
-};
-window.supprimerEleve = (i) => { eleves.splice(i,1); sauvegarder(); afficherEleves(); };
 
-// ==================== ENSEIGNANTS ====================
-function afficherEnseignants() {
-    let html = '';
-    enseignants.forEach((e, i) => {
-        html += `<div class="item">${e.nom} ${e.prenom} - ${e.matiere} (☎️ ${e.contact}) <button class="delete-btn" onclick="supprimerEnseignant(${i})">🗑️</button></div>`;
-    });
-    document.getElementById('enseignantsList').innerHTML = html || '<p>Aucun enseignant</p>';
-}
-window.ajouterEnseignant = () => {
-    let nom = document.getElementById('ensNom').value.trim();
-    let prenom = document.getElementById('ensPrenom').value.trim();
-    let matiere = document.getElementById('ensMatiere').value.trim();
-    let contact = document.getElementById('ensContact').value.trim();
-    if (!nom || !prenom || !matiere || !contact) return alert('Tous les champs requis');
-    enseignants.push({ nom, prenom, matiere, contact });
-    sauvegarder();
-    document.getElementById('ensNom').value = '';
-    document.getElementById('ensPrenom').value = '';
-    document.getElementById('ensMatiere').value = '';
-    document.getElementById('ensContact').value = '';
-    afficherEnseignants();
+// ==================== ADMIN ====================
+window.checkAdminPassword = () => {
+    if (document.getElementById('adminPassword').value === "LTB2025") {
+        document.getElementById('adminPasswordBox').style.display = 'none';
+        document.getElementById('adminZone').style.display = 'block';
+        adminAfficherTout();
+    } else alert('Mot de passe incorrect');
 };
-window.supprimerEnseignant = (i) => { enseignants.splice(i,1); sauvegarder(); afficherEnseignants(); };
 
-// ==================== COURS ====================
-function afficherCours() {
-    let html = '';
-    cours.forEach((c, i) => {
-        html += `<div class="item">${c.titre} - ${c.prof} (${c.type}) <button class="delete-btn" onclick="supprimerCours(${i})">🗑️</button></div>`;
-    });
-    document.getElementById('coursList').innerHTML = html || '<p>Aucun cours</p>';
+function adminAfficherTout() {
+    adminAfficher('eleves', 'adminElevesList');
+    adminAfficher('enseignants', 'adminEnseignantsList');
+    adminAfficher('cours', 'adminCoursList');
+    adminAfficher('publications', 'adminPublicationsList');
+    adminAfficher('classes', 'adminClassesList');
+    adminAfficher('specialites', 'adminSpecialitesList');
+    adminAfficher('administration', 'adminAdministrationList');
+    adminAfficher('anciens', 'adminAnciensList');
 }
-window.ajouterCours = () => {
-    let titre = document.getElementById('coursTitre').value.trim();
-    let prof = document.getElementById('coursProf').value.trim();
-    let desc = document.getElementById('coursDesc').value.trim();
-    let type = document.getElementById('coursType').value;
-    let lien = document.getElementById('coursLien').value.trim();
-    if (!titre || !prof || !desc || !lien) return alert('Tous les champs requis');
-    cours.push({ titre, prof, desc, type, lien });
-    sauvegarder();
-    document.getElementById('coursTitre').value = '';
-    document.getElementById('coursProf').value = '';
-    document.getElementById('coursDesc').value = '';
-    document.getElementById('coursLien').value = '';
-    afficherCours();
-};
-window.supprimerCours = (i) => { cours.splice(i,1); sauvegarder(); afficherCours(); };
 
-// ==================== PUBLICATIONS ====================
-function afficherPublications() {
-    let html = '';
-    publications.forEach((p, i) => {
-        html += `<div class="item"><strong>${p.titre}</strong> : ${p.contenu} <button class="delete-btn" onclick="supprimerPublication(${i})">🗑️</button></div>`;
-    });
-    document.getElementById('publicationsList').innerHTML = html || '<p>Aucune publication</p>';
-}
-window.ajouterPublication = () => {
-    let titre = document.getElementById('pubTitre').value.trim();
-    let contenu = document.getElementById('pubContenu').value.trim();
-    if (!titre || !contenu) return alert('Titre et contenu requis');
-    publications.push({ titre, contenu });
-    sauvegarder();
-    document.getElementById('pubTitre').value = '';
-    document.getElementById('pubContenu').value = '';
-    afficherPublications();
-};
-window.supprimerPublication = (i) => { publications.splice(i,1); sauvegarder(); afficherPublications(); };
+function adminAfficher(type, containerId) {
+    let data = [];
+    switch(type) {
+        case 'eleves': data = eleves; break;
+        case 'enseignants': data = enseignants; break;
+        case 'cours': data = cours; break;
+        case 'publications': data = publications; break;
+        case 'classes': data = classes; break;
+        case 'specialites': data = specialites; break;
+        case 'administration': data = administration; break;
+        case 'anciens': data = anciens; break;
+    }
 
-// ==================== ADMINISTRATION ====================
-function afficherAdministration() {
     let html = '';
-    administration.forEach((a, i) => {
-        html += `<div class="item">${a.nom} - ${a.role} (☎️ ${a.contact}) <button class="delete-btn" onclick="supprimerAdmin(${i})">🗑️</button></div>`;
+    data.forEach((item, index) => {
+        html += `<div class="admin-item">${JSON.stringify(item)} <button class="delete-btn" onclick="adminSupprimer('${type}', ${index})">🗑️</button></div>`;
     });
-    document.getElementById('administrationList').innerHTML = html || '<p>Aucun membre</p>';
+    document.getElementById(containerId).innerHTML = html || '<p>Aucune donnée</p>';
 }
-window.ajouterAdmin = () => {
-    let nom = document.getElementById('adminNom').value.trim();
-    let role = document.getElementById('adminRole').value.trim();
-    let contact = document.getElementById('adminContact').value.trim();
-    if (!nom || !role || !contact) return alert('Tous les champs requis');
-    administration.push({ nom, role, contact });
-    sauvegarder();
-    document.getElementById('adminNom').value = '';
-    document.getElementById('adminRole').value = '';
-    document.getElementById('adminContact').value = '';
-    afficherAdministration();
-};
-window.supprimerAdmin = (i) => { administration.splice(i,1); sauvegarder(); afficherAdministration(); };
 
-// ==================== ANCIENS ====================
-function afficherAnciens() {
-    let html = '';
-    anciens.forEach((a, i) => {
-        html += `<div class="item">${a.nom} (${a.annee}) - ${a.parcours} <button class="delete-btn" onclick="supprimerAncien(${i})">🗑️</button></div>`;
-    });
-    document.getElementById('anciensList').innerHTML = html || '<p>Aucun ancien</p>';
-}
-window.ajouterAncien = () => {
-    let nom = document.getElementById('ancienNom').value.trim();
-    let annee = document.getElementById('ancienAnnee').value.trim();
-    let parcours = document.getElementById('ancienParcours').value.trim();
-    if (!nom || !annee || !parcours) return alert('Tous les champs requis');
-    anciens.push({ nom, annee, parcours });
+window.adminSupprimer = (type, index) => {
+    if (!confirm('Supprimer ?')) return;
+    switch(type) {
+        case 'eleves': eleves.splice(index,1); break;
+        case 'enseignants': enseignants.splice(index,1); break;
+        case 'cours': cours.splice(index,1); break;
+        case 'publications': publications.splice(index,1); break;
+        case 'classes': classes.splice(index,1); break;
+        case 'specialites': specialites.splice(index,1); break;
+        case 'administration': administration.splice(index,1); break;
+        case 'anciens': anciens.splice(index,1); break;
+    }
     sauvegarder();
-    document.getElementById('ancienNom').value = '';
-    document.getElementById('ancienAnnee').value = '';
-    document.getElementById('ancienParcours').value = '';
-    afficherAnciens();
+    adminAfficherTout();
+    afficherPublic(type);
 };
-window.supprimerAncien = (i) => { anciens.splice(i,1); sauvegarder(); afficherAnciens(); };
+
+// ==================== ADMIN AJOUT ====================
+window.adminAjouterEleve = () => {
+    let n = document.getElementById('adminEleveNom').value.trim();
+    let p = document.getElementById('adminElevePrenom').value.trim();
+    let c = document.getElementById('adminEleveClasse').value.trim();
+    let co = document.getElementById('adminEleveContact').value.trim();
+    if (!n || !p || !c || !co) return alert('Tous les champs requis');
+    eleves.push({ nom: n, prenom: p, classe: c, contact: co });
+    sauvegarder();
+    document.getElementById('adminEleveNom').value = '';
+    document.getElementById('adminElevePrenom').value = '';
+    document.getElementById('adminEleveClasse').value = '';
+    document.getElementById('adminEleveContact').value = '';
+    adminAfficher('eleves', 'adminElevesList');
+    afficherPublic('eleves');
+};
+
+window.adminAjouterEnseignant = () => {
+    let n = document.getElementById('adminEnsNom').value.trim();
+    let p = document.getElementById('adminEnsPrenom').value.trim();
+    let m = document.getElementById('adminEnsMatiere').value.trim();
+    let co = document.getElementById('adminEnsContact').value.trim();
+    if (!n || !p || !m || !co) return alert('Tous les champs requis');
+    enseignants.push({ nom: n, prenom: p, matiere: m, contact: co });
+    sauvegarder();
+    document.getElementById('adminEnsNom').value = '';
+    document.getElementById('adminEnsPrenom').value = '';
+    document.getElementById('adminEnsMatiere').value = '';
+    document.getElementById('adminEnsContact').value = '';
+    adminAfficher('enseignants', 'adminEnseignantsList');
+    afficherPublic('enseignants');
+};
+
+window.adminAjouterCours = () => {
+    let t = document.getElementById('adminCoursTitre').value.trim();
+    let pr = document.getElementById('adminCoursProf').value.trim();
+    let d = document.getElementById('adminCoursDesc').value.trim();
+    let ty = document.getElementById('adminCoursType').value;
+    let l = document.getElementById('adminCoursLien').value.trim();
+    if (!t || !pr || !d || !l) return alert('Tous les champs requis');
+    cours.push({ titre: t, prof: pr, desc: d, type: ty, lien: l });
+    sauvegarder();
+    document.getElementById('adminCoursTitre').value = '';
+    document.getElementById('adminCoursProf').value = '';
+    document.getElementById('adminCoursDesc').value = '';
+    document.getElementById('adminCoursLien').value = '';
+    adminAfficher('cours', 'adminCoursList');
+    afficherPublic('cours');
+};
+
+window.adminAjouterPublication = () => {
+    let t = document.getElementById('adminPubTitre').value.trim();
+    let c = document.getElementById('adminPubContenu').value.trim();
+    if (!t || !c) return alert('Titre et contenu requis');
+    publications.push({ titre: t, contenu: c });
+    sauvegarder();
+    document.getElementById('adminPubTitre').value = '';
+    document.getElementById('adminPubContenu').value = '';
+    adminAfficher('publications', 'adminPublicationsList');
+    afficherPublic('publications');
+};
+
+window.adminAjouterClasse = () => {
+    let n = document.getElementById('adminClasseNom').value.trim();
+    if (!n) return alert('Nom requis');
+    classes.push({ nom: n });
+    sauvegarder();
+    document.getElementById('adminClasseNom').value = '';
+    adminAfficher('classes', 'adminClassesList');
+    afficherPublic('classes');
+};
+
+window.adminAjouterSpecialite = () => {
+    let n = document.getElementById('adminSpecialiteNom').value.trim();
+    if (!n) return alert('Nom requis');
+    specialites.push({ nom: n });
+    sauvegarder();
+    document.getElementById('adminSpecialiteNom').value = '';
+    adminAfficher('specialites', 'adminSpecialitesList');
+    afficherPublic('specialites');
+};
+
+window.adminAjouterAdmin = () => {
+    let n = document.getElementById('adminAdminNom').value.trim();
+    let r = document.getElementById('adminAdminRole').value.trim();
+    let c = document.getElementById('adminAdminContact').value.trim();
+    if (!n || !r || !c) return alert('Tous les champs requis');
+    administration.push({ nom: n, role: r, contact: c });
+    sauvegarder();
+    document.getElementById('adminAdminNom').value = '';
+    document.getElementById('adminAdminRole').value = '';
+    document.getElementById('adminAdminContact').value = '';
+    adminAfficher('administration', 'adminAdministrationList');
+    afficherPublic('administration');
+};
+
+window.adminAjouterAncien = () => {
+    let n = document.getElementById('adminAncienNom').value.trim();
+    let a = document.getElementById('adminAncienAnnee').value.trim();
+    let p = document.getElementById('adminAncienParcours').value.trim();
+    if (!n || !a || !p) return alert('Tous les champs requis');
+    anciens.push({ nom: n, annee: a, parcours: p });
+    sauvegarder();
+    document.getElementById('adminAncienNom').value = '';
+    document.getElementById('adminAncienAnnee').value = '';
+    document.getElementById('adminAncienParcours').value = '';
+    adminAfficher('anciens', 'adminAnciensList');
+    afficherPublic('anciens');
+};
 
 // ==================== BULLETINS ====================
 function remplirSelectClasses() {
@@ -218,7 +244,7 @@ function remplirSelectClasses() {
     classes.forEach(c => select.innerHTML += `<option value="${c.nom}">${c.nom}</option>`);
 }
 
-function afficherBulletins() {
+window.afficherBulletinsPublic = () => {
     let classe = document.getElementById('bulletinClasse').value;
     let trimestre = document.getElementById('bulletinTrimestre').value;
     if (!classe) return;
@@ -234,25 +260,17 @@ function afficherBulletins() {
             totalCoeff += n.coeff;
         });
         let moyenne = totalCoeff ? (totalPoints / totalCoeff).toFixed(2) : '—';
-        html += `<div class="item"><strong>${e.nom} ${e.prenom}</strong> : Moyenne ${moyenne}/20</div>`;
+        html += `<div class="card"><h3>${e.nom} ${e.prenom}</h3><p>Moyenne T${trimestre} : <strong>${moyenne}/20</strong></p></div>`;
     });
-    document.getElementById('bulletinsList').innerHTML = html || '<p>Aucun bulletin</p>';
-}
-
-// ==================== ADMIN ESPACE ====================
-window.checkAdminPassword = () => {
-    if (document.getElementById('adminPassword').value === "LTB2025") {
-        document.getElementById('adminPasswordBox').style.display = 'none';
-        document.getElementById('adminZone').style.display = 'block';
-    } else alert('Mot de passe incorrect');
+    document.getElementById('bulletinsListPublic').innerHTML = html || '<p>Aucun bulletin</p>';
 };
 
 // ==================== INIT ====================
-afficherSpecialites();
-afficherClasses();
-afficherEleves();
-afficherEnseignants();
-afficherCours();
-afficherPublications();
-afficherAdministration();
-afficherAnciens();
+afficherPublic('eleves');
+afficherPublic('enseignants');
+afficherPublic('cours');
+afficherPublic('publications');
+afficherPublic('classes');
+afficherPublic('specialites');
+afficherPublic('administration');
+afficherPublic('anciens');
