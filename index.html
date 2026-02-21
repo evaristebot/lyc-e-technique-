@@ -2,240 +2,141 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<title>Lycée Technique de Batouri</title>
+<title>Test Sheet.best - Lycée Technique</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
-  * { margin:0; padding:0; box-sizing:border-box; font-family: 'Segoe UI', sans-serif; }
-  body {
-    background: linear-gradient(135deg, #0b2f2f 0%, #1a4a4a 100%);
-    color: white;
-    min-height: 100vh;
-  }
-  .navbar {
-    background: #0b2f2f;
-    padding: 1rem 5%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    border-bottom: 3px solid #ffb347;
-  }
-  .nav-logo {
-    display: flex;
-    align-items: center;
-    gap: 10px;
+  body { font-family: Arial; padding: 20px; background: #f5f7fa; }
+  .container { max-width: 800px; margin: auto; }
+  button { 
+    background: #ffb347; 
+    border: none; 
+    padding: 12px 25px; 
+    margin: 10px; 
+    border-radius: 30px;
     cursor: pointer;
+    font-weight: bold;
   }
-  .nav-logo img {
-    width: 40px; height: 40px; border-radius: 50%; border: 2px solid #ffb347;
+  pre { 
+    background: white; 
+    padding: 15px; 
+    border-radius: 10px; 
+    border-left: 5px solid #ffb347;
+    white-space: pre-wrap;
   }
-  .nav-logo span { color: #ffb347; font-weight: bold; font-size: 1.2rem; }
-  .nav-links button {
-    background: transparent; border: 2px solid #ffb347; color: white;
-    padding: 8px 16px; border-radius: 30px; cursor: pointer; margin: 5px;
-    font-weight: 600;
-  }
-  .nav-links button:hover { background: #ffb347; color: #0b2f2f; }
-  .page { display: none; padding: 2rem 5%; }
-  .page.active { display: block; }
-  .hero { text-align: center; margin-bottom: 2rem; }
-  .logo-large { width: 150px; height: 150px; border-radius: 50%; border: 5px solid #ffb347; }
-  h1 { color: #ffb347; text-align: center; font-size: 2.5rem; }
-  .card {
-    background: rgba(255,255,255,0.1); padding: 20px; border-radius: 15px;
-    margin: 10px 0; border-left: 3px solid #ffb347;
-  }
-  .btn {
-    background: #ffb347; color: #0b2f2f; border: none; padding: 12px 30px;
-    border-radius: 30px; font-weight: bold; cursor: pointer; margin: 5px;
-  }
-  .btn-secondary {
-    background: transparent; border: 2px solid #ffb347; color: #ffb347;
-    padding: 12px 30px; border-radius: 30px; cursor: pointer;
-  }
-  .btn-test {
-    background: #4CAF50; color: white; border: none; padding: 12px 30px;
-    border-radius: 30px; font-weight: bold; cursor: pointer; margin: 5px;
-  }
-  input, select, textarea {
-    width: 100%; padding: 10px; margin: 10px 0;
-    border: 2px solid #ddd; border-radius: 10px;
-  }
-  .admin-section {
-    background: rgba(255,255,255,0.1); padding: 20px; margin: 20px 0;
-    border-radius: 15px; border-left: 5px solid #ffb347;
-  }
-  .admin-section h3 { color: #ffb347; margin-bottom: 15px; }
-  #adminPasswordBox {
-    background: #0b2f2f; padding: 30px; border-radius: 15px; text-align: center;
-    margin-bottom: 20px; border: 2px solid #ffb347;
-  }
-  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
-  .admin-item {
-    background: rgba(255,255,255,0.1); padding: 10px; margin: 5px 0;
-    border-radius: 5px; display: flex; justify-content: space-between; align-items: center;
-  }
-  .delete-btn {
-    background: #ff4444; color: white; border: none;
-    padding: 5px 15px; border-radius: 20px; cursor: pointer;
-  }
-  .test-message {
-    background: rgba(0,0,0,0.3); padding: 15px; border-radius: 10px;
-    margin: 10px 0; font-family: monospace;
-  }
+  .success { color: green; font-weight: bold; }
+  .error { color: red; font-weight: bold; }
 </style>
 </head>
- <button onclick="alert('✅ BOUTON MARCHE !')">TEST RAPIDE</button>
 <body>
+<div class="container">
+  <h1>🧪 TEST SHEET.BEST</h1>
+  <p>URL : <code>https://api.sheetbest.com/sheets/70923d86-6d1a-4756-bf21-a869acf3e029</code></p>
 
-<!-- NAVIGATION -->
-<nav class="navbar">
-  <div class="nav-logo" onclick="goHome()">
-    <img src="logo.jpg" alt="Logo" onerror="this.src='https://via.placeholder.com/40'">
-    <span>Lycée Technique de Batouri</span>
+  <div>
+    <button onclick="testLecture('eleves')">📖 Lire élèves</button>
+    <button onclick="testLecture('publications')">📖 Lire publications</button>
+    <button onclick="testLecture('cours')">📖 Lire cours</button>
+    <button onclick="testLecture('classes')">📖 Lire classes</button>
+    <button onclick="testLecture('administration')">📖 Lire administration</button>
+    <button onclick="testLecture('anciens')">📖 Lire anciens</button>
   </div>
-  <div class="nav-links">
-    <button onclick="goHome()">🏠 Accueil</button>
-    <button onclick="goToAdministration()">👨‍🏫 Administration</button>
-    <button onclick="goToAnciens()">🎓 Anciens</button>
-    <button onclick="goToJournal()">📰 Journal</button>
-    <button onclick="goToCours()">📚 Cours</button>
-    <button onclick="goToRecherche()">🔍 Recherche</button>
-    <button onclick="goToAdmin()">⚙️ Admin</button>
-  </div>
-</nav>
 
-<!-- ACCUEIL -->
-<div id="home" class="page active">
-  <div class="hero">
-    <img src="logo.jpg" class="logo-large" id="mainLogo" onerror="this.src='https://via.placeholder.com/150'">
-    <h1>Lycée Technique de Batouri</h1>
+  <div style="margin-top:20px;">
+    <h3>➕ Ajouter un élève test</h3>
+    <input type="text" id="testNom" placeholder="Nom" value="Test">
+    <input type="text" id="testPrenom" placeholder="Prénom" value="Sheet">
+    <input type="text" id="testClasse" placeholder="Classe" value="TestClasse">
+    <button onclick="testAjoutEleve()">AJOUTER</button>
   </div>
+
+  <div id="resultat">
+    <pre>Clique sur un bouton pour commencer...</pre>
+  </div>
+</div>
+
+<script>
+const BASE_URL = 'https://api.sheetbest.com/sheets/70923d86-6d1a-4756-bf21-a869acf3e029';
+
+function afficherResultat(message, type = 'info') {
+  const pre = document.querySelector('#resultat pre');
+  const color = type === 'success' ? 'green' : (type === 'error' ? 'red' : '#333');
+  pre.innerHTML = message;
+  pre.style.color = color;
+  pre.style.borderLeftColor = type === 'success' ? 'green' : (type === 'error' ? 'red' : '#ffb347');
+}
+
+async function testLecture(onglet) {
+  afficherResultat(`⏳ Chargement de l'onglet "${onglet}"...`);
   
-  <!-- ZONE DE TEST -->
-  <div class="card" style="border-left: 5px solid #4CAF50;">
-    <h2 style="color: #4CAF50;">🧪 Zone de diagnostic</h2>
-    <button class="btn-test" onclick="testSheetBest()">🔍 TESTER SHEET.BEST</button>
-    <button class="btn-test" onclick="testAjout()">➕ TESTER AJOUT</button>
-    <button class="btn-test" onclick="testLecture()">📖 TESTER LECTURE</button>
-    <div id="testMessage" class="test-message">
-      Clique sur un bouton pour commencer le test.
-    </div>
-  </div>
+  try {
+    const url = `${BASE_URL}/${onglet}`;
+    console.log('📡 Requête:', url);
+    
+    const response = await fetch(url);
+    const data = await response.json();
+    
+    afficherResultat(
+      `✅ Onglet "${onglet}" :\n` +
+      `📊 ${data.length} élément(s) trouvé(s)\n\n` +
+      JSON.stringify(data, null, 2),
+      'success'
+    );
+  } catch (err) {
+    afficherResultat(`❌ Erreur : ${err.message}`, 'error');
+    console.error(err);
+  }
+}
 
-  <div class="card">
-    <h2>Bienvenue</h2>
-    <p>Le Lycée Technique de Batouri forme les jeunes aux métiers techniques depuis 1985.</p>
-    <p><strong>Excellence, Discipline, Travail</strong></p>
-  </div>
-</div>
+async function testAjoutEleve() {
+  const nom = document.getElementById('testNom').value.trim();
+  const prenom = document.getElementById('testPrenom').value.trim();
+  const classe = document.getElementById('testClasse').value.trim();
 
-<!-- ADMINISTRATION -->
-<div id="administration" class="page">
-  <h1>👨‍🏫 Administration</h1>
-  <div id="adminList" class="grid"></div>
-  <button class="btn-secondary" onclick="goHome()">← Retour</button>
-</div>
+  if (!nom || !prenom || !classe) {
+    afficherResultat('❌ Tous les champs sont requis', 'error');
+    return;
+  }
 
-<!-- ANCIENS -->
-<div id="anciens" class="page">
-  <h1>🎓 Anciens Élèves</h1>
-  <div id="anciensList" class="grid"></div>
-  <button class="btn-secondary" onclick="goHome()">← Retour</button>
-</div>
+  afficherResultat(`⏳ Ajout de ${nom} ${prenom}...`);
 
-<!-- JOURNAL -->
-<div id="journal" class="page">
-  <h1>📰 Journal</h1>
-  <div id="articlesList" class="grid"></div>
-  <button class="btn-secondary" onclick="goHome()">← Retour</button>
-</div>
+  try {
+    const response = await fetch(`${BASE_URL}/eleves`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify([{ nom, prenom, classe }])
+    });
 
-<!-- COURS -->
-<div id="cours" class="page">
-  <h1>📚 Cours</h1>
-  <div id="coursList" class="grid"></div>
-  <button class="btn-secondary" onclick="goHome()">← Retour</button>
-</div>
+    const result = await response.json();
+    
+    afficherResultat(
+      `✅ Ajout réussi !\n\nRéponse :\n${JSON.stringify(result, null, 2)}`,
+      'success'
+    );
 
-<!-- RECHERCHE -->
-<div id="recherche" class="page">
-  <h1>🔍 Recherche</h1>
-  <input type="text" id="searchQuery" placeholder="Nom...">
-  <button class="btn" onclick="rechercher()">Rechercher</button>
-  <div id="searchResults" class="grid"></div>
-  <button class="btn-secondary" onclick="goHome()">← Retour</button>
-</div>
+    // Recharge automatiquement la liste des élèves après 2 secondes
+    setTimeout(() => testLecture('eleves'), 2000);
 
-<!-- ADMIN -->
-<div id="admin" class="page">
-  <h1>⚙️ Admin</h1>
+  } catch (err) {
+    afficherResultat(`❌ Erreur : ${err.message}`, 'error');
+    console.error(err);
+  }
+}
 
-  <div id="adminPasswordBox">
-    <h3>🔐 Mot de passe</h3>
-    <input type="password" id="adminPassword" placeholder="Mot de passe">
-    <button class="btn" onclick="checkAdminPassword()">Valider</button>
-  </div>
-
-  <div id="adminZone" style="display:none;">
-
-    <!-- PUBLICATIONS -->
-    <div class="admin-section">
-      <h3>📰 Publier un article</h3>
-      <input type="text" id="articleTitre" placeholder="Titre">
-      <textarea id="articleContenu" placeholder="Contenu..." rows="3"></textarea>
-      <button class="btn" onclick="publierArticle()">📤 Publier</button>
-      <div id="articlesAdminList"></div>
-    </div>
-
-    <!-- COURS -->
-    <div class="admin-section">
-      <h3>📚 Ajouter un cours</h3>
-      <input type="text" id="coursTitre" placeholder="Titre">
-      <input type="text" id="coursProfesseur" placeholder="Professeur">
-      <textarea id="coursDescription" placeholder="Description" rows="2"></textarea>
-      <select id="coursType">
-        <option value="video">Vidéo (lien)</option>
-        <option value="pdf">PDF</option>
-      </select>
-      <input type="text" id="coursLien" placeholder="Lien">
-      <button class="btn" onclick="ajouterCours()">➕ Ajouter</button>
-      <div id="coursAdminList"></div>
-    </div>
-
-    <!-- CLASSES -->
-    <div class="admin-section">
-      <h3>📂 Classes</h3>
-      <input type="text" id="classeNom" placeholder="Nom classe">
-      <button class="btn" onclick="ajouterClasse()">➕ Ajouter</button>
-      <div id="classesList"></div>
-    </div>
-
-    <!-- ÉLÈVES -->
-    <div class="admin-section">
-      <h3>👨‍🎓 Élèves</h3>
-      <input type="text" id="eleveNom" placeholder="Nom">
-      <input type="text" id="elevePrenom" placeholder="Prénom">
-      <select id="eleveClasse"></select>
-      <button class="btn" onclick="ajouterEleve()">➕ Ajouter</button>
-      <div id="elevesList"></div>
-    </div>
-
-    <!-- ADMINISTRATION -->
-    <div class="admin-section">
-      <h3>🏛️ Administration</h3>
-      <input type="text" id="adminNom" placeholder="Nom">
-      <input type="text" id="adminRole" placeholder="Rôle">
-      <button class="btn" onclick="ajouterAdmin()">➕ Ajouter</button>
-      <div id="adminsList"></div>
-    </div>
-
-  </div>
-
-  <button class="btn-secondary" onclick="goHome()">← Retour</button>
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="script.js"></script>
+// Test de connexion au démarrage
+window.onload = async function() {
+  try {
+    const response = await fetch(BASE_URL);
+    const data = await response.json();
+    afficherResultat(
+      '✅ Connexion réussie à Sheet.best !\n' +
+      `📊 Données actuelles : ${data.length} élément(s) dans la feuille principale.\n\n` +
+      'Clique sur un bouton pour lire un onglet spécifique.',
+      'success'
+    );
+  } catch (err) {
+    afficherResultat(`❌ Erreur de connexion : ${err.message}`, 'error');
+  }
+};
+</script>
 </body>
-     </html>
+</html>
