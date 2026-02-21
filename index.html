@@ -1,81 +1,57 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>🧪 TEST MINIMAL SHEET.BEST</title>
+    <title>✅ TEST FINAL</title>
 </head>
 <body>
-    <h1>🔍 Test Sheet.best</h1>
-    <p>URL: <code>https://api.sheetbest.com/sheets/70923d86-6d1a-4756-bf21-a869acf3e029</code></p>
+    <h1>🔍 Vérification finale</h1>
+    <p>URL : <code>https://api.sheetbest.com/sheets/70923d86-6d1a-4756-bf21-a869acf3e029</code></p>
     
-    <hr>
-    
-    <h3>Test sans onglet (feuille principale)</h3>
-    <button onclick="testPrincipal()">Tester la feuille principale</button>
-    
-    <h3>Test avec onglet "eleves"</h3>
-    <button onclick="testOnglet('eleves')">Tester onglet eleves</button>
-    
-    <h3>Test avec onglet "anciens"</h3>
-    <button onclick="testOnglet('anciens')">Tester onglet anciens</button>
-    
-    <hr>
-    
-    <h3>Résultat :</h3>
-    <pre id="resultat" style="background:#f0f0f0; padding:15px; border-radius:5px;">Clique sur un bouton</pre>
+    <div>
+        <button onclick="test('eleves')">📋 Élèves</button>
+        <button onclick="test('publications')">📰 Publications</button>
+        <button onclick="test('cours')">📚 Cours</button>
+        <button onclick="test('classes')">🏫 Classes</button>
+        <button onclick="test('administration')">👨‍🏫 Administration</button>
+        <button onclick="test('anciens')">🎓 Anciens</button>
+    </div>
+
+    <pre id="resultat" style="background:#f0f0f0; padding:15px; margin-top:20px; border-radius:5px;">
+Clique sur un bouton pour tester
+    </pre>
 
     <script>
     const BASE_URL = 'https://api.sheetbest.com/sheets/70923d86-6d1a-4756-bf21-a869acf3e029';
 
-    function afficher(data, type = 'info') {
-        const pre = document.getElementById('resultat');
-        if (typeof data === 'string') {
-            pre.innerHTML = data;
-        } else {
-            pre.innerHTML = JSON.stringify(data, null, 2);
-        }
-        pre.style.color = type === 'error' ? 'red' : 'green';
-    }
-
-    async function testPrincipal() {
-        afficher('⏳ Test en cours...');
+    async function test(onglet) {
+        const resultat = document.getElementById('resultat');
+        resultat.innerHTML = `⏳ Test de l'onglet "${onglet}"...`;
+        
         try {
-            const res = await fetch(BASE_URL);
-            const data = await res.json();
-            afficher(data, 'success');
+            // Test avec # (la bonne syntaxe)
+            const url = `${BASE_URL}#${onglet}`;
+            console.log('📡 Appel à :', url);
+            
+            const response = await fetch(url);
+            const data = await response.json();
+            
+            let message = `✅ Onglet "${onglet}" trouvé !\n`;
+            message += `📊 ${data.length} élément(s) trouvé(s)\n\n`;
+            
+            if (data.length > 0) {
+                message += 'Contenu :\n' + JSON.stringify(data, null, 2);
+            } else {
+                message += 'L\'onglet est vide. C\'est normal si tu n\'as pas encore ajouté de données.';
+            }
+            
+            resultat.innerHTML = message;
+            
         } catch (err) {
-            afficher('❌ Erreur : ' + err.message, 'error');
+            resultat.innerHTML = `❌ Erreur : ${err.message}`;
+            console.error(err);
         }
-    }
-
-    async function testOnglet(nomOnglet) {
-        afficher(`⏳ Test de l'onglet "${nomOnglet}"...`);
-        
-        // ESSAYONS LES DEUX FAÇONS
-        const facon1 = `${BASE_URL}/${nomOnglet}`;
-        const facon2 = `${BASE_URL}#${nomOnglet}`;
-        
-        let resultat = `Résultats pour l'onglet "${nomOnglet}":\n\n`;
-        
-        // Test façon 1 (avec /)
-        try {
-            const res1 = await fetch(facon1);
-            const data1 = await res1.json();
-            resultat += `✅ Façon 1 (/${nomOnglet}) : ${data1.length} élément(s)\n`;
-        } catch (err1) {
-            resultat += `❌ Façon 1 (/${nomOnglet}) : Erreur - ${err1.message}\n`;
-        }
-        
-        // Test façon 2 (avec #)
-        try {
-            const res2 = await fetch(facon2);
-            const data2 = await res2.json();
-            resultat += `✅ Façon 2 (#${nomOnglet}) : ${data2.length} élément(s)\n`;
-        } catch (err2) {
-            resultat += `❌ Façon 2 (#${nomOnglet}) : Erreur - ${err2.message}\n`;
-        }
-        
-        afficher(resultat, 'success');
     }
     </script>
 </body>
 </html>
+
