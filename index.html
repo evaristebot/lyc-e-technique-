@@ -1,152 +1,43 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>🔍 Diagnostic Sheet.best</title>
-    <style>
-        body { font-family: Arial; padding: 20px; background: #f5f7fa; }
-        .container { max-width: 800px; margin: auto; }
-        .card { background: white; padding: 20px; margin: 10px 0; border-radius: 10px; border-left: 5px solid #ffb347; }
-        button { background: #ffb347; border: none; padding: 10px 20px; border-radius: 30px; cursor: pointer; margin: 5px; }
-        pre { background: #f0f0f0; padding: 15px; border-radius: 5px; overflow: auto; }
-        .success { color: green; }
-        .error { color: red; }
-    </style>
+    <title>✅ TEST CORRIGÉ</title>
 </head>
 <body>
-    <div class="container">
-        <h1>🔍 DIAGNOSTIC SHEET.BEST</h1>
-        <p>URL : <code>https://api.sheetbest.com/sheets/70923d86-6d1a-4756-bf21-a869acf3e029</code></p>
+    <h1>🔍 Test avec la bonne syntaxe</h1>
+    
+    <button onclick="test('eleves')">Tester eleves</button>
+    <button onclick="test('publications')">Tester publications</button>
+    <button onclick="test('cours')">Tester cours</button>
+    <button onclick="test('classes')">Tester classes</button>
+    <button onclick="test('administration')">Tester administration</button>
+    <button onclick="test('anciens')">Tester anciens</button>
 
-        <div class="card">
-            <h3>Étape 1 : Tester la connexion</h3>
-            <button onclick="testConnexion()">Tester la connexion</button>
-        </div>
-
-        <div class="card">
-            <h3>Étape 2 : Vérifier chaque onglet</h3>
-            <button onclick="verifierOnglet('eleves')">Vérifier "eleves"</button>
-            <button onclick="verifierOnglet('publications')">Vérifier "publications"</button>
-            <button onclick="verifierOnglet('cours')">Vérifier "cours"</button>
-            <button onclick="verifierOnglet('classes')">Vérifier "classes"</button>
-            <button onclick="verifierOnglet('administration')">Vérifier "administration"</button>
-            <button onclick="verifierOnglet('anciens')">Vérifier "anciens"</button>
-        </div>
-
-        <div class="card">
-            <h3>Étape 3 : Ajouter des données de test</h3>
-            <button onclick="ajouterTest('publications')">➕ Ajouter test dans "publications"</button>
-            <button onclick="ajouterTest('cours')">➕ Ajouter test dans "cours"</button>
-            <button onclick="ajouterTest('classes')">➕ Ajouter test dans "classes"</button>
-            <button onclick="ajouterTest('administration')">➕ Ajouter test dans "administration"</button>
-            <button onclick="ajouterTest('anciens')">➕ Ajouter test dans "anciens"</button>
-        </div>
-
-        <div class="card">
-            <h3>Résultat :</h3>
-            <pre id="resultat">Clique sur un bouton pour commencer...</pre>
-        </div>
-    </div>
+    <pre id="resultat" style="background:#f0f0f0; padding:15px; margin-top:20px;"></pre>
 
     <script>
     const BASE_URL = 'https://api.sheetbest.com/sheets/70923d86-6d1a-4756-bf21-a869acf3e029';
 
-    function afficher(message, type = 'info') {
-        const pre = document.getElementById('resultat');
-        pre.innerHTML = message;
-        pre.className = type;
+    function getSheetUrl(onglet) {
+        return `${BASE_URL}/sheet?name=${onglet}`;
     }
 
-    // Étape 1 : Tester la connexion
-    async function testConnexion() {
-        afficher('⏳ Test de connexion...');
-        try {
-            const res = await fetch(BASE_URL);
-            const data = await res.json();
-            afficher(`✅ Connexion réussie !\n\nDonnées reçues :\n${JSON.stringify(data, null, 2)}`, 'success');
-        } catch (err) {
-            afficher(`❌ Erreur : ${err.message}`, 'error');
-        }
-    }
-
-    // Étape 2 : Vérifier un onglet
-    async function verifierOnglet(nom) {
-        afficher(`⏳ Vérification de l'onglet "${nom}"...`);
+    async function test(onglet) {
+        const resultat = document.getElementById('resultat');
+        resultat.innerHTML = `⏳ Test de "${onglet}"...`;
         
         try {
-            const url = `${BASE_URL}#${nom}`;
+            const url = getSheetUrl(onglet);
+            console.log('📡 URL:', url);
+            
             const res = await fetch(url);
-            
-            if (!res.ok) {
-                afficher(`❌ L'onglet "${nom}" n'existe pas (code ${res.status})`, 'error');
-                return;
-            }
-            
             const data = await res.json();
             
-            if (Array.isArray(data)) {
-                afficher(
-                    `✅ Onglet "${nom}" trouvé !\n` +
-                    `📊 ${data.length} élément(s) présent(s)\n\n` +
-                    `Structure des données :\n${JSON.stringify(data, null, 2)}`,
-                    'success'
-                );
-            } else {
-                afficher(`⚠️ L'onglet existe mais le format est étrange :\n${JSON.stringify(data)}`, 'error');
-            }
-            
+            resultat.innerHTML = 
+                `✅ Onglet "${onglet}" : ${data.length} élément(s)\n\n` +
+                JSON.stringify(data, null, 2);
         } catch (err) {
-            afficher(`❌ Erreur : ${err.message}`, 'error');
-        }
-    }
-
-    // Étape 3 : Ajouter des données de test
-    async function ajouterTest(onglet) {
-        let donnees = {};
-        
-        switch(onglet) {
-            case 'publications':
-                donnees = { titre: "Test " + Date.now(), contenu: "Ceci est un test" };
-                break;
-            case 'cours':
-                donnees = { 
-                    titre: "Cours test", 
-                    professeur: "Prof Test", 
-                    description: "Description test", 
-                    type: "pdf", 
-                    lien: "https://test.com" 
-                };
-                break;
-            case 'classes':
-                donnees = { nom: "Classe Test" };
-                break;
-            case 'administration':
-                donnees = { nom: "Test Admin", role: "Testeur" };
-                break;
-            case 'anciens':
-                donnees = { nom: "Test Ancien", annee: "2020", parcours: "Testeur" };
-                break;
-        }
-        
-        afficher(`⏳ Ajout d'un test dans "${onglet}"...`);
-        
-        try {
-            const url = `${BASE_URL}#${onglet}`;
-            const res = await fetch(url, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify([donnees])
-            });
-            
-            if (res.ok) {
-                afficher(`✅ Test ajouté dans "${onglet}" !`, 'success');
-                // Vérifie automatiquement après 1 seconde
-                setTimeout(() => verifierOnglet(onglet), 1000);
-            } else {
-                const text = await res.text();
-                afficher(`❌ Erreur lors de l'ajout dans "${onglet}" :\n${text}`, 'error');
-            }
-        } catch (err) {
-            afficher(`❌ Erreur : ${err.message}`, 'error');
+            resultat.innerHTML = `❌ Erreur: ${err.message}`;
         }
     }
     </script>
