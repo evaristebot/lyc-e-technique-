@@ -1,7 +1,7 @@
 // ============================================
-// CONFIGURATION SHEET.BEST
+// CONFIGURATION SHEET.BEST - AVEC TA NOUVELLE URL
 // ============================================
-const BASE_URL = 'https://api.sheetbest.com/sheets/fe7efdc7-8f02-4758-8f02-b168b59db733';
+const BASE_URL = 'https://api.sheetbest.com/sheets/70923d86-6d1a-4756-bf21-a869acf3e029';
 
 // URLs pour chaque feuille (table)
 const API = {
@@ -13,7 +13,7 @@ const API = {
   anciens: BASE_URL + '/anciens'
 };
 
-console.log('✅ Sheet.best configuré');
+console.log('✅ Sheet.best configuré avec la nouvelle URL');
 
 // ============================================
 // FONCTIONS DE NAVIGATION
@@ -270,7 +270,7 @@ async function chargerAdminEleves() {
   data.forEach((e, index) => {
     html += `
       <div class="admin-item">
-        <span>${e.nom} ${e.prenom} - ${e.classe}</span>
+        <span>${e.nom} ${e['prénom ']} - ${e['classe ']}</span>
         <button class="delete-btn" onclick="supprimerEleve('${index}')">🗑️</button>
       </div>
     `;
@@ -290,7 +290,7 @@ window.ajouterEleve = async function() {
   await fetch(API.eleves, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify([{ nom, prenom, classe }])
+    body: JSON.stringify([{ nom, "prénom ": prenom, "classe ": classe }])
   });
 
   document.getElementById('eleveNom').value = '';
@@ -394,8 +394,8 @@ window.rechercher = async function() {
   const elevesRes = await fetch(API.eleves);
   const eleves = await elevesRes.json();
   eleves.forEach(e => {
-    if (e.nom.toLowerCase().includes(query) || e.prenom.toLowerCase().includes(query)) {
-      html += `<div class="card"><h3>👨‍🎓 ${e.nom} ${e.prenom}</h3><p>Classe: ${e.classe}</p></div>`;
+    if (e.nom.toLowerCase().includes(query) || e['prénom '].toLowerCase().includes(query)) {
+      html += `<div class="card"><h3>👨‍🎓 ${e.nom} ${e['prénom ']}</h3><p>Classe: ${e['classe ']}</p></div>`;
     }
   });
 
@@ -421,10 +421,25 @@ window.rechercher = async function() {
 };
 
 // ============================================
+// RAFRAÎCHISSEMENT AUTOMATIQUE
+// ============================================
+function autoRefresh() {
+  // Rafraîchit les données toutes les 30 secondes
+  setInterval(async () => {
+    console.log('🔄 Rafraîchissement automatique...');
+    await chargerPublications();
+    await chargerCours();
+    await chargerAdministration();
+    await chargerAnciens();
+  }, 30000); // 30000 ms = 30 secondes
+}
+
+// ============================================
 // INIT
 // ============================================
 chargerPublications();
 chargerCours();
 chargerAdministration();
 chargerAnciens();
-console.log('✅ Site prêt avec Sheet.best');
+autoRefresh(); // Active le rafraîchissement automatique
+console.log('✅ Site prêt avec Sheet.best - Nouvelle URL active');
