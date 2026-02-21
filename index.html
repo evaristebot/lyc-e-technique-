@@ -1,142 +1,81 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html>
 <head>
-<meta charset="UTF-8">
-<title>Test Sheet.best - Lycée Technique</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<style>
-  body { font-family: Arial; padding: 20px; background: #f5f7fa; }
-  .container { max-width: 800px; margin: auto; }
-  button { 
-    background: #ffb347; 
-    border: none; 
-    padding: 12px 25px; 
-    margin: 10px; 
-    border-radius: 30px;
-    cursor: pointer;
-    font-weight: bold;
-  }
-  pre { 
-    background: white; 
-    padding: 15px; 
-    border-radius: 10px; 
-    border-left: 5px solid #ffb347;
-    white-space: pre-wrap;
-  }
-  .success { color: green; font-weight: bold; }
-  .error { color: red; font-weight: bold; }
-</style>
+    <title>🧪 TEST MINIMAL SHEET.BEST</title>
 </head>
 <body>
-<div class="container">
-  <h1>🧪 TEST SHEET.BEST</h1>
-  <p>URL : <code>https://api.sheetbest.com/sheets/70923d86-6d1a-4756-bf21-a869acf3e029</code></p>
-
-  <div>
-    <button onclick="testLecture('eleves')">📖 Lire élèves</button>
-    <button onclick="testLecture('publications')">📖 Lire publications</button>
-    <button onclick="testLecture('cours')">📖 Lire cours</button>
-    <button onclick="testLecture('classes')">📖 Lire classes</button>
-    <button onclick="testLecture('administration')">📖 Lire administration</button>
-    <button onclick="testLecture('anciens')">📖 Lire anciens</button>
-  </div>
-
-  <div style="margin-top:20px;">
-    <h3>➕ Ajouter un élève test</h3>
-    <input type="text" id="testNom" placeholder="Nom" value="Test">
-    <input type="text" id="testPrenom" placeholder="Prénom" value="Sheet">
-    <input type="text" id="testClasse" placeholder="Classe" value="TestClasse">
-    <button onclick="testAjoutEleve()">AJOUTER</button>
-  </div>
-
-  <div id="resultat">
-    <pre>Clique sur un bouton pour commencer...</pre>
-  </div>
-</div>
-
-<script>
-const BASE_URL = 'https://api.sheetbest.com/sheets/70923d86-6d1a-4756-bf21-a869acf3e029';
-
-function afficherResultat(message, type = 'info') {
-  const pre = document.querySelector('#resultat pre');
-  const color = type === 'success' ? 'green' : (type === 'error' ? 'red' : '#333');
-  pre.innerHTML = message;
-  pre.style.color = color;
-  pre.style.borderLeftColor = type === 'success' ? 'green' : (type === 'error' ? 'red' : '#ffb347');
-}
-
-async function testLecture(onglet) {
-  afficherResultat(`⏳ Chargement de l'onglet "${onglet}"...`);
-  
-  try {
-    const url = `${BASE_URL}/${onglet}`;
-    console.log('📡 Requête:', url);
+    <h1>🔍 Test Sheet.best</h1>
+    <p>URL: <code>https://api.sheetbest.com/sheets/70923d86-6d1a-4756-bf21-a869acf3e029</code></p>
     
-    const response = await fetch(url);
-    const data = await response.json();
+    <hr>
     
-    afficherResultat(
-      `✅ Onglet "${onglet}" :\n` +
-      `📊 ${data.length} élément(s) trouvé(s)\n\n` +
-      JSON.stringify(data, null, 2),
-      'success'
-    );
-  } catch (err) {
-    afficherResultat(`❌ Erreur : ${err.message}`, 'error');
-    console.error(err);
-  }
-}
-
-async function testAjoutEleve() {
-  const nom = document.getElementById('testNom').value.trim();
-  const prenom = document.getElementById('testPrenom').value.trim();
-  const classe = document.getElementById('testClasse').value.trim();
-
-  if (!nom || !prenom || !classe) {
-    afficherResultat('❌ Tous les champs sont requis', 'error');
-    return;
-  }
-
-  afficherResultat(`⏳ Ajout de ${nom} ${prenom}...`);
-
-  try {
-    const response = await fetch(`${BASE_URL}/eleves`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify([{ nom, prenom, classe }])
-    });
-
-    const result = await response.json();
+    <h3>Test sans onglet (feuille principale)</h3>
+    <button onclick="testPrincipal()">Tester la feuille principale</button>
     
-    afficherResultat(
-      `✅ Ajout réussi !\n\nRéponse :\n${JSON.stringify(result, null, 2)}`,
-      'success'
-    );
+    <h3>Test avec onglet "eleves"</h3>
+    <button onclick="testOnglet('eleves')">Tester onglet eleves</button>
+    
+    <h3>Test avec onglet "anciens"</h3>
+    <button onclick="testOnglet('anciens')">Tester onglet anciens</button>
+    
+    <hr>
+    
+    <h3>Résultat :</h3>
+    <pre id="resultat" style="background:#f0f0f0; padding:15px; border-radius:5px;">Clique sur un bouton</pre>
 
-    // Recharge automatiquement la liste des élèves après 2 secondes
-    setTimeout(() => testLecture('eleves'), 2000);
+    <script>
+    const BASE_URL = 'https://api.sheetbest.com/sheets/70923d86-6d1a-4756-bf21-a869acf3e029';
 
-  } catch (err) {
-    afficherResultat(`❌ Erreur : ${err.message}`, 'error');
-    console.error(err);
-  }
-}
+    function afficher(data, type = 'info') {
+        const pre = document.getElementById('resultat');
+        if (typeof data === 'string') {
+            pre.innerHTML = data;
+        } else {
+            pre.innerHTML = JSON.stringify(data, null, 2);
+        }
+        pre.style.color = type === 'error' ? 'red' : 'green';
+    }
 
-// Test de connexion au démarrage
-window.onload = async function() {
-  try {
-    const response = await fetch(BASE_URL);
-    const data = await response.json();
-    afficherResultat(
-      '✅ Connexion réussie à Sheet.best !\n' +
-      `📊 Données actuelles : ${data.length} élément(s) dans la feuille principale.\n\n` +
-      'Clique sur un bouton pour lire un onglet spécifique.',
-      'success'
-    );
-  } catch (err) {
-    afficherResultat(`❌ Erreur de connexion : ${err.message}`, 'error');
-  }
-};
-</script>
+    async function testPrincipal() {
+        afficher('⏳ Test en cours...');
+        try {
+            const res = await fetch(BASE_URL);
+            const data = await res.json();
+            afficher(data, 'success');
+        } catch (err) {
+            afficher('❌ Erreur : ' + err.message, 'error');
+        }
+    }
+
+    async function testOnglet(nomOnglet) {
+        afficher(`⏳ Test de l'onglet "${nomOnglet}"...`);
+        
+        // ESSAYONS LES DEUX FAÇONS
+        const facon1 = `${BASE_URL}/${nomOnglet}`;
+        const facon2 = `${BASE_URL}#${nomOnglet}`;
+        
+        let resultat = `Résultats pour l'onglet "${nomOnglet}":\n\n`;
+        
+        // Test façon 1 (avec /)
+        try {
+            const res1 = await fetch(facon1);
+            const data1 = await res1.json();
+            resultat += `✅ Façon 1 (/${nomOnglet}) : ${data1.length} élément(s)\n`;
+        } catch (err1) {
+            resultat += `❌ Façon 1 (/${nomOnglet}) : Erreur - ${err1.message}\n`;
+        }
+        
+        // Test façon 2 (avec #)
+        try {
+            const res2 = await fetch(facon2);
+            const data2 = await res2.json();
+            resultat += `✅ Façon 2 (#${nomOnglet}) : ${data2.length} élément(s)\n`;
+        } catch (err2) {
+            resultat += `❌ Façon 2 (#${nomOnglet}) : Erreur - ${err2.message}\n`;
+        }
+        
+        afficher(resultat, 'success');
+    }
+    </script>
 </body>
 </html>
