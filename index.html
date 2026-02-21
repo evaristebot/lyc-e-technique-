@@ -1,78 +1,162 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 <head>
-    <title>🔍 Test Airtable</title>
+    <meta charset="UTF-8">
+    <title>Lycée Technique de Batouri</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>🔍 Test de connexion Airtable</h1>
-    <p>Base ID : <code>appkY3jjhpeE3qIoM</code></p>
-    <p>Token : <code>patjrQeZt0hXPQ7ry.3edbbab760fa151d...</code></p>
 
-    <button onclick="testerConnexion()">📋 Tester la connexion</button>
-    <button onclick="lireEleves()">👨‍🎓 Lire les élèves</button>
-    <button onclick="ajouterEleve()">➕ Ajouter un élève test</button>
+<nav class="navbar">
+    <div class="nav-logo" onclick="goHome()">
+        <img src="logo.jpg" alt="Logo" onerror="this.src='https://via.placeholder.com/40'">
+        <span>Lycée Technique de Batouri</span>
+    </div>
+    <div class="nav-links">
+        <button onclick="goHome()">🏠 Accueil</button>
+        <button onclick="goToEleves()">👨‍🎓 Élèves</button>
+        <button onclick="goToEnseignants()">👨‍🏫 Enseignants</button>
+        <button onclick="goToCours()">📚 Cours</button>
+        <button onclick="goToPublications()">📰 Publications</button>
+        <button onclick="goToClasses()">🏫 Classes</button>
+        <button onclick="goToSpecialites()">📌 Spécialités</button>
+        <button onclick="goToAdministration()">🏛️ Administration</button>
+        <button onclick="goToAnciens()">🎓 Anciens</button>
+        <button onclick="goToBulletins()">📄 Bulletins</button>
+        <button onclick="goToAdmin()">⚙️ Admin</button>
+    </div>
+</nav>
 
-    <pre id="resultat" style="background:#f0f0f0; padding:15px; margin-top:20px; border-radius:5px;"></pre>
+<!-- ACCUEIL -->
+<div id="home" class="page active">
+    <div class="hero">
+        <img src="logo.jpg" class="logo-large" onerror="this.src='https://via.placeholder.com/150'">
+        <h1>Lycée Technique de Batouri</h1>
+    </div>
+    <div class="card">
+        <h2>Bienvenue</h2>
+        <p>Le Lycée Technique de Batouri forme les jeunes aux métiers techniques depuis 1985.</p>
+    </div>
+</div>
 
-    <script>
-    
-    const baseId = 'appkY3jjhpeE3qIoM';
-    const tableName = 'Éleves';
+<!-- ÉLÈVES -->
+<div id="eleves" class="page">
+    <h2>👨‍🎓 Élèves</h2>
+    <input type="text" id="eleveNom" placeholder="Nom">
+    <input type="text" id="elevePrenom" placeholder="Prénom">
+    <input type="text" id="eleveClasse" placeholder="Classe">
+    <input type="text" id="eleveContact" placeholder="Contact parents">
+    <button class="btn" onclick="ajouterEleve()">Ajouter</button>
+    <div id="elevesList"></div>
+    <button class="btn" onclick="goHome()">← Retour</button>
+</div>
 
-    function afficher(data) {
-        document.getElementById('resultat').innerHTML = JSON.stringify(data, null, 2);
-    }
+<!-- ENSEIGNANTS -->
+<div id="enseignants" class="page">
+    <h2>👨‍🏫 Enseignants</h2>
+    <input type="text" id="ensNom" placeholder="Nom">
+    <input type="text" id="ensPrenom" placeholder="Prénom">
+    <input type="text" id="ensMatiere" placeholder="Matière">
+    <input type="text" id="ensContact" placeholder="Contact">
+    <button class="btn" onclick="ajouterEnseignant()">Ajouter</button>
+    <div id="enseignantsList"></div>
+    <button class="btn" onclick="goHome()">← Retour</button>
+</div>
 
-    async function testerConnexion() {
-        try {
-            const res = await fetch(`https://api.airtable.com/v0/${baseId}/${encodeURIComponent(tableName)}`, {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-            const data = await res.json();
-            afficher({ status: res.status, ok: res.ok, data });
-        } catch (err) {
-            afficher({ error: err.message });
-        }
-    }
+<!-- COURS -->
+<div id="cours" class="page">
+    <h2>📚 Cours</h2>
+    <input type="text" id="coursTitre" placeholder="Titre">
+    <input type="text" id="coursProf" placeholder="Professeur">
+    <textarea id="coursDesc" placeholder="Description"></textarea>
+    <select id="coursType">
+        <option value="pdf">PDF</option>
+        <option value="video">Vidéo</option>
+    </select>
+    <input type="url" id="coursLien" placeholder="Lien">
+    <button class="btn" onclick="ajouterCours()">Ajouter</button>
+    <div id="coursList"></div>
+    <button class="btn" onclick="goHome()">← Retour</button>
+</div>
 
-    async function lireEleves() {
-        try {
-            const res = await fetch(`https://api.airtable.com/v0/${baseId}/${encodeURIComponent(tableName)}`, {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-            const data = await res.json();
-            afficher(data);
-        } catch (err) {
-            afficher({ error: err.message });
-        }
-    }
+<!-- PUBLICATIONS -->
+<div id="publications" class="page">
+    <h2>📰 Publications</h2>
+    <input type="text" id="pubTitre" placeholder="Titre">
+    <textarea id="pubContenu" placeholder="Contenu"></textarea>
+    <button class="btn" onclick="ajouterPublication()">Publier</button>
+    <div id="publicationsList"></div>
+    <button class="btn" onclick="goHome()">← Retour</button>
+</div>
 
-    async function ajouterEleve() {
-        const nouvelEleve = {
-            records: [{
-                fields: {
-                    "Nom": "Test",
-                    "Prénom": "Airtable",
-                    "Contact parents": "699000000"
-                }
-            }]
-        };
+<!-- CLASSES -->
+<div id="classes" class="page">
+    <h2>🏫 Classes</h2>
+    <input type="text" id="classeNom" placeholder="Nom de la classe">
+    <button class="btn" onclick="ajouterClasse()">Ajouter</button>
+    <div id="classesList"></div>
+    <button class="btn" onclick="goHome()">← Retour</button>
+</div>
 
-        try {
-            const res = await fetch(`https://api.airtable.com/v0/${baseId}/${encodeURIComponent(tableName)}`, {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(nouvelEleve)
-            });
-            const data = await res.json();
-            afficher({ success: true, data });
-        } catch (err) {
-            afficher({ error: err.message });
-        }
-    }
-    </script>
+<!-- SPÉCIALITÉS -->
+<div id="specialites" class="page">
+    <h2>📌 Spécialités</h2>
+    <input type="text" id="specialiteNom" placeholder="Nom">
+    <button class="btn" onclick="ajouterSpecialite()">Ajouter</button>
+    <div id="specialitesList"></div>
+    <button class="btn" onclick="goHome()">← Retour</button>
+</div>
+
+<!-- ADMINISTRATION -->
+<div id="administration" class="page">
+    <h2>🏛️ Administration</h2>
+    <input type="text" id="adminNom" placeholder="Nom">
+    <input type="text" id="adminRole" placeholder="Rôle">
+    <input type="text" id="adminContact" placeholder="Contact">
+    <button class="btn" onclick="ajouterAdmin()">Ajouter</button>
+    <div id="administrationList"></div>
+    <button class="btn" onclick="goHome()">← Retour</button>
+</div>
+
+<!-- ANCIENS -->
+<div id="anciens" class="page">
+    <h2>🎓 Anciens élèves</h2>
+    <input type="text" id="ancienNom" placeholder="Nom">
+    <input type="text" id="ancienAnnee" placeholder="Année">
+    <input type="text" id="ancienParcours" placeholder="Parcours">
+    <button class="btn" onclick="ajouterAncien()">Ajouter</button>
+    <div id="anciensList"></div>
+    <button class="btn" onclick="goHome()">← Retour</button>
+</div>
+
+<!-- BULLETINS -->
+<div id="bulletins" class="page">
+    <h2>📄 Bulletins</h2>
+    <select id="bulletinClasse"></select>
+    <select id="bulletinTrimestre">
+        <option value="1">Trimestre 1</option>
+        <option value="2">Trimestre 2</option>
+        <option value="3">Trimestre 3</option>
+    </select>
+    <button class="btn" onclick="afficherBulletins()">Afficher</button>
+    <div id="bulletinsList"></div>
+    <button class="btn" onclick="goHome()">← Retour</button>
+</div>
+
+<!-- ADMIN ESPACE -->
+<div id="admin" class="page">
+    <h2>⚙️ Administration</h2>
+    <div id="adminPasswordBox">
+        <input type="password" id="adminPassword" placeholder="Mot de passe">
+        <button class="btn" onclick="checkAdminPassword()">Valider</button>
+    </div>
+    <div id="adminZone" style="display:none;">
+        <p>🛠️ Espace réservé (gestion globale à venir)</p>
+    </div>
+    <button class="btn" onclick="goHome()">← Retour</button>
+</div>
+
+<script src="script.js"></script>
 </body>
-</html>
+            </html>
