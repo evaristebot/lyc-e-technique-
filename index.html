@@ -1,226 +1,133 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>🧪 TEST SHEET.BEST - Gestion complète</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔍 Diagnostic Sheet.best</title>
     <style>
-        * { margin:0; padding:0; box-sizing:border-box; font-family: 'Segoe UI', sans-serif; }
-        body {
-            background: linear-gradient(135deg, #0b2f2f 0%, #1a4a4a 100%);
-            color: white;
-            padding: 20px;
-        }
-        h1 { color: #ffb347; margin-bottom: 20px; }
-        .container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-            gap: 20px;
-        }
-        .card {
-            background: rgba(255,255,255,0.1);
-            border-radius: 15px;
-            padding: 20px;
-            backdrop-filter: blur(5px);
-            border-left: 5px solid #ffb347;
-        }
-        .card h2 { color: #ffb347; margin-bottom: 15px; }
-        input, select, textarea {
-            width: 100%;
-            padding: 10px;
-            margin: 8px 0;
-            border: 2px solid #ddd;
-            border-radius: 10px;
-        }
-        button {
-            background: #ffb347;
-            color: #0b2f2f;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 30px;
-            font-weight: bold;
-            cursor: pointer;
-            margin: 5px;
-        }
-        button:hover { background: #0b2f2f; color: #ffb347; }
-        .data-list {
-            margin-top: 15px;
-            max-height: 200px;
-            overflow-y: auto;
-        }
-        .item {
-            background: rgba(0,0,0,0.3);
-            padding: 8px;
-            margin: 5px 0;
-            border-radius: 5px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .delete-btn {
-            background: #ff4444;
-            color: white;
-            border: none;
-            padding: 5px 15px;
-            border-radius: 20px;
-            cursor: pointer;
-        }
-        .resultat {
-            background: rgba(0,0,0,0.3);
-            padding: 10px;
-            border-radius: 10px;
-            margin-top: 20px;
-            font-family: monospace;
-            white-space: pre-wrap;
-        }
+        body { font-family: Arial; padding: 20px; background: #f5f7fa; }
+        .container { max-width: 800px; margin: auto; }
+        .card { background: white; padding: 20px; margin: 10px 0; border-radius: 10px; border-left: 5px solid #ffb347; }
+        button { background: #ffb347; border: none; padding: 10px 20px; border-radius: 30px; cursor: pointer; margin: 5px; }
+        pre { background: #f0f0f0; padding: 15px; border-radius: 5px; overflow: auto; }
+        .success { color: green; }
+        .error { color: red; }
     </style>
 </head>
 <body>
-    <h1>📋 GESTION DES DONNÉES SHEET.BEST</h1>
-    <p>URL : <code>https://api.sheetbest.com/sheets/70923d86-6d1a-4756-bf21-a869acf3e029</code></p>
-
     <div class="container">
-        <!-- Carte ÉLÈVES -->
+        <h1>🔍 DIAGNOSTIC SHEET.BEST</h1>
+        <p>URL : <code>https://api.sheetbest.com/sheets/70923d86-6d1a-4756-bf21-a869acf3e029</code></p>
+
         <div class="card">
-            <h2>👨‍🎓 Élèves</h2>
-            <input type="text" id="eleveNom" placeholder="Nom">
-            <input type="text" id="elevePrenom" placeholder="Prénom">
-            <input type="text" id="eleveClasse" placeholder="Classe">
-            <button onclick="ajouter('eleves', {nom: get('eleveNom'), prenom: get('elevePrenom'), classe: get('eleveClasse')})">➕ Ajouter élève</button>
-            <button onclick="voir('eleves')">📋 Voir liste</button>
-            <div id="liste-eleves" class="data-list"></div>
+            <h3>Étape 1 : Tester la connexion</h3>
+            <button onclick="testConnexion()">Tester la connexion</button>
         </div>
 
-        <!-- Carte PUBLICATIONS -->
         <div class="card">
-            <h2>📰 Publications</h2>
-            <input type="text" id="pubTitre" placeholder="Titre">
-            <textarea id="pubContenu" placeholder="Contenu" rows="3"></textarea>
-            <button onclick="ajouter('publications', {titre: get('pubTitre'), contenu: get('pubContenu')})">➕ Ajouter publication</button>
-            <button onclick="voir('publications')">📋 Voir liste</button>
-            <div id="liste-publications" class="data-list"></div>
+            <h3>Étape 2 : Vérifier chaque onglet</h3>
+            <button onclick="verifierOnglet('eleves')">Vérifier "eleves"</button>
+            <button onclick="verifierOnglet('publications')">Vérifier "publications"</button>
+            <button onclick="verifierOnglet('cours')">Vérifier "cours"</button>
+            <button onclick="verifierOnglet('classes')">Vérifier "classes"</button>
+            <button onclick="verifierOnglet('administration')">Vérifier "administration"</button>
+            <button onclick="verifierOnglet('anciens')">Vérifier "anciens"</button>
         </div>
 
-        <!-- Carte COURS -->
         <div class="card">
-            <h2>📚 Cours</h2>
-            <input type="text" id="coursTitre" placeholder="Titre">
-            <input type="text" id="coursProf" placeholder="Professeur">
-            <textarea id="coursDesc" placeholder="Description" rows="2"></textarea>
-            <select id="coursType">
-                <option value="video">Vidéo</option>
-                <option value="pdf">PDF</option>
-            </select>
-            <input type="text" id="coursLien" placeholder="Lien">
-            <button onclick="ajouter('cours', {titre: get('coursTitre'), professeur: get('coursProf'), description: get('coursDesc'), type: get('coursType'), lien: get('coursLien')})">➕ Ajouter cours</button>
-            <button onclick="voir('cours')">📋 Voir liste</button>
-            <div id="liste-cours" class="data-list"></div>
+            <h3>Étape 3 : Ajouter des données de test</h3>
+            <button onclick="ajouterTest('publications')">➕ Ajouter test dans "publications"</button>
+            <button onclick="ajouterTest('cours')">➕ Ajouter test dans "cours"</button>
+            <button onclick="ajouterTest('classes')">➕ Ajouter test dans "classes"</button>
+            <button onclick="ajouterTest('administration')">➕ Ajouter test dans "administration"</button>
+            <button onclick="ajouterTest('anciens')">➕ Ajouter test dans "anciens"</button>
         </div>
 
-        <!-- Carte CLASSES -->
         <div class="card">
-            <h2>🏫 Classes</h2>
-            <input type="text" id="classeNom" placeholder="Nom de la classe">
-            <button onclick="ajouter('classes', {nom: get('classeNom')})">➕ Ajouter classe</button>
-            <button onclick="voir('classes')">📋 Voir liste</button>
-            <div id="liste-classes" class="data-list"></div>
+            <h3>Résultat :</h3>
+            <pre id="resultat">Clique sur un bouton pour commencer...</pre>
         </div>
-
-        <!-- Carte ADMINISTRATION -->
-        <div class="card">
-            <h2>👨‍🏫 Administration</h2>
-            <input type="text" id="adminNom" placeholder="Nom">
-            <input type="text" id="adminRole" placeholder="Rôle">
-            <button onclick="ajouter('administration', {nom: get('adminNom'), role: get('adminRole')})">➕ Ajouter membre</button>
-            <button onclick="voir('administration')">📋 Voir liste</button>
-            <div id="liste-administration" class="data-list"></div>
-        </div>
-
-        <!-- Carte ANCIENS -->
-        <div class="card">
-            <h2>🎓 Anciens élèves</h2>
-            <input type="text" id="ancienNom" placeholder="Nom">
-            <input type="text" id="ancienAnnee" placeholder="Année du Bac">
-            <input type="text" id="ancienParcours" placeholder="Parcours">
-            <button onclick="ajouter('anciens', {nom: get('ancienNom'), annee: get('ancienAnnee'), parcours: get('ancienParcours')})">➕ Ajouter ancien</button>
-            <button onclick="voir('anciens')">📋 Voir liste</button>
-            <div id="liste-anciens" class="data-list"></div>
-        </div>
-    </div>
-
-    <div class="resultat" id="resultat">
-        👆 Clique sur un bouton pour commencer...
     </div>
 
     <script>
     const BASE_URL = 'https://api.sheetbest.com/sheets/70923d86-6d1a-4756-bf21-a869acf3e029';
 
-    // Helper pour récupérer la valeur d'un input
-    function get(id) {
-        return document.getElementById(id).value.trim();
-    }
-
-    // Helper pour afficher les résultats
     function afficher(message, type = 'info') {
-        const div = document.getElementById('resultat');
-        div.innerHTML = message;
-        div.style.borderLeftColor = type === 'success' ? '#4CAF50' : (type === 'error' ? '#ff4444' : '#ffb347');
+        const pre = document.getElementById('resultat');
+        pre.innerHTML = message;
+        pre.className = type;
     }
 
-    // ============================================
-    // FONCTIONS PRINCIPALES
-    // ============================================
-
-    // VOIR les données d'un onglet
-    async function voir(onglet) {
-        afficher(`⏳ Chargement de "${onglet}"...`);
+    // Étape 1 : Tester la connexion
+    async function testConnexion() {
+        afficher('⏳ Test de connexion...');
         try {
-            const url = `${BASE_URL}#${onglet}`;
-            const res = await fetch(url);
+            const res = await fetch(BASE_URL);
             const data = await res.json();
-            
-            // Affiche dans la zone de résultat
-            afficher(
-                `✅ ${data.length} élément(s) dans "${onglet}"\n\n` +
-                JSON.stringify(data, null, 2),
-                'success'
-            );
-            
-            // Met à jour la liste visuelle
-            const listeDiv = document.getElementById(`liste-${onglet}`);
-            if (listeDiv) {
-                if (data.length === 0) {
-                    listeDiv.innerHTML = '<p>Aucune donnée</p>';
-                } else {
-                    let html = '';
-                    data.forEach((item, index) => {
-                        const ligneId = index + 1;
-                        html += `
-                            <div class="item">
-                                <span>${JSON.stringify(item).substring(0, 50)}...</span>
-                                <button class="delete-btn" onclick="supprimer('${onglet}', ${ligneId})">🗑️</button>
-                            </div>
-                        `;
-                    });
-                    listeDiv.innerHTML = html;
-                }
-            }
+            afficher(`✅ Connexion réussie !\n\nDonnées reçues :\n${JSON.stringify(data, null, 2)}`, 'success');
         } catch (err) {
             afficher(`❌ Erreur : ${err.message}`, 'error');
         }
     }
 
-    // AJOUTER des données
-    async function ajouter(onglet, donnees) {
-        // Vérifie que les champs ne sont pas vides
-        for (let [key, value] of Object.entries(donnees)) {
-            if (!value) {
-                afficher(`❌ Le champ "${key}" est requis`, 'error');
+    // Étape 2 : Vérifier un onglet
+    async function verifierOnglet(nom) {
+        afficher(`⏳ Vérification de l'onglet "${nom}"...`);
+        
+        try {
+            const url = `${BASE_URL}#${nom}`;
+            const res = await fetch(url);
+            
+            if (!res.ok) {
+                afficher(`❌ L'onglet "${nom}" n'existe pas (code ${res.status})`, 'error');
                 return;
             }
+            
+            const data = await res.json();
+            
+            if (Array.isArray(data)) {
+                afficher(
+                    `✅ Onglet "${nom}" trouvé !\n` +
+                    `📊 ${data.length} élément(s) présent(s)\n\n` +
+                    `Structure des données :\n${JSON.stringify(data, null, 2)}`,
+                    'success'
+                );
+            } else {
+                afficher(`⚠️ L'onglet existe mais le format est étrange :\n${JSON.stringify(data)}`, 'error');
+            }
+            
+        } catch (err) {
+            afficher(`❌ Erreur : ${err.message}`, 'error');
         }
+    }
 
-        afficher(`⏳ Ajout dans "${onglet}"...`);
+    // Étape 3 : Ajouter des données de test
+    async function ajouterTest(onglet) {
+        let donnees = {};
+        
+        switch(onglet) {
+            case 'publications':
+                donnees = { titre: "Test " + Date.now(), contenu: "Ceci est un test" };
+                break;
+            case 'cours':
+                donnees = { 
+                    titre: "Cours test", 
+                    professeur: "Prof Test", 
+                    description: "Description test", 
+                    type: "pdf", 
+                    lien: "https://test.com" 
+                };
+                break;
+            case 'classes':
+                donnees = { nom: "Classe Test" };
+                break;
+            case 'administration':
+                donnees = { nom: "Test Admin", role: "Testeur" };
+                break;
+            case 'anciens':
+                donnees = { nom: "Test Ancien", annee: "2020", parcours: "Testeur" };
+                break;
+        }
+        
+        afficher(`⏳ Ajout d'un test dans "${onglet}"...`);
         
         try {
             const url = `${BASE_URL}#${onglet}`;
@@ -231,55 +138,18 @@
             });
             
             if (res.ok) {
-                afficher(`✅ Ajout réussi dans "${onglet}" !`, 'success');
-                // Vide les champs
-                for (let key in donnees) {
-                    const inputId = key === 'titre' ? 'pubTitre' :
-                                   key === 'contenu' ? 'pubContenu' :
-                                   key === 'professeur' ? 'coursProf' :
-                                   key === 'description' ? 'coursDesc' :
-                                   key === 'type' ? 'coursType' :
-                                   key === 'lien' ? 'coursLien' :
-                                   key === 'annee' ? 'ancienAnnee' :
-                                   key === 'parcours' ? 'ancienParcours' :
-                                   `${onglet}${key.charAt(0).toUpperCase() + key.slice(1)}`;
-                    const input = document.getElementById(inputId);
-                    if (input) input.value = '';
-                }
-                // Recharge la liste
-                voir(onglet);
+                afficher(`✅ Test ajouté dans "${onglet}" !`, 'success');
+                // Vérifie automatiquement après 1 seconde
+                setTimeout(() => verifierOnglet(onglet), 1000);
             } else {
-                afficher(`❌ Erreur lors de l'ajout`, 'error');
+                const text = await res.text();
+                afficher(`❌ Erreur lors de l'ajout dans "${onglet}" :\n${text}`, 'error');
             }
         } catch (err) {
             afficher(`❌ Erreur : ${err.message}`, 'error');
         }
     }
-
-    // SUPPRIMER des données
-    async function supprimer(onglet, ligneId) {
-        if (!confirm(`Supprimer la ligne ${ligneId} de "${onglet}" ?`)) return;
-        
-        try {
-            const url = `${BASE_URL}#${onglet}/${ligneId}`;
-            const res = await fetch(url, { method: 'DELETE' });
-            
-            if (res.ok) {
-                afficher(`✅ Ligne ${ligneId} supprimée de "${onglet}"`, 'success');
-                voir(onglet); // Recharge la liste
-            } else {
-                afficher(`❌ Erreur lors de la suppression`, 'error');
-            }
-        } catch (err) {
-            afficher(`❌ Erreur : ${err.message}`, 'error');
-        }
-    }
-
-    // Initialisation : charge quelques données au démarrage
-    window.onload = async function() {
-        afficher('✅ Connecté à Sheet.best !\nClique sur "Voir liste" pour chaque catégorie.');
-    };
     </script>
 </body>
-        </html>
+</html>
 
