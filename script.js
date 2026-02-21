@@ -15,113 +15,7 @@ const API = {
 console.log('✅ Sheet.best configuré');
 
 // ============================================
-// FONCTIONS DE TEST
-// ============================================
-function updateTestMessage(message, type = 'info') {
-  const el = document.getElementById('testMessage');
-  if (!el) return;
-  
-  const colors = {
-    info: 'white',
-    success: '#4CAF50',
-    error: '#ff4444',
-    warning: '#ffb347'
-  };
-  
-  el.innerHTML = message;
-  el.style.color = colors[type] || 'white';
-  el.style.borderLeft = `5px solid ${colors[type] || 'white'}`;
-}
-
-window.testSheetBest = async function() {
-  updateTestMessage('⏳ Test de connexion à Sheet.best...', 'info');
-  
-  try {
-    const response = await fetch(BASE_URL);
-    const text = await response.text();
-    
-    if (response.ok) {
-      updateTestMessage(`✅ Connexion réussie ! Données reçues : ${text}`, 'success');
-    } else {
-      updateTestMessage(`❌ Erreur ${response.status}: ${text}`, 'error');
-    }
-  } catch (err) {
-    updateTestMessage(`❌ Exception: ${err.message}`, 'error');
-  }
-};
-
-window.testAjout = async function() {
-  updateTestMessage('⏳ Test d\'ajout en cours...', 'info');
-  
-  try {
-    const testData = [{
-      nom: "TEST_" + Date.now(),
-      "prénom ": "Succès",
-      "classe ": "TestClasse"
-    }];
-    
-    const response = await fetch(API.eleves, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(testData)
-    });
-    
-    const responseText = await response.text();
-    
-    if (response.ok) {
-      updateTestMessage(`✅ AJOUT RÉUSSI ! Donnée ajoutée. Vérifie ton Google Sheets.`, 'success');
-      // Recharge la liste des élèves
-      if (typeof chargerAdminEleves === 'function') chargerAdminEleves();
-    } else {
-      updateTestMessage(`❌ Erreur ${response.status}: ${responseText}`, 'error');
-    }
-  } catch (err) {
-    updateTestMessage(`❌ Exception: ${err.message}`, 'error');
-  }
-};
-
-window.testLecture = async function() {
-  updateTestMessage('⏳ Test de lecture...', 'info');
-  
-  try {
-    const response = await fetch(API.eleves);
-    const data = await response.json();
-    
-    if (response.ok) {
-      updateTestMessage(`✅ Lecture réussie ! ${data.length} élève(s) trouvé(s).`, 'success');
-      console.log('Données reçues:', data);
-    } else {
-      updateTestMessage(`❌ Erreur ${response.status}`, 'error');
-    }
-  } catch (err) {
-    updateTestMessage(`❌ Exception: ${err.message}`, 'error');
-  }
-};
-
-// ============================================
-// N... (le reste de ton script reste identique)
-// ============================================
-// ... (toutes les autres fonctions que tu avais déjà)
-// ...
-// ============================================
-// CONFIGURATION SHEET.BEST - AVEC TA NOUVELLE URL
-// ============================================
-const BASE_URL = 'https://api.sheetbest.com/sheets/70923d86-6d1a-4756-bf21-a869acf3e029';
-
-// URLs pour chaque feuille (table)
-const API = {
-  eleves: BASE_URL + '/eleves',
-  publications: BASE_URL + '/publications',
-  cours: BASE_URL + '/cours',
-  classes: BASE_URL + '/classes',
-  admins: BASE_URL + '/administration',
-  anciens: BASE_URL + '/anciens'
-};
-
-console.log('✅ Sheet.best configuré avec la nouvelle URL');
-
-// ============================================
-// FONCTIONS DE NAVIGATION
+// FONCTIONS DE NAVIGATION (GLOBALES)
 // ============================================
 window.goHome = function() {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -187,30 +81,40 @@ window.checkAdminPassword = function() {
 // PUBLICATIONS (Journal)
 // ============================================
 async function chargerPublications() {
-  const res = await fetch(API.publications);
-  const data = await res.json();
-  
-  let html = '';
-  data.forEach(p => {
-    html += `<div class="card"><h3>${p.titre}</h3><p>${p.contenu}</p></div>`;
-  });
-  document.getElementById('articlesList').innerHTML = html || '<p>Aucune publication</p>';
+  try {
+    const res = await fetch(API.publications);
+    const data = await res.json();
+    
+    let html = '';
+    data.forEach(p => {
+      html += `<div class="card"><h3>${p.titre || ''}</h3><p>${p.contenu || ''}</p></div>`;
+    });
+    document.getElementById('articlesList').innerHTML = html || '<p>Aucune publication</p>';
+  } catch (err) {
+    console.error('Erreur chargement publications:', err);
+    document.getElementById('articlesList').innerHTML = '<p>Erreur de chargement</p>';
+  }
 }
 
 async function chargerAdminPublications() {
-  const res = await fetch(API.publications);
-  const data = await res.json();
-  
-  let html = '';
-  data.forEach((p, index) => {
-    html += `
-      <div class="admin-item">
-        <span>${p.titre}</span>
-        <button class="delete-btn" onclick="supprimerPublication('${index}')">🗑️</button>
-      </div>
-    `;
-  });
-  document.getElementById('articlesAdminList').innerHTML = html || '<p>Aucune publication</p>';
+  try {
+    const res = await fetch(API.publications);
+    const data = await res.json();
+    
+    let html = '';
+    data.forEach((p, index) => {
+      const ligneId = index + 1;
+      html += `
+        <div class="admin-item">
+          <span>${p.titre || ''}</span>
+          <button class="delete-btn" onclick="supprimerPublication('${ligneId}')">🗑️</button>
+        </div>
+      `;
+    });
+    document.getElementById('articlesAdminList').innerHTML = html || '<p>Aucune publication</p>';
+  } catch (err) {
+    console.error('Erreur chargement admin publications:', err);
+  }
 }
 
 window.publierArticle = async function() {
@@ -218,63 +122,78 @@ window.publierArticle = async function() {
   const contenu = document.getElementById('articleContenu').value.trim();
   if (!titre || !contenu) return alert('❌ Titre et contenu requis');
 
-  await fetch(API.publications, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify([{ titre, contenu }])
-  });
+  try {
+    await fetch(API.publications, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify([{ titre, contenu }])
+    });
 
-  document.getElementById('articleTitre').value = '';
-  document.getElementById('articleContenu').value = '';
-  chargerPublications();
-  chargerAdminPublications();
-  alert('✅ Article publié');
+    document.getElementById('articleTitre').value = '';
+    document.getElementById('articleContenu').value = '';
+    chargerPublications();
+    chargerAdminPublications();
+    alert('✅ Article publié');
+  } catch (err) {
+    alert('❌ Erreur: ' + err.message);
+  }
 };
 
-window.supprimerPublication = async function(index) {
-  if (!confirm('Supprimer ?')) return;
-  await fetch(`${API.publications}/${index}`, { method: 'DELETE' });
-  chargerPublications();
-  chargerAdminPublications();
+window.supprimerPublication = async function(ligneId) {
+  if (!confirm('Supprimer cette publication ?')) return;
+  try {
+    await fetch(`${API.publications}/${ligneId}`, { method: 'DELETE' });
+    chargerPublications();
+    chargerAdminPublications();
+  } catch (err) {
+    alert('❌ Erreur: ' + err.message);
+  }
 };
 
 // ============================================
 // COURS
 // ============================================
 async function chargerCours() {
-  const res = await fetch(API.cours);
-  const data = await res.json();
-  
-  let html = '';
-  data.forEach(c => {
-    html += `
-      <div class="card">
-        <h3>${c.titre}</h3>
-        <p><strong>${c.professeur}</strong></p>
-        <p>${c.description}</p>
-        <a href="${c.lien}" target="_blank" class="cours-link">
-          ${c.type === 'pdf' ? '📄 Voir PDF' : '▶️ Voir vidéo'}
-        </a>
-      </div>
-    `;
-  });
-  document.getElementById('coursList').innerHTML = html || '<p>Aucun cours</p>';
+  try {
+    const res = await fetch(API.cours);
+    const data = await res.json();
+    
+    let html = '';
+    data.forEach(c => {
+      html += `
+        <div class="card">
+          <h3>${c.titre || ''}</h3>
+          <p><strong>${c.professeur || ''}</strong></p>
+          <p>${c.description || ''}</p>
+          ${c.lien ? `<a href="${c.lien}" target="_blank" class="cours-link">${c.type === 'pdf' ? '📄 Voir PDF' : '▶️ Voir vidéo'}</a>` : ''}
+        </div>
+      `;
+    });
+    document.getElementById('coursList').innerHTML = html || '<p>Aucun cours</p>';
+  } catch (err) {
+    console.error('Erreur chargement cours:', err);
+  }
 }
 
 async function chargerAdminCours() {
-  const res = await fetch(API.cours);
-  const data = await res.json();
-  
-  let html = '';
-  data.forEach((c, index) => {
-    html += `
-      <div class="admin-item">
-        <span>${c.titre} - ${c.professeur}</span>
-        <button class="delete-btn" onclick="supprimerCours('${index}')">🗑️</button>
-      </div>
-    `;
-  });
-  document.getElementById('coursAdminList').innerHTML = html || '<p>Aucun cours</p>';
+  try {
+    const res = await fetch(API.cours);
+    const data = await res.json();
+    
+    let html = '';
+    data.forEach((c, index) => {
+      const ligneId = index + 1;
+      html += `
+        <div class="admin-item">
+          <span>${c.titre || ''} - ${c.professeur || ''}</span>
+          <button class="delete-btn" onclick="supprimerCours('${ligneId}')">🗑️</button>
+        </div>
+      `;
+    });
+    document.getElementById('coursAdminList').innerHTML = html || '<p>Aucun cours</p>';
+  } catch (err) {
+    console.error('Erreur chargement admin cours:', err);
+  }
 }
 
 window.ajouterCours = async function() {
@@ -288,99 +207,129 @@ window.ajouterCours = async function() {
     return alert('❌ Tous les champs requis');
   }
 
-  await fetch(API.cours, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify([{ titre, professeur, description, type, lien }])
-  });
+  try {
+    await fetch(API.cours, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify([{ titre, professeur, description, type, lien }])
+    });
 
-  document.getElementById('coursTitre').value = '';
-  document.getElementById('coursProfesseur').value = '';
-  document.getElementById('coursDescription').value = '';
-  document.getElementById('coursLien').value = '';
-  
-  chargerCours();
-  chargerAdminCours();
-  alert('✅ Cours ajouté');
+    document.getElementById('coursTitre').value = '';
+    document.getElementById('coursProfesseur').value = '';
+    document.getElementById('coursDescription').value = '';
+    document.getElementById('coursLien').value = '';
+    
+    chargerCours();
+    chargerAdminCours();
+    alert('✅ Cours ajouté');
+  } catch (err) {
+    alert('❌ Erreur: ' + err.message);
+  }
 };
 
-window.supprimerCours = async function(index) {
-  if (!confirm('Supprimer ?')) return;
-  await fetch(`${API.cours}/${index}`, { method: 'DELETE' });
-  chargerCours();
-  chargerAdminCours();
+window.supprimerCours = async function(ligneId) {
+  if (!confirm('Supprimer ce cours ?')) return;
+  try {
+    await fetch(`${API.cours}/${ligneId}`, { method: 'DELETE' });
+    chargerCours();
+    chargerAdminCours();
+  } catch (err) {
+    alert('❌ Erreur: ' + err.message);
+  }
 };
 
 // ============================================
 // CLASSES
 // ============================================
 async function chargerAdminClasses() {
-  const res = await fetch(API.classes);
-  const data = await res.json();
-  
-  let html = '';
-  data.forEach((c, index) => {
-    html += `
-      <div class="admin-item">
-        <span>${c.nom}</span>
-        <button class="delete-btn" onclick="supprimerClasse('${index}')">🗑️</button>
-      </div>
-    `;
-  });
-  document.getElementById('classesList').innerHTML = html || '<p>Aucune classe</p>';
+  try {
+    const res = await fetch(API.classes);
+    const data = await res.json();
+    
+    let html = '';
+    data.forEach((c, index) => {
+      const ligneId = index + 1;
+      html += `
+        <div class="admin-item">
+          <span>${c.nom || ''}</span>
+          <button class="delete-btn" onclick="supprimerClasse('${ligneId}')">🗑️</button>
+        </div>
+      `;
+    });
+    document.getElementById('classesList').innerHTML = html || '<p>Aucune classe</p>';
+  } catch (err) {
+    console.error('Erreur chargement classes:', err);
+  }
 }
 
 window.ajouterClasse = async function() {
   const nom = document.getElementById('classeNom').value.trim();
   if (!nom) return alert('❌ Nom requis');
 
-  await fetch(API.classes, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify([{ nom }])
-  });
+  try {
+    await fetch(API.classes, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify([{ nom }])
+    });
 
-  document.getElementById('classeNom').value = '';
-  chargerAdminClasses();
-  chargerClassesSelect();
-  alert('✅ Classe ajoutée');
+    document.getElementById('classeNom').value = '';
+    chargerAdminClasses();
+    chargerClassesSelect();
+    alert('✅ Classe ajoutée');
+  } catch (err) {
+    alert('❌ Erreur: ' + err.message);
+  }
 };
 
-window.supprimerClasse = async function(index) {
-  if (!confirm('Supprimer ?')) return;
-  await fetch(`${API.classes}/${index}`, { method: 'DELETE' });
-  chargerAdminClasses();
-  chargerClassesSelect();
+window.supprimerClasse = async function(ligneId) {
+  if (!confirm('Supprimer cette classe ?')) return;
+  try {
+    await fetch(`${API.classes}/${ligneId}`, { method: 'DELETE' });
+    chargerAdminClasses();
+    chargerClassesSelect();
+  } catch (err) {
+    alert('❌ Erreur: ' + err.message);
+  }
 };
 
 async function chargerClassesSelect() {
-  const res = await fetch(API.classes);
-  const data = await res.json();
-  
-  let html = '<option value="">Choisir une classe</option>';
-  data.forEach(c => {
-    html += `<option value="${c.nom}">${c.nom}</option>`;
-  });
-  document.getElementById('eleveClasse').innerHTML = html;
+  try {
+    const res = await fetch(API.classes);
+    const data = await res.json();
+    
+    let html = '<option value="">Choisir une classe</option>';
+    data.forEach(c => {
+      html += `<option value="${c.nom}">${c.nom}</option>`;
+    });
+    document.getElementById('eleveClasse').innerHTML = html;
+  } catch (err) {
+    console.error('Erreur chargement select classes:', err);
+  }
 }
 
 // ============================================
 // ÉLÈVES
 // ============================================
 async function chargerAdminEleves() {
-  const res = await fetch(API.eleves);
-  const data = await res.json();
-  
-  let html = '';
-  data.forEach((e, index) => {
-    html += `
-      <div class="admin-item">
-        <span>${e.nom} ${e['prénom ']} - ${e['classe ']}</span>
-        <button class="delete-btn" onclick="supprimerEleve('${index}')">🗑️</button>
-      </div>
-    `;
-  });
-  document.getElementById('elevesList').innerHTML = html || '<p>Aucun élève</p>';
+  try {
+    const res = await fetch(API.eleves);
+    const data = await res.json();
+    
+    let html = '';
+    data.forEach((e, index) => {
+      const ligneId = index + 1;
+      html += `
+        <div class="admin-item">
+          <span>${e.nom || ''} ${e.prenom || ''} - ${e.classe || ''}</span>
+          <button class="delete-btn" onclick="supprimerEleve('${ligneId}')">🗑️</button>
+        </div>
+      `;
+    });
+    document.getElementById('elevesList').innerHTML = html || '<p>Aucun élève</p>';
+  } catch (err) {
+    console.error('Erreur chargement élèves:', err);
+  }
 }
 
 window.ajouterEleve = async function() {
@@ -392,53 +341,70 @@ window.ajouterEleve = async function() {
     return alert('❌ Tous les champs requis');
   }
 
-  await fetch(API.eleves, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify([{ nom, "prénom ": prenom, "classe ": classe }])
-  });
+  try {
+    await fetch(API.eleves, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify([{ nom, prenom, classe }])
+    });
 
-  document.getElementById('eleveNom').value = '';
-  document.getElementById('elevePrenom').value = '';
-  
-  chargerAdminEleves();
-  alert('✅ Élève ajouté');
+    document.getElementById('eleveNom').value = '';
+    document.getElementById('elevePrenom').value = '';
+    
+    chargerAdminEleves();
+    alert('✅ Élève ajouté');
+  } catch (err) {
+    alert('❌ Erreur: ' + err.message);
+  }
 };
 
-window.supprimerEleve = async function(index) {
-  if (!confirm('Supprimer ?')) return;
-  await fetch(`${API.eleves}/${index}`, { method: 'DELETE' });
-  chargerAdminEleves();
+window.supprimerEleve = async function(ligneId) {
+  if (!confirm('Supprimer cet élève ?')) return;
+  try {
+    await fetch(`${API.eleves}/${ligneId}`, { method: 'DELETE' });
+    chargerAdminEleves();
+  } catch (err) {
+    alert('❌ Erreur: ' + err.message);
+  }
 };
 
 // ============================================
 // ADMINISTRATION
 // ============================================
 async function chargerAdministration() {
-  const res = await fetch(API.admins);
-  const data = await res.json();
-  
-  let html = '';
-  data.forEach(a => {
-    html += `<div class="card"><h3>${a.nom}</h3><p><strong>${a.role}</strong></p></div>`;
-  });
-  document.getElementById('adminList').innerHTML = html || '<p>Aucun membre</p>';
+  try {
+    const res = await fetch(API.admins);
+    const data = await res.json();
+    
+    let html = '';
+    data.forEach(a => {
+      html += `<div class="card"><h3>${a.nom || ''}</h3><p><strong>${a.role || ''}</strong></p></div>`;
+    });
+    document.getElementById('adminList').innerHTML = html || '<p>Aucun membre</p>';
+  } catch (err) {
+    console.error('Erreur chargement administration:', err);
+  }
 }
 
 async function chargerAdminAdmins() {
-  const res = await fetch(API.admins);
-  const data = await res.json();
-  
-  let html = '';
-  data.forEach((a, index) => {
-    html += `
-      <div class="admin-item">
-        <span>${a.nom} - ${a.role}</span>
-        <button class="delete-btn" onclick="supprimerAdmin('${index}')">🗑️</button>
-      </div>
-    `;
-  });
-  document.getElementById('adminsList').innerHTML = html || '<p>Aucun membre</p>';
+  try {
+    const res = await fetch(API.admins);
+    const data = await res.json();
+    
+    let html = '';
+    data.forEach((a, index) => {
+      const ligneId = index + 1;
+      html += `
+        <div class="admin-item">
+          <span>${a.nom || ''} - ${a.role || ''}</span>
+          <button class="delete-btn" onclick="supprimerAdmin('${ligneId}')">🗑️</button>
+        </div>
+      `;
+    });
+    document.getElementById('adminsList').innerHTML = html || '<p>Aucun membre</p>';
+  } catch (err) {
+    console.error('Erreur chargement admin admins:', err);
+  }
 }
 
 window.ajouterAdmin = async function() {
@@ -446,39 +412,51 @@ window.ajouterAdmin = async function() {
   const role = document.getElementById('adminRole').value.trim();
   if (!nom || !role) return alert('❌ Nom et rôle requis');
 
-  await fetch(API.admins, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify([{ nom, role }])
-  });
+  try {
+    await fetch(API.admins, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify([{ nom, role }])
+    });
 
-  document.getElementById('adminNom').value = '';
-  document.getElementById('adminRole').value = '';
-  
-  chargerAdministration();
-  chargerAdminAdmins();
-  alert('✅ Membre ajouté');
+    document.getElementById('adminNom').value = '';
+    document.getElementById('adminRole').value = '';
+    
+    chargerAdministration();
+    chargerAdminAdmins();
+    alert('✅ Membre ajouté');
+  } catch (err) {
+    alert('❌ Erreur: ' + err.message);
+  }
 };
 
-window.supprimerAdmin = async function(index) {
-  if (!confirm('Supprimer ?')) return;
-  await fetch(`${API.admins}/${index}`, { method: 'DELETE' });
-  chargerAdministration();
-  chargerAdminAdmins();
+window.supprimerAdmin = async function(ligneId) {
+  if (!confirm('Supprimer ce membre ?')) return;
+  try {
+    await fetch(`${API.admins}/${ligneId}`, { method: 'DELETE' });
+    chargerAdministration();
+    chargerAdminAdmins();
+  } catch (err) {
+    alert('❌ Erreur: ' + err.message);
+  }
 };
 
 // ============================================
 // ANCIENS ÉLÈVES
 // ============================================
 async function chargerAnciens() {
-  const res = await fetch(API.anciens);
-  const data = await res.json();
-  
-  let html = '';
-  data.forEach(a => {
-    html += `<div class="card"><h3>${a.nom}</h3><p>${a.annee} - ${a.parcours}</p></div>`;
-  });
-  document.getElementById('anciensList').innerHTML = html || '<p>Aucun ancien</p>';
+  try {
+    const res = await fetch(API.anciens);
+    const data = await res.json();
+    
+    let html = '';
+    data.forEach(a => {
+      html += `<div class="card"><h3>${a.nom || ''}</h3><p>${a.annee || ''} - ${a.parcours || ''}</p></div>`;
+    });
+    document.getElementById('anciensList').innerHTML = html || '<p>Aucun ancien</p>';
+  } catch (err) {
+    console.error('Erreur chargement anciens:', err);
+  }
 }
 
 // ============================================
@@ -495,56 +473,62 @@ window.rechercher = async function() {
 
   let html = '';
 
-  // Recherche dans les élèves
-  const elevesRes = await fetch(API.eleves);
-  const eleves = await elevesRes.json();
-  eleves.forEach(e => {
-    if (e.nom.toLowerCase().includes(query) || e['prénom '].toLowerCase().includes(query)) {
-      html += `<div class="card"><h3>👨‍🎓 ${e.nom} ${e['prénom ']}</h3><p>Classe: ${e['classe ']}</p></div>`;
-    }
-  });
+  try {
+    // Recherche dans les élèves
+    const elevesRes = await fetch(API.eleves);
+    const eleves = await elevesRes.json();
+    eleves.forEach(e => {
+      if ((e.nom && e.nom.toLowerCase().includes(query)) || 
+          (e.prenom && e.prenom.toLowerCase().includes(query))) {
+        html += `<div class="card"><h3>👨‍🎓 ${e.nom} ${e.prenom}</h3><p>Classe: ${e.classe}</p></div>`;
+      }
+    });
 
-  // Recherche dans les admins
-  const adminsRes = await fetch(API.admins);
-  const admins = await adminsRes.json();
-  admins.forEach(a => {
-    if (a.nom.toLowerCase().includes(query)) {
-      html += `<div class="card"><h3>👨‍🏫 ${a.nom}</h3><p>${a.role}</p></div>`;
-    }
-  });
+    // Recherche dans les admins
+    const adminsRes = await fetch(API.admins);
+    const admins = await adminsRes.json();
+    admins.forEach(a => {
+      if (a.nom && a.nom.toLowerCase().includes(query)) {
+        html += `<div class="card"><h3>👨‍🏫 ${a.nom}</h3><p>${a.role}</p></div>`;
+      }
+    });
 
-  // Recherche dans les cours
-  const coursRes = await fetch(API.cours);
-  const cours = await coursRes.json();
-  cours.forEach(c => {
-    if (c.titre.toLowerCase().includes(query) || c.professeur.toLowerCase().includes(query)) {
-      html += `<div class="card"><h3>📚 ${c.titre}</h3><p>Par ${c.professeur}</p></div>`;
-    }
-  });
+    // Recherche dans les cours
+    const coursRes = await fetch(API.cours);
+    const cours = await coursRes.json();
+    cours.forEach(c => {
+      if ((c.titre && c.titre.toLowerCase().includes(query)) || 
+          (c.professeur && c.professeur.toLowerCase().includes(query))) {
+        html += `<div class="card"><h3>📚 ${c.titre}</h3><p>Par ${c.professeur}</p></div>`;
+      }
+    });
 
-  results.innerHTML = html || '<p>Aucun résultat trouvé</p>';
+    results.innerHTML = html || '<p>Aucun résultat trouvé</p>';
+  } catch (err) {
+    console.error('Erreur recherche:', err);
+    results.innerHTML = '<p>Erreur lors de la recherche</p>';
+  }
 };
 
 // ============================================
-// RAFRAÎCHISSEMENT AUTOMATIQUE
+// RAFRAÎCHISSEMENT AUTOMATIQUE (optionnel)
 // ============================================
 function autoRefresh() {
-  // Rafraîchit les données toutes les 30 secondes
   setInterval(async () => {
     console.log('🔄 Rafraîchissement automatique...');
     await chargerPublications();
     await chargerCours();
     await chargerAdministration();
     await chargerAnciens();
-  }, 30000); // 30000 ms = 30 secondes
+  }, 30000); // 30 secondes
 }
 
 // ============================================
-// INIT
+// INITIALISATION
 // ============================================
 chargerPublications();
 chargerCours();
 chargerAdministration();
 chargerAnciens();
-autoRefresh(); // Active le rafraîchissement automatique
-console.log('✅ Site prêt avec Sheet.best - Nouvelle URL active');
+autoRefresh();
+console.log('✅ Site prêt avec Sheet.best');
