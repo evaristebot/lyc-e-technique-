@@ -1,232 +1,78 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html>
 <head>
-<meta charset="UTF-8">
-<title>Lycée Technique de Batouri</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<style>
-  * { margin:0; padding:0; box-sizing:border-box; font-family: 'Segoe UI', sans-serif; }
-  body {
-    background: linear-gradient(135deg, #0b2f2f 0%, #1a4a4a 100%);
-    color: white;
-    min-height: 100vh;
-  }
-  .navbar {
-    background: #0b2f2f;
-    padding: 1rem 5%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    border-bottom: 3px solid #ffb347;
-  }
-  .nav-logo {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    cursor: pointer;
-  }
-  .nav-logo img {
-    width: 40px; height: 40px; border-radius: 50%; border: 2px solid #ffb347;
-  }
-  .nav-logo span { color: #ffb347; font-weight: bold; font-size: 1.2rem; }
-  .nav-links button {
-    background: transparent; border: 2px solid #ffb347; color: white;
-    padding: 8px 16px; border-radius: 30px; cursor: pointer; margin: 5px; font-weight: 600;
-    transition: all 0.3s;
-  }
-  .nav-links button:hover { background: #ffb347; color: #0b2f2f; }
-  .page { display: none; padding: 2rem 5%; animation: fade 0.3s; }
-  .page.active { display: block; }
-  @keyframes fade { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
-  .hero { text-align: center; margin-bottom: 2rem; }
-  .logo-large { width: 150px; height: 150px; border-radius: 50%; border: 5px solid #ffb347; }
-  h1 { color: #ffb347; text-align: center; font-size: 2.5rem; }
-  .card {
-    background: rgba(255,255,255,0.1); padding: 20px; border-radius: 15px;
-    margin: 10px 0; backdrop-filter: blur(5px);
-    border-left: 3px solid #ffb347;
-  }
-  .btn {
-    background: #ffb347; color: #0b2f2f; border: none; padding: 12px 30px;
-    border-radius: 30px; font-weight: bold; cursor: pointer; margin: 5px;
-    transition: all 0.3s;
-  }
-  .btn:hover { background: transparent; color: #ffb347; border: 2px solid #ffb347; padding: 10px 28px; }
-  .btn-secondary {
-    background: transparent; border: 2px solid #ffb347; color: #ffb347;
-    padding: 12px 30px; border-radius: 30px; cursor: pointer;
-    transition: all 0.3s;
-  }
-  .btn-secondary:hover { background: #ffb347; color: #0b2f2f; }
-  input, select, textarea {
-    width: 100%; padding: 10px; margin: 10px 0;
-    border: 2px solid #ddd; border-radius: 10px;
-    font-size: 1rem;
-  }
-  input:focus, textarea:focus { border-color: #ffb347; outline: none; }
-  .admin-section {
-    background: rgba(255,255,255,0.1); padding: 20px; margin: 20px 0;
-    border-radius: 15px; border-left: 5px solid #ffb347;
-  }
-  .admin-section h3 { color: #ffb347; margin-bottom: 15px; }
-  #adminPasswordBox {
-    background: #0b2f2f; padding: 30px; border-radius: 15px; text-align: center;
-    margin-bottom: 20px; border: 2px solid #ffb347;
-  }
-  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
-  .admin-item {
-    background: rgba(255,255,255,0.1); padding: 10px; margin: 5px 0;
-    border-radius: 5px; display: flex; justify-content: space-between; align-items: center;
-  }
-  .delete-btn {
-    background: #ff4444; color: white; border: none;
-    padding: 5px 15px; border-radius: 20px; cursor: pointer;
-  }
-  .cours-link {
-    display: inline-block; background: #ffb347; color: #0b2f2f;
-    padding: 8px 16px; border-radius: 30px; text-decoration: none; margin-top: 10px;
-  }
-</style>
+    <title>🔍 Test Airtable</title>
 </head>
 <body>
+    <h1>🔍 Test de connexion Airtable</h1>
+    <p>Base ID : <code>appkY3jjhpeE3qIoM</code></p>
+    <p>Token : <code>patjrQeZt0hXPQ7ry.3edbbab760fa151d...</code></p>
 
-<!-- NAVIGATION -->
-<nav class="navbar">
-  <div class="nav-logo" onclick="goHome()">
-    <img src="logo.jpg" alt="Logo" onerror="this.src='https://via.placeholder.com/40'">
-    <span>Lycée Technique de Batouri</span>
-  </div>
-  <div class="nav-links">
-    <button onclick="goHome()">🏠 Accueil</button>
-    <button onclick="goToAdministration()">👨‍🏫 Administration</button>
-    <button onclick="goToAnciens()">🎓 Anciens</button>
-    <button onclick="goToJournal()">📰 Journal</button>
-    <button onclick="goToCours()">📚 Cours</button>
-    <button onclick="goToRecherche()">🔍 Recherche</button>
-    <button onclick="goToAdmin()">⚙️ Admin</button>
-  </div>
-</nav>
+    <button onclick="testerConnexion()">📋 Tester la connexion</button>
+    <button onclick="lireEleves()">👨‍🎓 Lire les élèves</button>
+    <button onclick="ajouterEleve()">➕ Ajouter un élève test</button>
 
-<!-- ACCUEIL -->
-<div id="home" class="page active">
-  <div class="hero">
-    <img src="logo.jpg" class="logo-large" id="mainLogo" onerror="this.src='https://via.placeholder.com/150'">
-    <h1>Lycée Technique de Batouri</h1>
-  </div>
-  <div class="card">
-    <h2>Bienvenue</h2>
-    <p>Le Lycée Technique de Batouri forme les jeunes aux métiers techniques depuis 1985.</p>
-    <p><strong>Excellence, Discipline, Travail</strong></p>
-  </div>
-</div>
+    <pre id="resultat" style="background:#f0f0f0; padding:15px; margin-top:20px; border-radius:5px;"></pre>
 
-<!-- ADMINISTRATION -->
-<div id="administration" class="page">
-  <h1>👨‍🏫 Administration</h1>
-  <div id="adminList" class="grid"></div>
-  <button class="btn-secondary" onclick="goHome()">← Retour</button>
-</div>
+    <script>
+    
+    const baseId = 'appkY3jjhpeE3qIoM';
+    const tableName = 'Éleves';
 
-<!-- ANCIENS -->
-<div id="anciens" class="page">
-  <h1>🎓 Anciens Élèves</h1>
-  <div id="anciensList" class="grid"></div>
-  <button class="btn-secondary" onclick="goHome()">← Retour</button>
-</div>
+    function afficher(data) {
+        document.getElementById('resultat').innerHTML = JSON.stringify(data, null, 2);
+    }
 
-<!-- JOURNAL -->
-<div id="journal" class="page">
-  <h1>📰 Journal du Lycée</h1>
-  <div id="articlesList" class="grid"></div>
-  <button class="btn-secondary" onclick="goHome()">← Retour</button>
-</div>
+    async function testerConnexion() {
+        try {
+            const res = await fetch(`https://api.airtable.com/v0/${baseId}/${encodeURIComponent(tableName)}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const data = await res.json();
+            afficher({ status: res.status, ok: res.ok, data });
+        } catch (err) {
+            afficher({ error: err.message });
+        }
+    }
 
-<!-- COURS -->
-<div id="cours" class="page">
-  <h1>📚 Cours disponibles</h1>
-  <div id="coursList" class="grid"></div>
-  <button class="btn-secondary" onclick="goHome()">← Retour</button>
-</div>
+    async function lireEleves() {
+        try {
+            const res = await fetch(`https://api.airtable.com/v0/${baseId}/${encodeURIComponent(tableName)}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const data = await res.json();
+            afficher(data);
+        } catch (err) {
+            afficher({ error: err.message });
+        }
+    }
 
-<!-- RECHERCHE -->
-<div id="recherche" class="page">
-  <h1>🔍 Recherche</h1>
-  <input type="text" id="searchQuery" placeholder="Nom, prénom, matière...">
-  <button class="btn" onclick="rechercher()">Rechercher</button>
-  <div id="searchResults" class="grid"></div>
-  <button class="btn-secondary" onclick="goHome()">← Retour</button>
-</div>
+    async function ajouterEleve() {
+        const nouvelEleve = {
+            records: [{
+                fields: {
+                    "Nom": "Test",
+                    "Prénom": "Airtable",
+                    "Contact parents": "699000000"
+                }
+            }]
+        };
 
-<!-- ADMIN -->
-<div id="admin" class="page">
-  <h1>⚙️ Administration</h1>
-
-  <div id="adminPasswordBox">
-    <h3>🔐 Accès sécurisé</h3>
-    <input type="password" id="adminPassword" placeholder="Mot de passe">
-    <button class="btn" onclick="checkAdminPassword()">Valider</button>
-  </div>
-
-  <div id="adminZone" style="display:none;">
-
-    <!-- PUBLICATIONS -->
-    <div class="admin-section">
-      <h3>📰 Publier un article</h3>
-      <input type="text" id="articleTitre" placeholder="Titre">
-      <textarea id="articleContenu" placeholder="Contenu..." rows="3"></textarea>
-      <button class="btn" onclick="publierArticle()">📤 Publier</button>
-      <div id="articlesAdminList"></div>
-    </div>
-
-    <!-- COURS -->
-    <div class="admin-section">
-      <h3>📚 Ajouter un cours</h3>
-      <input type="text" id="coursTitre" placeholder="Titre du cours">
-      <input type="text" id="coursProfesseur" placeholder="Professeur">
-      <textarea id="coursDescription" placeholder="Description" rows="2"></textarea>
-      <select id="coursType">
-        <option value="video">Vidéo (lien)</option>
-        <option value="pdf">PDF</option>
-      </select>
-      <input type="text" id="coursLien" placeholder="Lien YouTube ou Drive">
-      <button class="btn" onclick="ajouterCours()">➕ Ajouter le cours</button>
-      <div id="coursAdminList"></div>
-    </div>
-
-    <!-- CLASSES -->
-    <div class="admin-section">
-      <h3>📂 Gestion des classes</h3>
-      <input type="text" id="classeNom" placeholder="Nom de la classe (ex: 1ère Électricité)">
-      <button class="btn" onclick="ajouterClasse()">➕ Ajouter classe</button>
-      <div id="classesList"></div>
-    </div>
-
-    <!-- ÉLÈVES -->
-    <div class="admin-section">
-      <h3>👨‍🎓 Gestion des élèves</h3>
-      <input type="text" id="eleveNom" placeholder="Nom">
-      <input type="text" id="elevePrenom" placeholder="Prénom">
-      <select id="eleveClasse"></select>
-      <button class="btn" onclick="ajouterEleve()">➕ Ajouter élève</button>
-      <div id="elevesList"></div>
-    </div>
-
-    <!-- ADMINISTRATION -->
-    <div class="admin-section">
-      <h3>🏛️ Gestion administration</h3>
-      <input type="text" id="adminNom" placeholder="Nom complet">
-      <input type="text" id="adminRole" placeholder="Rôle (Proviseur, Censeur...)">
-      <button class="btn" onclick="ajouterAdmin()">➕ Ajouter membre</button>
-      <div id="adminsList"></div>
-    </div>
-
-  </div>
-
-  <button class="btn-secondary" onclick="goHome()">← Retour</button>
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="script.js"></script>
+        try {
+            const res = await fetch(`https://api.airtable.com/v0/${baseId}/${encodeURIComponent(tableName)}`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(nouvelEleve)
+            });
+            const data = await res.json();
+            afficher({ success: true, data });
+        } catch (err) {
+            afficher({ error: err.message });
+        }
+    }
+    </script>
 </body>
-    </html>
+</html>
