@@ -1,112 +1,207 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>✅ TEST ULTIME SHEET.BEST</title>
+    <title>🧪 TEST ÉLÈVES & COURS</title>
+    <style>
+        body { font-family: Arial; padding: 20px; background: #f5f7fa; }
+        .container { display: flex; gap: 20px; }
+        .card { 
+            background: white; 
+            padding: 20px; 
+            border-radius: 15px; 
+            flex: 1;
+            border-left: 5px solid #ffb347;
+        }
+        button { 
+            background: #ffb347; 
+            border: none; 
+            padding: 10px 20px; 
+            margin: 5px; 
+            border-radius: 30px;
+            cursor: pointer;
+        }
+        input, textarea { 
+            width: 100%; 
+            padding: 8px; 
+            margin: 5px 0; 
+            border: 2px solid #ddd; 
+            border-radius: 10px;
+        }
+        .data-list { 
+            margin-top: 15px; 
+            max-height: 200px; 
+            overflow-y: auto; 
+        }
+        .item { 
+            background: #f0f0f0; 
+            padding: 8px; 
+            margin: 5px 0; 
+            border-radius: 5px;
+        }
+    </style>
 </head>
 <body>
-    <h1>🔍 Test avec la bonne syntaxe</h1>
-    
-    <div>
-        <button onclick="test('eleves')">📋 Élèves</button>
-        <button onclick="test('publications')">📰 Publications</button>
-        <button onclick="test('cours')">📚 Cours</button>
-        <button onclick="test('classes')">🏫 Classes</button>
-        <button onclick="test('administration')">👨‍🏫 Administration</button>
-        <button onclick="test('anciens')">🎓 Anciens</button>
-    </div>
+    <h1>🔍 TEST ÉLÈVES & COURS</h1>
 
-    <div style="margin-top:20px;">
-        <h3>Ajouter un test</h3>
-        <button onclick="ajouterTest('publications')">➕ Test publications</button>
-        <button onclick="ajouterTest('cours')">➕ Test cours</button>
-        <button onclick="ajouterTest('classes')">➕ Test classes</button>
-        <button onclick="ajouterTest('administration')">➕ Test administration</button>
-        <button onclick="ajouterTest('anciens')">➕ Test anciens</button>
-    </div>
+    <div class="container">
+        <!-- Carte ÉLÈVES -->
+        <div class="card">
+            <h2>👨‍🎓 ÉLÈVES</h2>
+            <p>URL: <code>70923d86-6d1a-4756-bf21-a869acf3e029</code></p>
+            
+            <input type="text" id="eleveNom" placeholder="Nom">
+            <input type="text" id="elevePrenom" placeholder="Prénom">
+            <input type="text" id="eleveClasse" placeholder="Classe">
+            <button onclick="ajouterEleve()">➕ Ajouter élève</button>
+            <button onclick="voirEleves()">📋 Voir élèves</button>
+            
+            <div id="listeEleves" class="data-list"></div>
+        </div>
 
-    <pre id="resultat" style="background:#f0f0f0; padding:15px; margin-top:20px; border-radius:5px;"></pre>
+        <!-- Carte COURS -->
+        <div class="card">
+            <h2>📚 COURS</h2>
+            <p>URL: <code>0073e64e-80ab-4337-b6b9-df0c2ce14cd3</code></p>
+            
+            <input type="text" id="coursTitre" placeholder="Titre">
+            <input type="text" id="coursProf" placeholder="Professeur">
+            <textarea id="coursDesc" placeholder="Description" rows="2"></textarea>
+            <select id="coursType">
+                <option value="pdf">PDF</option>
+                <option value="video">Vidéo</option>
+            </select>
+            <input type="text" id="coursLien" placeholder="Lien">
+            <button onclick="ajouterCours()">➕ Ajouter cours</button>
+            <button onclick="voirCours()">📋 Voir cours</button>
+            
+            <div id="listeCours" class="data-list"></div>
+        </div>
+    </div>
 
     <script>
-    const BASE_URL = 'https://api.sheetbest.com/sheets/70923d86-6d1a-4756-bf21-a869acf3e029';
+    // ============================================
+    // CONFIGURATION
+    // ============================================
+    const API = {
+        eleves: 'https://api.sheetbest.com/sheets/70923d86-6d1a-4756-bf21-a869acf3e029',
+        cours: 'https://api.sheetbest.com/sheets/0073e64e-80ab-4337-b6b9-df0c2ce14cd3'
+    };
 
-    function afficher(message, type = 'info') {
-        const pre = document.getElementById('resultat');
-        pre.innerHTML = message;
-        pre.style.color = type === 'error' ? 'red' : 'green';
-    }
-
-    // TESTER UN ONGLET
-    async function test(onglet) {
-        afficher(`⏳ Test de "${onglet}"...`);
-        
+    // ============================================
+    // FONCTIONS POUR LES ÉLÈVES
+    // ============================================
+    async function voirEleves() {
         try {
-            // LA BONNE SYNTAXE : #nom_onglet
-            const url = `${BASE_URL}#${onglet}`;
-            console.log('📡 URL:', url);
-            
-            const res = await fetch(url);
+            const res = await fetch(API.eleves);
             const data = await res.json();
             
-            let message = `✅ Onglet "${onglet}" trouvé !\n`;
-            message += `📊 ${data.length} élément(s)\n\n`;
-            message += JSON.stringify(data, null, 2);
-            
-            afficher(message);
-            
+            let html = '';
+            data.forEach(e => {
+                html += `
+                    <div class="item">
+                        👤 ${e.nom || ''} ${e['prénom '] || e.prenom || ''} - ${e['classe '] || e.classe || ''}
+                    </div>
+                `;
+            });
+            document.getElementById('listeEleves').innerHTML = html || '<p>Aucun élève</p>';
         } catch (err) {
-            afficher(`❌ Erreur: ${err.message}`, 'error');
+            alert('Erreur: ' + err.message);
         }
     }
 
-    // AJOUTER UN TEST
-    async function ajouterTest(onglet) {
-        let donnees = {};
+    async function ajouterEleve() {
+        const nom = document.getElementById('eleveNom').value;
+        const prenom = document.getElementById('elevePrenom').value;
+        const classe = document.getElementById('eleveClasse').value;
         
-        switch(onglet) {
-            case 'publications':
-                donnees = { titre: "Test " + Date.now(), contenu: "Test réussi !" };
-                break;
-            case 'cours':
-                donnees = { 
-                    titre: "Cours test", 
-                    professeur: "Prof Test", 
-                    description: "Description", 
-                    type: "pdf", 
-                    lien: "#" 
-                };
-                break;
-            case 'classes':
-                donnees = { nom: "Classe Test" };
-                break;
-            case 'administration':
-                donnees = { nom: "Test Admin", role: "Testeur" };
-                break;
-            case 'anciens':
-                donnees = { nom: "Test Ancien", annee: "2020", parcours: "Testeur" };
-                break;
+        if (!nom || !prenom || !classe) {
+            alert('Tous les champs sont requis');
+            return;
         }
         
-        afficher(`⏳ Ajout dans "${onglet}"...`);
-        
         try {
-            const url = `${BASE_URL}#${onglet}`;
-            const res = await fetch(url, {
+            const res = await fetch(API.eleves, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify([donnees])
+                body: JSON.stringify([{ nom, prenom, classe }])
             });
             
             if (res.ok) {
-                afficher(`✅ Test ajouté dans "${onglet}" !`);
-                setTimeout(() => test(onglet), 1000);
-            } else {
-                const text = await res.text();
-                afficher(`❌ Erreur ${res.status}: ${text}`, 'error');
+                alert('✅ Élève ajouté !');
+                document.getElementById('eleveNom').value = '';
+                document.getElementById('elevePrenom').value = '';
+                document.getElementById('eleveClasse').value = '';
+                voirEleves();
             }
         } catch (err) {
-            afficher(`❌ Erreur: ${err.message}`, 'error');
+            alert('Erreur: ' + err.message);
         }
     }
+
+    // ============================================
+    // FONCTIONS POUR LES COURS
+    // ============================================
+    async function voirCours() {
+        try {
+            const res = await fetch(API.cours);
+            const data = await res.json();
+            
+            let html = '';
+            data.forEach(c => {
+                html += `
+                    <div class="item">
+                        📘 ${c.titre || ''} - ${c.professeur || ''}<br>
+                        <small>${c.type || ''}</small>
+                    </div>
+                `;
+            });
+            document.getElementById('listeCours').innerHTML = html || '<p>Aucun cours</p>';
+        } catch (err) {
+            alert('Erreur: ' + err.message);
+        }
+    }
+
+    async function ajouterCours() {
+        const titre = document.getElementById('coursTitre').value;
+        const prof = document.getElementById('coursProf').value;
+        const desc = document.getElementById('coursDesc').value;
+        const type = document.getElementById('coursType').value;
+        const lien = document.getElementById('coursLien').value;
+        
+        if (!titre || !prof || !desc || !lien) {
+            alert('Tous les champs sont requis');
+            return;
+        }
+        
+        try {
+            const res = await fetch(API.cours, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify([{ 
+                    titre, 
+                    professeur: prof, 
+                    description: desc, 
+                    type, 
+                    lien 
+                }])
+            });
+            
+            if (res.ok) {
+                alert('✅ Cours ajouté !');
+                document.getElementById('coursTitre').value = '';
+                document.getElementById('coursProf').value = '';
+                document.getElementById('coursDesc').value = '';
+                document.getElementById('coursLien').value = '';
+                voirCours();
+            }
+        } catch (err) {
+            alert('Erreur: ' + err.message);
+        }
+    }
+
+    // Charger les données au démarrage
+    voirEleves();
+    voirCours();
     </script>
 </body>
 </html>
